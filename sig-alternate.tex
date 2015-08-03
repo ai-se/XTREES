@@ -1,0 +1,110 @@
+\documentclass{sig-alternate}
+\usepackage{tikz}
+  \def\firstcircle{(90:1.75cm) circle (2.5cm)}
+  \def\secondcircle{(210:1.75cm) circle (2.5cm)}
+  \def\thirdcircle{(330:1.75cm) circle (2.5cm)} 
+\usepackage{comment}
+\usepackage{cite}
+\usepackage[shortlabels]{enumitem} 
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage{balance}
+\newcommand{\bi}{\begin{itemize}[leftmargin=0.4cm]}
+\newcommand{\ei}{\end{itemize}}
+\newcommand{\be}{\begin{enumerate}}
+\newcommand{\ee}{\end{enumerate}}
+\newcommand{\tion}[1]{\S\ref{sect:#1}}
+\newcommand{\fig}[1]{Figure~\ref{fig:#1}}
+\newcommand{\eq}[1]{Equation~\ref{eq:#1}}
+\setlist{nolistsep,leftmargin=5mm}
+%\usepackage[pdftex]{graphicx}
+\newcommand{\Sample}{{\bf SAMPLE}}
+\newcommand{\PEEKING}{{\bf PEEKING2}}
+\usepackage{picture}
+\usepackage{colortbl}
+\usepackage[table]{xcolor}
+\usepackage{listings}
+
+\definecolor{lightgray}{gray}{0.8}
+\definecolor{darkgray}{gray}{0.6}
+\usepackage{tabu}
+
+\definecolor{Gray}{gray}{0.95}
+\definecolor{LightGray}{gray}{0.975}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\fontsize{2.4mm}{0.8em}\selectfont,
+    breaklines=true,
+    prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+    frame=tlrb,
+    showtabs=false,
+    showspaces=false,
+    showstringspaces=false,
+    %backgroundcolor=\color{Gray},
+    keywordstyle=\bfseries,
+    emph={COCONUT,GUESSES,ASSESS,COCOMO2,PEEKING2,SAMPLE,WHERE,RIG}, emphstyle=\bfseries\color{Blue},
+    stringstyle=\color{green!50!black},
+    commentstyle=\color{red}\itshape,
+    %numbers=none,
+    captionpos=t,
+    numberstyle=\bfseries\color{red},
+    escapeinside={\%*}{*)}
+}
+
+\definecolor{darkgreen}{rgb}{0,0.3,0}
+
+\usepackage[table]{xcolor}
+\definecolor{Gray}{rgb}{0.88,1,1}
+\definecolor{Gray}{gray}{0.85}
+\definecolor{Blue}{RGB}{0,29,193}
+
+\newcommand{\G}{\cellcolor{green}}
+\newcommand{\Y}{\cellcolor{yellow}}
+
+\newcommand{\quart}[4]{\begin{picture}(100,4)%1
+{\color{black}\put(#3,2){\circle*{4}}\put(#1,2){\line(1,0){#2}}}\end{picture}}
+
+
+\definecolor{MyDarkBlue}{rgb}{0,0.08,0.45} 
+\newenvironment{changed}{\par\color{MyDarkBlue}}{\par}
+%\newenvironment{changed}{\par}{\par}
+
+\newcommand{\ADD}[1]{\textcolor{MyDarkBlue}{{\bf #1}}}
+%\newcommand{\ADD}[1]{#1}
+\usepackage{times}
+\def\baselinestretch{1}
+\setlist{nosep}
+\usepackage[font={small}]{caption, subfig}
+
+\setlength{\abovecaptionskip}{1ex}
+\setlength{\belowcaptionskip}{1ex}
+\setlength{\floatsep}{1ex}
+\setlength{\textfloatsep}{1ex}
+\newcommand{\subparagraph}{} % defined before loading titlesec
+\usepackage[compact,small]{titlesec}
+\DeclareMathSizes{7}{7}{7}{7} 
+
+\pagenumbering{arabic} 
+\begin{document}  
+\conferenceinfo{ISCE}{'16 Austin, Texas}
+
+\title{Learning Actionable Analytics Using CROSSTREES}
+\numberofauthors{2} 
+\author{
+\alignauthor 
+Rahul Krishna \\
+       \affaddr{CS, NcState, USA}\\
+       {i.m.ralk@gmail.com}
+\alignauthor
+Tim Menzies\\
+       \affaddr{CS, NcState, USA}\\
+       {tim.menzies@gmail.com}}
+\setlength{\columnsep}{7mm}
+
+\maketitle
+\begin{abstract}
+This paper provides ...  
+\end{abstract}
+
+\end{document}
