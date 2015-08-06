@@ -1,0 +1,205 @@
+\documentclass{sig-alternate}
+\usepackage{tikz}
+  \def\firstcircle{(90:1.75cm) circle (2.5cm)}
+  \def\secondcircle{(210:1.75cm) circle (2.5cm)}
+  \def\thirdcircle{(330:1.75cm) circle (2.5cm)} 
+\usepackage{comment}
+\usepackage{cite}
+\usepackage[shortlabels]{enumitem} 
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage{balance}
+\newcommand{\bi}{\begin{itemize}[leftmargin=0.4cm]}
+\newcommand{\ei}{\end{itemize}}
+\newcommand{\be}{\begin{enumerate}}
+\newcommand{\ee}{\end{enumerate}}
+\newcommand{\tion}[1]{\S\ref{sect:#1}}
+\newcommand{\fig}[1]{Figure~\ref{fig:#1}}
+\newcommand{\eq}[1]{Equation~\ref{eq:#1}}
+\setlist{nolistsep,leftmargin=5mm}
+%\usepackage[pdftex]{graphicx}
+\newcommand{\Sample}{{\bf SAMPLE}}
+\newcommand{\PEEKING}{{\bf PEEKING2}}
+\usepackage{picture}
+\usepackage{colortbl}
+\usepackage[table]{xcolor}
+\usepackage{listings}
+
+\definecolor{lightgray}{gray}{0.8}
+\definecolor{darkgray}{gray}{0.6}
+\usepackage{tabu}
+
+\definecolor{Gray}{gray}{0.95}
+\definecolor{LightGray}{gray}{0.975}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\fontsize{2.4mm}{0.8em}\selectfont,
+    breaklines=true,
+    prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+    frame=tlrb,
+    showtabs=false,
+    showspaces=false,
+    showstringspaces=false,
+    %backgroundcolor=\color{Gray},
+    keywordstyle=\bfseries,
+    emph={COCONUT,GUESSES,ASSESS,COCOMO2,PEEKING2,SAMPLE,WHERE,RIG}, emphstyle=\bfseries\color{Blue},
+    stringstyle=\color{green!50!black},
+    commentstyle=\color{red}\itshape,
+    %numbers=none,
+    captionpos=t,
+    numberstyle=\bfseries\color{red},
+    escapeinside={\%*}{*)}
+}
+
+\definecolor{darkgreen}{rgb}{0,0.3,0}
+
+\usepackage[table]{xcolor}
+\definecolor{Gray}{rgb}{0.88,1,1}
+\definecolor{Gray}{gray}{0.85}
+\definecolor{Blue}{RGB}{0,29,193}
+
+\newcommand{\G}{\cellcolor{green}}
+\newcommand{\Y}{\cellcolor{yellow}}
+
+\newcommand{\quart}[4]{\begin{picture}(100,4)%1
+{\color{black}\put(#3,2){\circle*{4}}\put(#1,2){\line(1,0){#2}}}\end{picture}}
+
+
+\definecolor{MyDarkBlue}{rgb}{0,0.08,0.45} 
+\newenvironment{changed}{\par\color{MyDarkBlue}}{\par}
+%\newenvironment{changed}{\par}{\par}
+
+\newcommand{\ADD}[1]{\textcolor{MyDarkBlue}{{\bf #1}}}
+%\newcommand{\ADD}[1]{#1}
+\usepackage{times}
+\def\baselinestretch{1}
+\setlist{nosep}
+\usepackage[font={small}]{caption, subfig}
+
+\setlength{\abovecaptionskip}{1ex}
+\setlength{\belowcaptionskip}{1ex}
+\setlength{\floatsep}{1ex}
+\setlength{\textfloatsep}{1ex}
+\newcommand{\subparagraph}{} % defined before loading titlesec
+\usepackage[compact,small]{titlesec}
+\DeclareMathSizes{7}{7}{7}{7} 
+\bibliographystyle{unsrt}
+\pagenumbering{arabic} 
+\begin{document}  
+\conferenceinfo{ISCE}{'16 Austin, Texas}
+
+\title{Prediction is Hard (Especially About the Future)}
+\numberofauthors{2} 
+\author{
+\alignauthor 
+Rahul Krishna \\
+       \affaddr{CS, NcState, USA}\\
+       {i.m.ralk@gmail.com}
+\alignauthor
+Tim Menzies\\
+       \affaddr{CS, NcState, USA}\\
+       {tim.menzies@gmail.com}}
+\setlength{\columnsep}{7mm}
+
+\maketitle
+\begin{abstract}
+This paper provides ...  
+\end{abstract}
+\section{Introduction}
+\section{Cluster and Contrast}
+A recurring data analysis pattern in this paper is $cluster+contrast$. The data is distilled into a few clusters using a clustering scheme. Then lessons are inferred by studying the differences between these clusters. These lessons are used to generate rules that can be applied in any context.
+\subsection{Clustering}
+There are a wide variety of clustering methods to choose from. A study by Ganesan~\cite{div14} explored different clustering methods for software engineering data using the effort and defect data from the PROMISE repository~\cite{promise}. In that study methods such as K-Means, mini-batch-K-Means, DBScan, EM, Ward, and WHERE were investigated. The results of the study showed that the size and number of clusters is more important that the specifics of the techniques used. 
+
+For this purposes of this work, we have chosen WHERE, a clustering scheme which is capable of generating at least $\sqrt{N}$ clusters given $N$ instances. In addition to this, WHERE has been shown to run fast while ignoring spurious dimensions~\cite{menzies2013}. This is particularly useful, for much of the DE data is noisy, in that they contain a information not associated with the target variable. 
+\subsection{Finding Contrasts}
+All the following methods use clustering in the form of WHERE, a top-down clustering method which recursively splits the data in two along a dimension that represents the highest variability, shown as Step-1 in figure \ref{fig:xtrees_bare}. Several algorithms are explored as possible tools used to identify contrast between clusters these include Nearest Neighbors methods, Case Based Reasoning, and Decision Trees. 
+
+\subsubsection{Nearest Neighbors}
+T
+\subsubsection{Case Based Reasoning}
+
+\subsubsection{Decision Trees}
+
+\section{CROSSTREES}
+\subsection{Design}
+	\begin{figure}[t]
+		\small
+		~\hrule~
+		
+		{\bf Step1: Top down clustering using WHERE}
+		
+		The data is recursively divided in clusters using WHERE as follows:
+		\begin{itemize}
+			
+			\item Find   two   distance cases,  $X,Y$
+			by picking any case $W$ at random, then setting $X$ to its most
+			distant case, then setting $Y$ to the case most distant from
+			$X$
+			(this requires only $O(2N)$ comparisons
+			of $N$ cases).
+			\item Project each case $Z$
+			onto a {\tt Slope} that  runs between $X,Y$ using the cosine
+			rule. 
+			\item Split the data at the median $X$ value of all cases and
+			recurses on each half  (stopping when
+			one half has less  than $\sqrt{N}$ of the original population).
+		\end{itemize}
+		~\hrule~
+		
+		{\bf Step2: Distinguish between clusters using  decision trees}
+		
+		Call each leaf from WHERE a  ``class''. Use an entropy-based
+		 decision tree (DT) learner to learn what attributes select for each ``class''. To limit tree size:
+		 \bi
+		 \item Only use the top $\alpha=33$\%  of the features, as determined by their information gain~\cite{Irani1993}. 
+		 \item Only build the trees down to  max depth of $\beta=10$.
+		 \item Only build subtrees if it contains at least $N^{\gamma=0.5}$ examples (where $N$ is the size of the training set).
+\ei
+{\em Score}  DT  leaf nodes  via the mean score of its majority cluster. 
+		
+		~\hrule~
+		
+		{\bf Step3: Generating contrast sets from DT branches}
+		\begin{itemize}
+		\item Find the {\em current } cluster: take each test instance, run it down to a leaf in the DT tree.  
+		\item Find the {\em desired} cluster: 
+		\bi
+		\item Starting at {\em current}, ascend the tree $lvl\in \{0,1,2...\}$ levels;
+		\item Identify {\em sibling} clusters; i.e. leaf clusters that can be reached from level $lvl$ that are not {\em current }
+		\item Using the {\em score} defined above, find the {\em better} siblings; i.e. those with a {\em score} less than $\epsilon=0.5$ times the mean score of {\em current}. If none found, then repeat for $lvl += 1$
+		\item  Return the {\em closest} better sibling where distance is measured between the mean centroids of that sibling and {\em current}
+		\ei
+		\item Find the {\em delta}; i.e. the set difference between  conditions in the DT branch to {\em desired} and {\em current}. To find that delta:
+		\bi
+		\item
+		For discrete attributes,  return the value from {\em desired}. 
+		\item
+		For  numerics, return the numeric difference. 
+		\item
+		For numerics  into ranges, return a random number selected from the low and high boundaries of the that range.
+	\ei
+	\ei
+		~\hrule~
+		\caption{CROSSTREES. Controlled by the parameters
+		$\{\alpha, \beta, \gamma, \delta, \epsilon\}$ (set via engineering judgement).}
+		\label{fig:xtrees_bare}
+	\end{figure}
+
+\subsection{Assessment}
+\section{Experiments}
+\subsection{Data}
+\subsection{When not to Plan?}
+\subsection{Evaluation}
+\subsection{Results}
+\section{Threats to Validity}
+\section{Conclusion}
+\section*{Acknowledgements}
+\bibliographystyle{plain}
+
+\bibliography{References}
+\balanced
+\end{document}
+
+\end{document}
