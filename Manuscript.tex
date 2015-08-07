@@ -115,7 +115,13 @@ For this purposes of this work, we have chosen WHERE, a clustering scheme which 
 \subsection{Finding Contrasts}
 All the following methods use clustering in the form of WHERE, a top-down clustering method which recursively splits the data in two along a dimension that represents the highest variability, shown as Step-1 in figure \ref{fig:xtrees_bare}. 
 
-Clustering is followed generating \textit{contrast sets}. These contrast sets represent recommendations on what could be altered to better improve an outcome. In this work we have explored several algorithms as possible tools to identify contrast between clusters. These fall into three broad categories: a) Case Based Reasoning techniques (Nearest Neighbors), b) A Gradient base planner (called HOW), and c) Decision Trees. These techniques are discussed below. It is worth noting that the following techniques are organized in such a way that each one seeks to address certain fallacies of the ones that precede it. 
+Clustering is followed generating \textit{contrast sets}. These contrast sets represent recommendations on what could be altered to better improve an outcome. In this work we have explored several algorithms as possible tools to identify contrast between clusters. These fall into two broad categories:
+\begin{enumerate}
+\item Case Based Reasoning techniques (Nearest Neighbors and a gradient base planner called HOW)
+\item Decision Trees.
+\end{enumerate}
+
+These techniques are discussed below. It is worth noting that the following techniques are organized in such a way that each one seeks to address certain shortcomings in the ones that precede it. 
 
 \subsubsection{Case Based Reasoning}
 
@@ -127,14 +133,21 @@ We divide the $N$ training samples into $\sqrt{N}$ clusters and compute the cent
 
 In most SE applications, not all features contribute equally to a problem. With this in mind, we opine that it would be beneficial if the above method is extended to include some form of feature weighting, thus enabling the tools to recommend changes to only the most informative features. This paper uses a feature weighting scheme similar to that used in CART, see \fig{where}d.
 
-Simple though this method may seem, using nearest neighbors presents the following demerits: a) Displacements are limited to small regions, this implies that large changes may be recommended in order to 
-\texttt{<Demrits of knn here and lead to the next\\ section>}
+Simple though this method may seem, using nearest neighbors presents a couple of significant challenges: 
+\begin{itemize}
+\item[1.] Displacements are seldom limited to small regions, this implies that large changes may be recommended when not necessary. This may make the solutions less feasible to implement. 
+\item[2.] The nearness of a test case to a cluster in the training data is subjective. This affects the locality of the solutions, thus jeopardizing the relevance of these changes to the test case under consideration.
+\end{itemize}
+
+In view of the above issues, we developed HOW, a tool that combines (a) Feature Selection; (b) Centroid generation from clusters; (c) Contrast generation using gradient between clusters.
 
 \subsubsection{HOW}
 
-HOW is very different compared to other CBR planners in that it explores the gradient between pairs of nearby clusters instead of studying the clusters themselves. HOW works by clustering the data during training using WHERE and then drawing \texttt{slopes} between the centroids of pairs of nearby clusters. Assuming the cluster pairs are labeled X and Y, with X having slightly better performance score than Y, the \texttt{slope} between X and Y acts as an indicator pointing to a direction to displace the data; i.e. away from Y and towards X. 
+HOW is very different compared to conventional CBR planners in that it explores the gradient between pairs of nearby clusters instead of studying the clusters themselves. HOW works by clustering the data during training using WHERE and then drawing \texttt{slopes} between the centroids of pairs of nearby clusters. Assuming the cluster pairs are labeled X and Y, with X having slightly better performance score than Y, the \texttt{slope} between X and Y acts as an indicator pointing to a direction to displace the data; i.e. away from Y and towards X. 
 
-While testing, HOW finds the nearest slope to every test case. The slope provides the exact magnitude and direction of displacements. Contrast sets are derived from these displacements. HOW offers a distinct advantage over CBR planners by limiting the displacements to very small regions (the displacements are never more than the separation between two clusters). 
+While testing, HOW finds the nearest slope to every test case. The slope provides the exact magnitude and direction of displacements. Contrast sets are derived from these displacements. HOW offers a distinct advantage over the other CBR planners by limiting the displacements to very small regions (the displacements are never more than the separation between two clusters). 
+
+Although HOW manages to generate plans by localizing displacements to regions small enough to produce a statistically significant change, it needs to be noted that it fails to provide succinct summaries. In addition to this, plans derived from HOW 
 
 \begin{figure}[t!]
 	\small
@@ -142,18 +155,22 @@ While testing, HOW finds the nearest slope to every test case. The slope provide
 	
 	{\bf \fig{where}a: top down clustering:}
 	
-	Data can be rapidly and recursively divided   as follows.
-	Find   two   distance cases,  $X,Y$
-	by picking any case $W$ at random, then setting $X$ to its most
-	distant case, then setting $Y$ to the case most distant from
-	$X$~\cite{fastmap}
-	(this requires only $O(2N)$ comparisons
-	of $N$ cases).
-	Next, HOW projects each case $Z$
-	onto a {\tt Slope} that  runs between $X,Y$ using the cosine
-	rule of \fig{where}b. After that,  split the data at the median $x$ value of all cases and
-	recurses on each half  (stopping when
-	one half has less  than $\sqrt{N}$ of the original population).
+		The data is recursively divided in clusters using WHERE as follows:
+		\begin{itemize}
+			
+			\item Find   two   distance cases,  $X,Y$
+			by picking any case $W$ at random, then setting $X$ to its most
+			distant case, then setting $Y$ to the case most distant from
+			$X$
+			(this requires only $O(2N)$ comparisons
+			of $N$ cases).
+			\item Project each case $Z$
+			onto a {\tt Slope} that  runs between $X,Y$ using the cosine
+			rule. 
+			\item Split the data at the median $X$ value of all cases and
+			recurses on each half  (stopping when
+			one half has less  than $\sqrt{N}$ of the original population).
+		\end{itemize}
 	
 	~\hrule~
 	
@@ -211,22 +228,8 @@ While testing, HOW finds the nearest slope to every test case. The slope provide
 		
 		{\bf Step1: Top down clustering using WHERE}
 		
-		The data is recursively divided in clusters using WHERE as follows:
-		\begin{itemize}
-			
-			\item Find   two   distance cases,  $X,Y$
-			by picking any case $W$ at random, then setting $X$ to its most
-			distant case, then setting $Y$ to the case most distant from
-			$X$
-			(this requires only $O(2N)$ comparisons
-			of $N$ cases).
-			\item Project each case $Z$
-			onto a {\tt Slope} that  runs between $X,Y$ using the cosine
-			rule. 
-			\item Split the data at the median $X$ value of all cases and
-			recurses on each half  (stopping when
-			one half has less  than $\sqrt{N}$ of the original population).
-		\end{itemize}
+		The data is recursively divided in clusters using WHERE. For more information, see \fig{where}a.
+
 		~\hrule~
 		
 		{\bf Step2: Distinguish between clusters using  decision trees}
