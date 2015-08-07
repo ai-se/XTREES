@@ -30,7 +30,8 @@
 
 \usepackage{listings}
 \usepackage{tabu}
-
+\DeclareMathOperator*{\argmin}{arg\,min} 
+\DeclareMathOperator*{\argmax}{arg\,max}
 \definecolor{lightgray}{gray}{0.8}
 \definecolor{darkgray}{gray}{0.6}
 \definecolor{Gray}{gray}{0.95}
@@ -114,15 +115,15 @@ For this purposes of this work, we have chosen WHERE, a clustering scheme which 
 \subsection{Finding Contrasts}
 All the following methods use clustering in the form of WHERE, a top-down clustering method which recursively splits the data in two along a dimension that represents the highest variability, shown as Step-1 in figure \ref{fig:xtrees_bare}. 
 
-Clustering is followed generating \textit{contrast sets}. These contrast sets represent recommendations on what could be altered to better improve an outcome. In this work we have explored several algorithms as possible tools to identify contrast between clusters. These fall into three broad categories: a) Case Based Reasoning techniques (Nearest Neighbors), b) A Gradient base planner (called HOW), and c) Decision Trees. These techniques are discussed below. It is worth noting that they are organized in such a way that each technique seeks to address certain fallacies in the ones that precede it. 
+Clustering is followed generating \textit{contrast sets}. These contrast sets represent recommendations on what could be altered to better improve an outcome. In this work we have explored several algorithms as possible tools to identify contrast between clusters. These fall into three broad categories: a) Case Based Reasoning techniques (Nearest Neighbors), b) A Gradient base planner (called HOW), and c) Decision Trees. These techniques are discussed below. It is worth noting that the following techniques are organized in such a way that each one seeks to address certain fallacies of the ones that precede it. 
 
 \subsubsection{Case Based Reasoning}
 
 Case-based reasoning seeks to find solutions to problems by emulating human recollection and adaptation from past experiences. It has found extensive usage in Artificial Intelligence because it offers several advantages. However, one of the most important benefits that CBR has to offer is that it works on a ``case-by-case'' basis. Therefore it's advise is tailored to be specific to the particular case being considered. Several paper in SE have applied this technique, most of all for effort estimation ~\cite{keung2008analogy, 6600685, walkerden1999empirical, shepperd1997estimating, kocaguneli2010use}. 
 
-A classic example of a CBR is a nearest neighbor approach. The nearest neighbor approach is rather straight forward and has been developed as a "straw-man"; i.e., a simple baseline tool to act as a benchmark used to evaluate other methods. 
+A classic example of a CBR is K Nearest Neighbor. Our version of nearest neighbor for planning is rather straight forward. It has been developed as a "straw-man"; i.e., a simple baseline tool to act as a benchmark used to evaluate other methods. 
 
-Our approach is rather straight forward, we divide the $N$ training samples into $\sqrt{N}$ clusters and compute the centroid of these clusters. For every test case, we identify a cluster from the training set that most closely resembles it. Following this, we find the nearest cluster with a better performance score. The differences in the attributes between these two clusters constitute the \textit{"contrast set"}. These contrast sets acts as plans that can be used to reflect over the test cases to improve them.
+We divide the $N$ training samples into $\sqrt{N}$ clusters and compute the centroid of these clusters. For every test case, we identify a cluster from the training set that most closely resembles it. Following this, we find the nearest cluster with a better performance score. The differences in the attributes between these two clusters constitute the \textit{"contrast set"}. These contrast sets acts as plans that can be used to reflect over the test cases to improve them.
 
 In most SE applications, not all features contribute equally to a problem. With this in mind, we opine that it would be beneficial if the above method is extended to include some form of feature weighting, thus enabling the tools to recommend changes to only the most informative features. 
 
@@ -133,6 +134,71 @@ In most SE applications, not all features contribute equally to a problem. With 
 HOW is very different compared to other CBR planners in that it explores the gradient between pairs of nearby clusters instead of studying the clusters themselves. HOW works by clustering the data during training using WHERE and then drawing \texttt{slopes} between the centroids of pairs of nearby clusters. Assuming the cluster pairs are labeled X and Y, with X having slightly better performance score than Y, the \texttt{slope} between X and Y acts as an indicator pointing to a direction to displace the data; i.e. away from Y and towards X. 
 
 While testing, HOW finds the nearest slope to every test case. The slope provides the exact magnitude and direction of displacements. Contrast sets are derived from these displacements. HOW offers a distinct advantage over CBR planners by limiting the displacements to very small regions (the displacements are never more than the separation between two clusters). 
+
+\begin{figure}[t!]
+	\small
+	~\hrule~
+	
+	{\bf \fig{where}a: top down clustering:}
+	
+	Data can be rapidly and recursively divided   as follows.
+	Find   two   distance cases,  $X,Y$
+	by picking any case $W$ at random, then setting $X$ to its most
+	distant case, then setting $Y$ to the case most distant from
+	$X$~\cite{fastmap}
+	(this requires only $O(2N)$ comparisons
+	of $N$ cases).
+	Next, HOW projects each case $Z$
+	onto a {\tt Slope} that  runs between $X,Y$ using the cosine
+	rule of \fig{where}b. After that,  split the data at the median $x$ value of all cases and
+	recurses on each half  (stopping when
+	one half has less  than $\sqrt{N}$ of the original population).
+	
+	~\hrule~
+	
+	{\bf \fig{where}b: finding distances:}
+	
+	In the \fig{where}a, to compute distances, we use
+	the Euclidean measure recommended for
+	case-based reasoning by Aha et al.~\cite{aha91};
+	i.e. $\sqrt{\sum_iw_i(X_i-Y_i)^2}$ where $X_i,Y_i$
+	where values are  normalized 0..1 for the range min..max and 
+	$w_i$ is some importance weight given to attribute $i$.
+	Usually, $w_i=1$ but it can be adjusted using, say,
+	the feature weighting methods of \fig{where}d. 
+	
+	~\hrule~
+	
+	{\bf \fig{where}c: 3 point geometry:}
+	
+	Let   $X,Y$ be two points joined by  a {\em Slope} of  length $c$.
+	A third point, $Z$, has distances  $a=dist(Z,X)$ and
+	$b=dist(Z,Y)$ to $X,Y$, respectively.
+	According to the cosine rule,   $Z$ projects onto  $\overline{XY}$
+	at distance $x=(a^2 + c^2 - b^2)/(2c)$ from $X$.
+	Further, according to Pythagoras' theorem, $Z$ stands at a distance
+	$y = \sqrt{a^2 - x^2}$ from the line $\overline{XY}$. 
+	
+	~\hrule~
+	
+	{\bf \fig{where}d: feature weighting:}
+	
+	HERE's feature weighting algorithm
+	comes from the CART regression tree learner~\cite{Breiman1984}.
+	It sorts independent variables
+	according to how well they can reduce the variability
+	of a  numeric objective.
+	If we split some column $i$ of independent numeric data  into $N=n_1 + n_2 + ..$ splits,
+	then the expected
+	value of the objective value of the split  is $w_i = \sum_i v_in_i/N$
+	where $v$ is the standard deviation of the objective.
+	A recursive procedure can  find those divisions $n_1,n_2,...$ by (a)~sorting a numeric column,
+	then split at $\argmin_i w_i$, then recursing into each half.
+	
+	~\hrule~
+	
+	\caption{Sub-routines within HOW.}\label{fig:where}
+\end{figure}
 
 \subsubsection{Decision Trees}
 
