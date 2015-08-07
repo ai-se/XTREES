@@ -125,7 +125,7 @@ A classic example of a CBR is K Nearest Neighbor. Our version of nearest neighbo
 
 We divide the $N$ training samples into $\sqrt{N}$ clusters and compute the centroid of these clusters. For every test case, we identify a cluster from the training set that most closely resembles it. Following this, we find the nearest cluster with a better performance score. The differences in the attributes between these two clusters constitute the \textit{"contrast set"}. These contrast sets acts as plans that can be used to reflect over the test cases to improve them.
 
-In most SE applications, not all features contribute equally to a problem. With this in mind, we opine that it would be beneficial if the above method is extended to include some form of feature weighting, thus enabling the tools to recommend changes to only the most informative features. 
+In most SE applications, not all features contribute equally to a problem. With this in mind, we opine that it would be beneficial if the above method is extended to include some form of feature weighting, thus enabling the tools to recommend changes to only the most informative features. This paper uses a feature weighting scheme similar to that used in CART, see \fig{where}d.
 
 \texttt{<Demrits of knn here and lead to the next\\ section>}
 
