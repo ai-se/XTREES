@@ -115,7 +115,9 @@ There are a wide variety of clustering methods to choose from. A study by Ganesa
 For this purposes of this work, we have chosen WHERE, a clustering scheme which is capable of generating at least $\sqrt{N}$ clusters given $N$ instances. In addition to this, WHERE has been shown to run fast while ignoring spurious dimensions~\cite{menzies2013}. This is particularly useful, for much of the SE data is noisy, they contain a information not associated with the target variable. 
 
 \subsection{Finding Contrasts}
-All the following methods use clustering in the form of WHERE, a top-down clustering method which recursively splits the data in two along a dimension that represents the highest variability, shown as Step-1 in figure \ref{fig:xtrees_bare}. In this work we have explored several algorithms as possible tools used to identify contrast between clusters. These fall into three broad categories: a) Case Based Reasoning techniques (Nearest Neighbors), b) A Gradient base planner (called HOW), and c) Decision Trees. 
+All the following methods use clustering in the form of WHERE, a top-down clustering method which recursively splits the data in two along a dimension that represents the highest variability, shown as Step-1 in figure \ref{fig:xtrees_bare}. 
+
+In this work we have explored several algorithms as possible tools to identify contrast between clusters. These fall into three broad categories: a) Case Based Reasoning techniques (Nearest Neighbors), b) A Gradient base planner (called HOW), and c) Decision Trees. Each technique offers a distinct advantage over the other.
 
 \subsubsection{Case Based Reasoning}
 
@@ -123,13 +125,16 @@ Case-based reasoning seeks to find solutions to problems by emulating human reco
 
 A classic example of a CBR is a nearest neighbor approach. The nearest neighbor approach is rather straight forward and has been developed as a "straw-man"; i.e., a simple baseline tool to act as a benchmark used to evaluate other methods. 
 
-Our approach is rather straight forward, in that we divide the $N$ training samples into $\sqrt{N}$ clusters and compute the centroid of these clusters. For every test case, we identify a cluster from the training set that most closely resembles it. Following this, we find the nearest cluster with a better performance score. The differences in the attributes between these two clusters constitute the \textit{"contrast set"}. These contrast sets acts as plans that can be used to reflect over the test cases to improve them.
+Our approach is rather straight forward, we divide the $N$ training samples into $\sqrt{N}$ clusters and compute the centroid of these clusters. For every test case, we identify a cluster from the training set that most closely resembles it. Following this, we find the nearest cluster with a better performance score. The differences in the attributes between these two clusters constitute the \textit{"contrast set"}. These contrast sets acts as plans that can be used to reflect over the test cases to improve them.
 
 In most SE applications, not all features contribute equally to a problem. With this in mind, we opine that it would be beneficial if the above method is extended to include some form of feature weighting, thus enabling the tools to recommend changes to only the most informative features. 
 
 \subsubsection{HOW}
 
-HOW is a very different planner to other CBR systems. HOW 
+HOW is very different compared to other CBR planners in that it explores the gradient between pairs of nearby clusters instead of studying the clusters themselves. HOW works by clustering the data during training using WHERE and then drawing \texttt{slopes} between the centroids of pairs of nearby clusters. Assuming the cluster pairs are labeled X and Y, with X having slightly better performance score than Y, the \texttt{slope} between X and Y acts as an indicator pointing to a direction to displace the data; i.e. away from Y and towards X. 
+
+While testing, HOW finds the nearest slope to every test case. The slope provides the exact magnitude and direction of displacements. Contrast sets are derived from these displacements. HOW offers a distinct advantage over CBR planners by limiting the displacements to very small regions (the displacements are never more than the separation between two clusters). 
+
 
 \subsubsection{Decision Trees}
 
