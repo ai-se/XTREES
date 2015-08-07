@@ -20,15 +20,19 @@
 %\usepackage[pdftex]{graphicx}
 \newcommand{\Sample}{{\bf SAMPLE}}
 \newcommand{\PEEKING}{{\bf PEEKING2}}
-\usepackage{picture}
+%\usepackage[table]{xcolor}
+\definecolor{darkgreen}{rgb}{0,0.3,0}
+\definecolor{Gray}{rgb}{0.88,1,1}
+\definecolor{Gray}{gray}{0.85}
+\definecolor{Blue}{RGB}{0,29,193}
 \usepackage{colortbl}
-\usepackage[table]{xcolor}
+\usepackage{picture}
+
 \usepackage{listings}
+\usepackage{tabu}
 
 \definecolor{lightgray}{gray}{0.8}
 \definecolor{darkgray}{gray}{0.6}
-\usepackage{tabu}
-
 \definecolor{Gray}{gray}{0.95}
 \definecolor{LightGray}{gray}{0.975}
 
@@ -51,13 +55,6 @@
     numberstyle=\bfseries\color{red},
     escapeinside={\%*}{*)}
 }
-
-\definecolor{darkgreen}{rgb}{0,0.3,0}
-
-\usepackage[table]{xcolor}
-\definecolor{Gray}{rgb}{0.88,1,1}
-\definecolor{Gray}{gray}{0.85}
-\definecolor{Blue}{RGB}{0,29,193}
 
 \newcommand{\G}{\cellcolor{green}}
 \newcommand{\Y}{\cellcolor{yellow}}
@@ -117,7 +114,7 @@ For this purposes of this work, we have chosen WHERE, a clustering scheme which 
 \subsection{Finding Contrasts}
 All the following methods use clustering in the form of WHERE, a top-down clustering method which recursively splits the data in two along a dimension that represents the highest variability, shown as Step-1 in figure \ref{fig:xtrees_bare}. 
 
-In this work we have explored several algorithms as possible tools to identify contrast between clusters. These fall into three broad categories: a) Case Based Reasoning techniques (Nearest Neighbors), b) A Gradient base planner (called HOW), and c) Decision Trees. Each technique offers a distinct advantage over the other.
+Clustering is followed generating \textit{contrast sets}. These contrast sets represent recommendations on what could be altered to better improve an outcome. In this work we have explored several algorithms as possible tools to identify contrast between clusters. These fall into three broad categories: a) Case Based Reasoning techniques (Nearest Neighbors), b) A Gradient base planner (called HOW), and c) Decision Trees. These techniques are discussed below. It is worth noting that they are organized in such a way that each technique seeks to address certain fallacies in the ones that precede it. 
 
 \subsubsection{Case Based Reasoning}
 
@@ -129,12 +126,13 @@ Our approach is rather straight forward, we divide the $N$ training samples into
 
 In most SE applications, not all features contribute equally to a problem. With this in mind, we opine that it would be beneficial if the above method is extended to include some form of feature weighting, thus enabling the tools to recommend changes to only the most informative features. 
 
+\texttt{<Demrits of knn here and lead to the next\\ section>}
+
 \subsubsection{HOW}
 
 HOW is very different compared to other CBR planners in that it explores the gradient between pairs of nearby clusters instead of studying the clusters themselves. HOW works by clustering the data during training using WHERE and then drawing \texttt{slopes} between the centroids of pairs of nearby clusters. Assuming the cluster pairs are labeled X and Y, with X having slightly better performance score than Y, the \texttt{slope} between X and Y acts as an indicator pointing to a direction to displace the data; i.e. away from Y and towards X. 
 
 While testing, HOW finds the nearest slope to every test case. The slope provides the exact magnitude and direction of displacements. Contrast sets are derived from these displacements. HOW offers a distinct advantage over CBR planners by limiting the displacements to very small regions (the displacements are never more than the separation between two clusters). 
-
 
 \subsubsection{Decision Trees}
 
@@ -275,7 +273,6 @@ Data   marked with ``$\times$'' are ``not good'' since their test suites  have s
 \bibliographystyle{plain}
 
 \bibliography{References}
-\balanced
 \end{document}
 
 \end{document}
