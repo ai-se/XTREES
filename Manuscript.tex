@@ -152,12 +152,85 @@ Although HOW manages to generate plans by localizing displacements to regions sm
 This is a trend commonly observed in most CBR systems. They tend to reason directly from a loaded training data instead of first summarizing the data into a model. However, not all domains come with reliable models. For instance, a model that encompasses all the intricate issues that may lead to defects in software would be very large and indeed rather complex. In addition to this, finding empirical data to validate such models can be hard to come by and also time consuming ~\cite{me09i,me09j}. Fortunately, this issue can be circumvented by using decision trees. 
  
 
-\begin{figure}[t!]
-	\small
-	~\hrule~
-	
-	{\bf \fig{where}a: top down clustering:}
-	
+%\begin{figure}[t!]
+%	\small
+%	~\hrule~
+%	
+%	{\bf \fig{where}a: top down clustering:}
+%	
+%		The data is recursively divided in clusters using WHERE as follows:
+%		\begin{itemize}
+%			
+%			\item Find   two   distance cases,  $X,Y$
+%			by picking any case $W$ at random, then setting $X$ to its most
+%			distant case, then setting $Y$ to the case most distant from
+%			$X$
+%			(this requires only $O(2N)$ comparisons
+%			of $N$ cases).
+%			\item Project each case $Z$
+%			onto a {\tt Slope} that  runs between $X,Y$ using the cosine
+%			rule. 
+%			\item Split the data at the median $X$ value of all cases and
+%			recurses on each half  (stopping when
+%			one half has less  than $\sqrt{N}$ of the original population).
+%		\end{itemize}
+%	
+%	~\hrule~
+%	
+%	{\bf \fig{where}b: finding distances:}
+%	
+%	In the \fig{where}a, to compute distances, we use
+%	the Euclidean measure recommended for
+%	case-based reasoning by Aha et al.~\cite{aha91};
+%	i.e. $\sqrt{\sum_iw_i(X_i-Y_i)^2}$ where $X_i,Y_i$
+%	where values are  normalized 0..1 for the range min..max and 
+%	$w_i$ is some importance weight given to attribute $i$.
+%	Usually, $w_i=1$ but it can be adjusted using, say,
+%	the feature weighting methods of \fig{where}d. 
+%	
+%	~\hrule~
+%	
+%	{\bf \fig{where}c: 3 point geometry:}
+%	
+%	Let   $X,Y$ be two points joined by  a {\em Slope} of  length $c$.
+%	A third point, $Z$, has distances  $a=dist(Z,X)$ and
+%	$b=dist(Z,Y)$ to $X,Y$, respectively.
+%	According to the cosine rule,   $Z$ projects onto  $\overline{XY}$
+%	at distance $x=(a^2 + c^2 - b^2)/(2c)$ from $X$.
+%	Further, according to Pythagoras' theorem, $Z$ stands at a distance
+%	$y = \sqrt{a^2 - x^2}$ from the line $\overline{XY}$. 
+%	
+%	~\hrule~
+%	
+%	{\bf \fig{where}d: feature weighting:}
+%	
+%	HERE's feature weighting algorithm
+%	comes from the CART regression tree learner~\cite{Breiman1984}.
+%	It sorts independent variables
+%	according to how well they can reduce the variability
+%	of a  numeric objective.
+%	If we split some column $i$ of independent numeric data  into $N=n_1 + n_2 + ..$ splits,
+%	then the expected
+%	value of the objective value of the split  is $w_i = \sum_i v_in_i/N$
+%	where $v$ is the standard deviation of the objective.
+%	A recursive procedure can  find those divisions $n_1,n_2,...$ by (a)~sorting a numeric column,
+%	then split at $\argmin_i w_i$, then recursing into each half.
+%	
+%	~\hrule~
+%	
+%	\caption{Sub-routines within HOW.}\label{fig:where}
+%\end{figure}
+
+\subsubsection{Decision Trees}
+
+
+\section{CROSSTREES}
+\subsection{Design}
+	\begin{figure}[t]
+		\small
+		~\hrule~
+		
+		{\bf Step 1: Top down clustering using WHERE}
 		The data is recursively divided in clusters using WHERE as follows:
 		\begin{itemize}
 			
@@ -173,72 +246,11 @@ This is a trend commonly observed in most CBR systems. They tend to reason direc
 			\item Split the data at the median $X$ value of all cases and
 			recurses on each half  (stopping when
 			one half has less  than $\sqrt{N}$ of the original population).
-		\end{itemize}
-	
-	~\hrule~
-	
-	{\bf \fig{where}b: finding distances:}
-	
-	In the \fig{where}a, to compute distances, we use
-	the Euclidean measure recommended for
-	case-based reasoning by Aha et al.~\cite{aha91};
-	i.e. $\sqrt{\sum_iw_i(X_i-Y_i)^2}$ where $X_i,Y_i$
-	where values are  normalized 0..1 for the range min..max and 
-	$w_i$ is some importance weight given to attribute $i$.
-	Usually, $w_i=1$ but it can be adjusted using, say,
-	the feature weighting methods of \fig{where}d. 
-	
-	~\hrule~
-	
-	{\bf \fig{where}c: 3 point geometry:}
-	
-	Let   $X,Y$ be two points joined by  a {\em Slope} of  length $c$.
-	A third point, $Z$, has distances  $a=dist(Z,X)$ and
-	$b=dist(Z,Y)$ to $X,Y$, respectively.
-	According to the cosine rule,   $Z$ projects onto  $\overline{XY}$
-	at distance $x=(a^2 + c^2 - b^2)/(2c)$ from $X$.
-	Further, according to Pythagoras' theorem, $Z$ stands at a distance
-	$y = \sqrt{a^2 - x^2}$ from the line $\overline{XY}$. 
-	
-	~\hrule~
-	
-	{\bf \fig{where}d: feature weighting:}
-	
-	HERE's feature weighting algorithm
-	comes from the CART regression tree learner~\cite{Breiman1984}.
-	It sorts independent variables
-	according to how well they can reduce the variability
-	of a  numeric objective.
-	If we split some column $i$ of independent numeric data  into $N=n_1 + n_2 + ..$ splits,
-	then the expected
-	value of the objective value of the split  is $w_i = \sum_i v_in_i/N$
-	where $v$ is the standard deviation of the objective.
-	A recursive procedure can  find those divisions $n_1,n_2,...$ by (a)~sorting a numeric column,
-	then split at $\argmin_i w_i$, then recursing into each half.
-	
-	~\hrule~
-	
-	\caption{Sub-routines within HOW.}\label{fig:where}
-\end{figure}
-
-\subsubsection{Decision Trees}
-
-
-Decision tress categorically  sort the training data into a tree structure which can be viewed as model to reason about the data. In theory, this is a very desirable approach as it promises a
-
-\section{CROSSTREES}
-\subsection{Design}
-	\begin{figure}[t]
-		\small
-		~\hrule~
-		
-		{\bf Step1: Top down clustering using WHERE}
-		
-		The data is recursively divided in clusters using WHERE. For more information, see \fig{where}a.
+		\end{itemize}		
 
 		~\hrule~
 		
-		{\bf Step2: Distinguish between clusters using  decision trees}
+		{\bf Step 2: Distinguish between clusters using  decision trees}
 		
 		Call each leaf from WHERE a  ``class''. Use an entropy-based
 		 decision tree (DT) learner to learn what attributes select for each ``class''. To limit tree size:
@@ -251,7 +263,7 @@ Decision tress categorically  sort the training data into a tree structure which
 		
 		~\hrule~
 		
-		{\bf Step3: Generating contrast sets from DT branches}
+		{\bf Step 3: Generating contrast sets from DT branches}
 		\begin{itemize}
 		\item Find the {\em current } cluster: take each test instance, run it down to a leaf in the DT tree.  
 		\item Find the {\em desired} cluster: 
