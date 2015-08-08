@@ -147,7 +147,10 @@ HOW is very different compared to conventional CBR planners in that it explores 
 
 While testing, HOW finds the nearest slope to every test case. The slope provides the exact magnitude and direction of displacements. Contrast sets are derived from these displacements. HOW offers a distinct advantage over the other CBR planners by limiting the displacements to very small regions (the displacements are never more than the separation between two clusters). 
 
-Although HOW manages to generate plans by localizing displacements to regions small enough to produce a statistically significant change, it needs to be noted that it fails to provide succinct summaries. In addition to this, plans derived from HOW 
+Although HOW manages to generate plans by localizing displacements to regions small enough to produce a statistically significant improvement, it needs to be noted that it fails to provide succinct summaries. Lack of succinctness makes it difficult draw generalizable conclusions about the test data. 
+
+This is a trend commonly observed in most CBR systems. They tend to reason directly from a loaded training data instead of first summarizing the data into a model. However, not all domains come with reliable models. For instance, a model that encompasses all the intricate issues that may lead to defects in software would be very large and indeed rather complex. In addition to this, finding empirical data to validate such models can be hard to come by and also time consuming ~\cite{me09i,me09j}. Fortunately, this issue can be circumvented by using decision trees. 
+ 
 
 \begin{figure}[t!]
 	\small
@@ -219,6 +222,9 @@ Although HOW manages to generate plans by localizing displacements to regions sm
 \end{figure}
 
 \subsubsection{Decision Trees}
+
+
+Decision tress categorically  sort the training data into a tree structure which can be viewed as model to reason about the data. In theory, this is a very desirable approach as it promises a
 
 \section{CROSSTREES}
 \subsection{Design}
