@@ -105,8 +105,11 @@ Tim Menzies\\
 This paper provides ...  
 \end{abstract}
 \section{Introduction}
+
 \section{Cluster and Contrast}
+
 A recurring data analysis pattern in this paper is $cluster+contrast$. The data is distilled into a few clusters using a clustering scheme. Then lessons are inferred by studying the differences between these clusters. These lessons are used to generate rules that can be applied in any context.
+
 \subsection{Clustering}
 There are a wide variety of clustering methods to choose from. A study by Ganesan~\cite{div14} explored different clustering methods for software engineering data using the effort and defect data from the PROMISE repository~\cite{promise}. In that study methods such as WHERE, K-Means, mini-batch-K-Means, DBScan, EM, and Ward were investigated. The results of the study showed that the size and number of clusters is more important that the specifics of the techniques used. 
 
@@ -115,7 +118,7 @@ For this purposes of this work, we have chosen WHERE, a clustering scheme which 
 \subsection{Finding Contrasts}
 All the following methods use clustering in the form of WHERE, a top-down clustering method which recursively splits the data in two along a dimension that represents the highest variability, shown as Step-1 in figure \ref{fig:xtrees_bare}. 
 
-Clustering is followed generating \textit{contrast sets}. These contrast sets represent recommendations on what could be altered to better improve an outcome. In this work we have explored several algorithms as possible tools to identify contrast between clusters. These fall into two broad categories:
+Clustering is followed by generating \textit{contrast sets}. These contrast sets represent recommendations on what could be altered to better improve an outcome. In this work we have explored several algorithms as possible tools to identify contrast between clusters. These fall into two broad categories:
 \begin{enumerate}
 \item Case Based Reasoning techniques (Nearest Neighbors and a gradient base planner called HOW)
 \item Decision Trees.
@@ -123,7 +126,7 @@ Clustering is followed generating \textit{contrast sets}. These contrast sets re
 
 These techniques are discussed below. It is worth noting that the following techniques are organized in such a way that each one seeks to address certain shortcomings in the ones that precede it. 
 
-\subsubsection{Case Based Reasoning}
+\subsection{Case Based Reasoning}
 
 Case-based reasoning seeks to find solutions to problems by emulating human recollection and adaptation from past experiences. It has found extensive usage in Artificial Intelligence because it offers several advantages. However, one of the most important benefits that CBR has to offer is that it works on a ``case-by-case'' basis. Therefore it's advise is tailored to be specific to the particular case being considered. Several paper in SE have applied this technique, most of all for effort estimation ~\cite{keung2008analogy, 6600685, walkerden1999empirical, shepperd1997estimating, kocaguneli2010use}. 
 
@@ -135,136 +138,62 @@ In most SE applications, not all features contribute equally to a problem. With 
 
 Simple though this method may seem, using nearest neighbors presents a couple of significant challenges: 
 \begin{itemize}
-\item[1.] Displacements are seldom limited to small regions, this implies that large changes may be recommended when not necessary. This may make the solutions less feasible to implement. 
+\item[1.] Displacements are seldom limited to small regions, this implies that large changes may be recommended when they are not necessary. This may make the solutions less feasible to implement. 
 \item[2.] The nearness of a test case to a cluster in the training data is subjective. This affects the locality of the solutions, thus jeopardizing the relevance of these changes to the test case under consideration.
 \end{itemize}
 
 In view of the above issues, we developed HOW, a tool that combines (a) Feature Selection; (b) Centroid generation from clusters; (c) Contrast generation using gradient between clusters.
 
-\subsubsection{HOW}
+\subsection{HOW}
 
-HOW is very different compared to conventional CBR planners in that it explores the gradient between pairs of nearby clusters instead of studying the clusters themselves. HOW works by clustering the data during training using WHERE and then drawing \texttt{slopes} between the centroids of pairs of nearby clusters. Assuming the cluster pairs are labeled X and Y, with X having slightly better performance score than Y, the \texttt{slope} between X and Y acts as an indicator pointing to a direction to displace the data; i.e. away from Y and towards X. 
+HOW is very different compared to conventional CBR planners in that it explores the gradient between pairs of nearby clusters instead of studying the clusters themselves. HOW works by clustering the data during training using WHERE and then drawing \texttt{slopes} between the centroids of pairs of nearby clusters. Assuming the cluster pairs are labeled X and Y, with X having slightly better performance score than Y, the \texttt{slope} between X and Y acts as an indicator pointing to a direction in which to displace the data; i.e. away from Y and towards X. 
 
 While testing, HOW finds the nearest slope to every test case. The slope provides the exact magnitude and direction of displacements. Contrast sets are derived from these displacements. HOW offers a distinct advantage over the other CBR planners by limiting the displacements to very small regions (the displacements are never more than the separation between two clusters). 
 
-Although HOW manages to generate plans by localizing displacements to regions small enough to produce a statistically significant improvement, it needs to be noted that it fails to provide succinct summaries. Lack of succinctness makes it difficult draw generalizable conclusions about the test data. 
+Although HOW manages to generate plans by localizing displacements to regions small enough to produce a statistically significant improvement, it needs to be noted that it fails to provide succinct summaries. Lack of succinctness makes it difficult draw generalizable conclusions about the test data. This is a trend commonly observed in most CBR systems. They tend to reason directly from a loaded training data instead of first summarizing the data into a model. 
 
-This is a trend commonly observed in most CBR systems. They tend to reason directly from a loaded training data instead of first summarizing the data into a model. However, not all domains come with reliable models. For instance, a model that encompasses all the intricate issues that may lead to defects in software would be very large and indeed rather complex. In addition to this, finding empirical data to validate such models can be hard to come by and also time consuming ~\cite{me09i,me09j}. Fortunately, this issue can be circumvented by using decision trees. 
- 
-
-%\begin{figure}[t!]
-%	\small
-%	~\hrule~
-%	
-%	{\bf \fig{where}a: top down clustering:}
-%	
-%		The data is recursively divided in clusters using WHERE as follows:
-%		\begin{itemize}
-%			
-%			\item Find   two   distance cases,  $X,Y$
-%			by picking any case $W$ at random, then setting $X$ to its most
-%			distant case, then setting $Y$ to the case most distant from
-%			$X$
-%			(this requires only $O(2N)$ comparisons
-%			of $N$ cases).
-%			\item Project each case $Z$
-%			onto a {\tt Slope} that  runs between $X,Y$ using the cosine
-%			rule. 
-%			\item Split the data at the median $X$ value of all cases and
-%			recurses on each half  (stopping when
-%			one half has less  than $\sqrt{N}$ of the original population).
-%		\end{itemize}
-%	
-%	~\hrule~
-%	
-%	{\bf \fig{where}b: finding distances:}
-%	
-%	In the \fig{where}a, to compute distances, we use
-%	the Euclidean measure recommended for
-%	case-based reasoning by Aha et al.~\cite{aha91};
-%	i.e. $\sqrt{\sum_iw_i(X_i-Y_i)^2}$ where $X_i,Y_i$
-%	where values are  normalized 0..1 for the range min..max and 
-%	$w_i$ is some importance weight given to attribute $i$.
-%	Usually, $w_i=1$ but it can be adjusted using, say,
-%	the feature weighting methods of \fig{where}d. 
-%	
-%	~\hrule~
-%	
-%	{\bf \fig{where}c: 3 point geometry:}
-%	
-%	Let   $X,Y$ be two points joined by  a {\em Slope} of  length $c$.
-%	A third point, $Z$, has distances  $a=dist(Z,X)$ and
-%	$b=dist(Z,Y)$ to $X,Y$, respectively.
-%	According to the cosine rule,   $Z$ projects onto  $\overline{XY}$
-%	at distance $x=(a^2 + c^2 - b^2)/(2c)$ from $X$.
-%	Further, according to Pythagoras' theorem, $Z$ stands at a distance
-%	$y = \sqrt{a^2 - x^2}$ from the line $\overline{XY}$. 
-%	
-%	~\hrule~
-%	
-%	{\bf \fig{where}d: feature weighting:}
-%	
-%	HERE's feature weighting algorithm
-%	comes from the CART regression tree learner~\cite{Breiman1984}.
-%	It sorts independent variables
-%	according to how well they can reduce the variability
-%	of a  numeric objective.
-%	If we split some column $i$ of independent numeric data  into $N=n_1 + n_2 + ..$ splits,
-%	then the expected
-%	value of the objective value of the split  is $w_i = \sum_i v_in_i/N$
-%	where $v$ is the standard deviation of the objective.
-%	A recursive procedure can  find those divisions $n_1,n_2,...$ by (a)~sorting a numeric column,
-%	then split at $\argmin_i w_i$, then recursing into each half.
-%	
-%	~\hrule~
-%	
-%	\caption{Sub-routines within HOW.}\label{fig:where}
-%\end{figure}
-
-\subsubsection{Decision Trees}
+% However, not all domains come with reliable models. For instance, a model that encompasses all the intricate issues that may lead to defects in software would be very large and indeed rather complex. In addition to this, finding empirical data to validate such models can be hard to come by and also time consuming ~\cite{me09i,me09j}. 
 
 
-\section{CROSSTREES}
-\subsection{Design}
-	\begin{figure}[t]
-		\small
-		~\hrule~
+\begin{figure}[t]
+	\small
+	~\hrule~
+	
+	{\bf Step 1: Top down clustering using WHERE}
+	The data is recursively divided in clusters using WHERE as follows:
+	\begin{itemize}
 		
-		{\bf Step 1: Top down clustering using WHERE}
-		The data is recursively divided in clusters using WHERE as follows:
-		\begin{itemize}
-			
-			\item Find   two   distance cases,  $X,Y$
-			by picking any case $W$ at random, then setting $X$ to its most
-			distant case, then setting $Y$ to the case most distant from
-			$X$
-			(this requires only $O(2N)$ comparisons
-			of $N$ cases).
-			\item Project each case $Z$
-			onto a {\tt Slope} that  runs between $X,Y$ using the cosine
-			rule. 
-			\item Split the data at the median $X$ value of all cases and
-			recurses on each half  (stopping when
-			one half has less  than $\sqrt{N}$ of the original population).
-		\end{itemize}		
-
-		~\hrule~
-		
-		{\bf Step 2: Distinguish between clusters using  decision trees}
-		
-		Call each leaf from WHERE a  ``class''. Use an entropy-based
-		 decision tree (DT) learner to learn what attributes select for each ``class''. To limit tree size:
-		 \bi
-		 \item Only use the top $\alpha=33$\%  of the features, as determined by their information gain~\cite{Irani1993}. 
-		 \item Only build the trees down to  max depth of $\beta=10$.
-		 \item Only build subtrees if it contains at least $N^{\gamma=0.5}$ examples (where $N$ is the size of the training set).
-\ei
-{\em Score}  DT  leaf nodes  via the mean score of its majority cluster. 
-		
-		~\hrule~
-		
-		{\bf Step 3: Generating contrast sets from DT branches}
-		\begin{itemize}
+		\item Find   two   distance cases,  $X,Y$
+		by picking any case $W$ at random, then setting $X$ to its most
+		distant case, then setting $Y$ to the case most distant from
+		$X$
+		(this requires only $O(2N)$ comparisons
+		of $N$ cases).
+		\item Project each case $Z$
+		onto a {\tt Slope} that  runs between $X,Y$ using the cosine
+		rule. 
+		\item Split the data at the median $X$ value of all cases and
+		recurses on each half  (stopping when
+		one half has less  than $\sqrt{N}$ of the original population).
+	\end{itemize}		
+	
+	~\hrule~
+	
+	{\bf Step 2: Distinguish between clusters using  decision trees}
+	
+	Call each leaf from WHERE a  ``class''. Use an entropy-based
+	decision tree (DT) learner to learn what attributes select for each ``class''. To limit tree size:
+	\bi
+	\item Only use the top $\alpha=33$\%  of the features, as determined by their information gain~\cite{Irani1993}. 
+	\item Only build the trees down to  max depth of $\beta=10$.
+	\item Only build subtrees if it contains at least $N^{\gamma=0.5}$ examples (where $N$ is the size of the training set).
+	\ei
+	{\em Score}  DT  leaf nodes  via the mean score of its majority cluster. 
+	
+	~\hrule~
+	
+	{\bf Step 3: Generating contrast sets from DT branches}
+	\begin{itemize}
 		\item Find the {\em current } cluster: take each test instance, run it down to a leaf in the DT tree.  
 		\item Find the {\em desired} cluster: 
 		\bi
@@ -281,79 +210,155 @@ This is a trend commonly observed in most CBR systems. They tend to reason direc
 		For  numerics, return the numeric difference. 
 		\item
 		For numerics  into ranges, return a random number selected from the low and high boundaries of the that range.
-	\ei
-	\ei
+		\ei
+		\ei
 		~\hrule~
 		\caption{CROSSTREES. Controlled by the parameters
-		$\{\alpha, \beta, \gamma, \delta, \epsilon\}$ (set via engineering judgement).}
+			$\{\alpha, \beta, \gamma, \delta, \epsilon\}$ (set via engineering judgement).}
 		\label{fig:xtrees_bare}
 	\end{figure}
 
-\subsection{Assessment}
+
+
+\subsection{CROSSTREES}
+
+
+Like all the previous planners, CROSSTREES starts by clustering the training data. Following this, it executes a decision tree algorithm using the clusters as class labels. Using a decision tree algorithm allows us to identify the most informative attributes to select in different clusters. The decision tree built in this fashion emulates a model built from the training data. 
+
+Using the decision tree, the test cases can be categorized into one of the branches of the tree. Now, to generate the contrast sets, we determine (1) What \textit{current} branch does a test case fall in?; (2) What \textit{desired} branch would the test case have to move to?; (3) What are the deltas between \textit{current} and \textit{desired}? The last question can be answered by finding the deltas in branches of the decision tree that lead to \textit{desired} from \textit{current}. For full algorithmic details, refer to \fig{xtrees_bare}.
+
+CROSSTREES offer a great number of benefits compared to the other methods that were discussed above. Firstly, they offer a visual medium for experts to identify and explore solutions spaces that are local to the problem. Secondly, they offer solutions that are much more stable than other instance based learners. This stability can be attributed to the consistency and general reproducibility of the tree structure. Thirdly, and perhaps most importantly, the tree summarizes the training data succinctly, making it easier for a business user to examine the solutions.
+
+A tree structure such as CROSSTREES are characterized by attributes such as size and depth. It is worth noting that these attributes have a profound impact on its performance. Our initial motivation for using CROSSTREES is that they can serve as a medium for experts to reason about a data. The size of the tree, if too large, jeopardizes the readability of the solutions by increasing the complexity. We have, therefore, endeavored to reduce the size of the tree by pruning away irrelevant solutions that do not contribute to better solutions (refer to step-2 of \fig{xtrees_bare})
+
+
 \section{Experiments}
+
 \subsection{Data}
 
-\begin{figure*}[!t]
-\scriptsize
-   \begin{center}
-   \begin{minipage}{.46\linewidth}
-    \begin{tabular}{r@{~}|l@{~}|r@{~}|l@{~}|r@{~}|r@{~}|} \cline{2-6}
-   & \multicolumn{5}{c|}{ }\\ 
-   
-   & \multicolumn{5}{c|}{ Data set  properties}\\ 
-   & \multicolumn{5}{c|}{  }\\ 
-           & \multicolumn{2}{c|}{training}   & \multicolumn{3}{c|}{testing}      \\ \cline{2-6}
-   data set      & versions           & cases & versions     & cases    & \% defective             \\ \hline
-        jedit    & 3.2, 4.0, 4.1, 4.2 & 1257      & 4.3          & 492          & 2 \\
-        ivy      & 1.1, 1.4           & 352       & 2.0          & 352          & 11 \\
-        camel    & 1.0, 1.2, 1.4      & 1819      & 1.6          & 965          & 19 \\
-        ant      & 1.3, 1.4, 1.5, 1.6 & 947       & 1.7          & 745          & 22 \\
-        synapse  & 1.0, 1.1           & 379       & 1.2          & 256          & 34 \\
-        velocity & 1.4, 1.5           & 410       & 1.6          & 229          & 34 \\
-        lucene   & 2.0, 2.2           & 442       & 2.4          & 340          & 59 \\
-        poi      & 1.5, 2, 2.5        & 936       & 3.0          & 442          & 64 \\
-        xerces   & 1.0, 1.2, 1.3      & 1055      & 1.4          & 588          & 74  \\ 
-        log4j    & 1.0, 1.1           & 244       & 1.2          & 205          & 92   \\
-        xalan    & 2.4, 2.5, 2.6      & 2411      & 2.7          & 909          & 99  \\\hline 
-        
-        
-    \end{tabular}\end{minipage}\begin{minipage}{.4\linewidth}
-    \begin{tabular}{|rrr|rrr|rr|l} \cline{1-8}
-      \multicolumn{8}{|c|}{  }\\
-      \multicolumn{8}{|c|}{  Results from learning}\\
-       \multicolumn{8}{|c|}{   }\\
-   \multicolumn{3}{|c|}{untuned} & \multicolumn{3}{c|}{tuned} & \multicolumn{2}{c|}{change}\\
-  \cline{1-8}
-  
-  pd & pf & good? & pd & pf & good? & pd & pf\\\cline{1-8}
-  55 & 29 &   & 64 & 29 & y & 9 & 0&$\star$\\
-  65 & 35 & y & 65 & 28 & y & 0 & -7&$\star$\\
-  49 & 31 &   & 56 & 37 &   & 5 & 6\\
-  49 & 13 & y & 63 & 16 & y & 14 & 3&$\star$\\
-  45 & 19 &   & 47 & 15 &   & 2 & -4\\
-  78 & 60 &   & 76 & 60 &   & -2 & 0\\
-  56 & 25 &   & 60 & 25 & y & 4 & 0\\
-  56 & 31 &   & 60 & 10 & y & 4 & -21&$\star$\\
- 30 & 31 &   & 40 & 29 &   & 10 & -2&$\times$\\
-  32 & 6 &   & 30 & 6 &   & -2 & 0&$\times$\\
-  38 & 9 &   & 47 & 9 &   & 9 & 0&$\times$\\
-\hline 
-\end{tabular}
 
-\end{minipage}
-\end{center}    
-  
-    \caption{Training and test {\em data set properties} for the Jureczko data sets,
-    sorted in ascending order of \% defective examples.
-    On the right-hand-side, we show the {\em results from learning}.
-    Data is ``good'' if it has recall over 60\% and false alarm under 40\%
-(and note that, after tuning, there are more ``good'' than before).
-Data   marked with ``$\star$'' show large improvements in performance, after tuning.
-Data   marked with ``$\times$'' are ``not good'' since their test suites  have so few non-defective examples (less than 5\% of the total sample) that it becomes harder to find better data towards which we can displace test data.
-}\label{fig:j}
+\begin{figure*}[htbp!]
+	\renewcommand{\baselinestretch}{0.8}\begin{center}
+		{\scriptsize
+			\begin{tabular}{c|l|p{4.7in}}
+				amc & average method complexity & e.g. number of JAVA byte codes\\\hline
+				avg\, cc & average McCabe & average McCabe's cyclomatic complexity seen
+				in class\\\hline
+				ca & afferent couplings & how many other classes use the specific
+				class. \\\hline
+				class. \\\hline
+				cam & cohesion amongst classes & summation of number of different
+				types of method parameters in every method divided by a multiplication
+				of number of different method parameter types in whole class and
+				number of methods. \\\hline
+				cbm &coupling between methods &  total number of new/redefined methods
+				to which all the inherited methods are coupled\\\hline
+				cbo & coupling between objects & increased when the methods of one
+				class access services of another.\\\hline
+				ce & efferent couplings & how many other classes is used by the
+				specific class. \\\hline
+				dam & data access & ratio of the number of private (protected)
+				attributes to the total number of attributes\\\hline
+				dit & depth of inheritance tree &\\\hline
+				ic & inheritance coupling &  number of parent classes to which a given
+				class is coupled (includes counts of methods and variables inherited)
+				\\\hline
+				lcom & lack of cohesion in methods &number of pairs of methods that do
+				not share a reference to an case variable.\\\hline
+				locm3 & another lack of cohesion measure & if $m,a$ are  the number of
+				$methods,attributes$
+				in a class number and $\mu(a)$  is the number of methods accessing an
+				attribute, 
+				then
+				$lcom3=((\frac{1}{a} \sum, j^a \mu(a, j)) - m)/ (1-m)$.
+				\\\hline
+				loc & lines of code &\\\hline
+				max\, cc & maximum McCabe & maximum McCabe's cyclomatic complexity seen
+				in class\\\hline
+				mfa & functional abstraction & number of methods inherited by a class
+				plus number of methods accessible by member methods of the
+				class\\\hline
+				moa &  aggregation &  count of the number of data declarations (class
+				fields) whose types are user defined classes\\\hline
+				noc &  number of children &\\\hline
+				npm & number of public methods & \\\hline
+				rfc & response for a class &number of  methods invoked in response to
+				a message to the object.\\\hline
+				wmc & weighted methods per class &\\\hline
+				\rowcolor{lightgray}
+				defect & defect & Boolean: where defects found in post-release bug-tracking systems.
+			\end{tabular}
+		}
+	\end{center}
+	\caption{OO measures used in our defect data sets.  Last line is
+		the dependent attribute (whether a defect is reported to  a
+		post-release bug-tracking system).}\label{fig:ck}
 \end{figure*}
+
+
 \subsection{When not to Plan?}
-\subsection{Evaluation}
+\begin{figure*}[!t]
+	\scriptsize
+	\begin{center}
+		\begin{minipage}{.46\linewidth}
+			\begin{tabular}{r@{~}|l@{~}|r@{~}|l@{~}|r@{~}|r@{~}|} \cline{2-6}
+				& \multicolumn{5}{c|}{ }\\ 
+				
+				& \multicolumn{5}{c|}{ Data set  properties}\\ 
+				& \multicolumn{5}{c|}{  }\\ 
+				& \multicolumn{2}{c|}{training}   & \multicolumn{3}{c|}{testing}      \\ \cline{2-6}
+				data set      & versions           & cases & versions     & cases    & \% defective             \\ \hline
+				jedit    & 3.2, 4.0, 4.1, 4.2 & 1257      & 4.3          & 492          & 2 \\
+				ivy      & 1.1, 1.4           & 352       & 2.0          & 352          & 11 \\
+				camel    & 1.0, 1.2, 1.4      & 1819      & 1.6          & 965          & 19 \\
+				ant      & 1.3, 1.4, 1.5, 1.6 & 947       & 1.7          & 745          & 22 \\
+				synapse  & 1.0, 1.1           & 379       & 1.2          & 256          & 34 \\
+				velocity & 1.4, 1.5           & 410       & 1.6          & 229          & 34 \\
+				lucene   & 2.0, 2.2           & 442       & 2.4          & 340          & 59 \\
+				poi      & 1.5, 2, 2.5        & 936       & 3.0          & 442          & 64 \\
+				xerces   & 1.0, 1.2, 1.3      & 1055      & 1.4          & 588          & 74  \\ 
+				log4j    & 1.0, 1.1           & 244       & 1.2          & 205          & 92   \\
+				xalan    & 2.4, 2.5, 2.6      & 2411      & 2.7          & 909          & 99  \\\hline 
+				
+				
+			\end{tabular}\end{minipage}\begin{minipage}{.4\linewidth}
+			\begin{tabular}{|rrr|rrr|rr|l} \cline{1-8}
+				\multicolumn{8}{|c|}{  }\\
+				\multicolumn{8}{|c|}{  Results from learning}\\
+				\multicolumn{8}{|c|}{   }\\
+				\multicolumn{3}{|c|}{untuned} & \multicolumn{3}{c|}{tuned} & \multicolumn{2}{c|}{change}\\
+				\cline{1-8}
+				
+				pd & pf & good? & pd & pf & good? & pd & pf\\\cline{1-8}
+				55 & 29 &   & 64 & 29 & y & 9 & 0&$\star$\\
+				65 & 35 & y & 65 & 28 & y & 0 & -7&$\star$\\
+				49 & 31 &   & 56 & 37 &   & 5 & 6\\
+				49 & 13 & y & 63 & 16 & y & 14 & 3&$\star$\\
+				45 & 19 &   & 47 & 15 &   & 2 & -4\\
+				78 & 60 &   & 76 & 60 &   & -2 & 0\\
+				56 & 25 &   & 60 & 25 & y & 4 & 0\\
+				56 & 31 &   & 60 & 10 & y & 4 & -21&$\star$\\
+				30 & 31 &   & 40 & 29 &   & 10 & -2&$\times$\\
+				32 & 6 &   & 30 & 6 &   & -2 & 0&$\times$\\
+				38 & 9 &   & 47 & 9 &   & 9 & 0&$\times$\\
+				\hline 
+			\end{tabular}
+			
+		\end{minipage}
+	\end{center}    
+	
+	\caption{Training and test {\em data set properties} for the Jureczko data sets,
+		sorted in ascending order of \% defective examples.
+		On the right-hand-side, we show the {\em results from learning}.
+		Data is ``good'' if it has recall over 60\% and false alarm under 40\%
+		(and note that, after tuning, there are more ``good'' than before).
+		Data   marked with ``$\star$'' show large improvements in performance, after tuning.
+		Data   marked with ``$\times$'' are ``not good'' since their test suites  have so few non-defective examples (less than 5\% of the total sample) that it becomes harder to find better data towards which we can displace test data.
+	}\label{fig:j}
+\end{figure*}
+
+
+\subsection{Assessment}
 \subsection{Results}
 \section{Threats to Validity}
 \section{Conclusion}
