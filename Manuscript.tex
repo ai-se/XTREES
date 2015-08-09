@@ -222,6 +222,7 @@ Although HOW manages to generate plans by localizing displacements to regions sm
 
 \subsection{CROSSTREES}
 
+Trustworthy domain models are a popular alternatives to CBR planners. In our previous work, we have used executing source code as a "model" to check if our mutations to test suites minimize the test suite size while maximizing the number of statements covered~\cite{me09m,andrews07,andrews10}. However, we do not always have access to ready-to-use models. Further, finding empirical data to validate existing models can be hard. Fortunately, this issue can be circumvented by 
 
 
 Like all the previous planners, CROSSTREES starts by clustering the training data. Following this, it executes a decision tree algorithm using the clusters as class labels. Using a decision tree algorithm allows us to identify the most informative attributes to select in different clusters. The decision tree built in this fashion emulates a model built from the training data. 
