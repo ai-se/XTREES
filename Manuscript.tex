@@ -223,13 +223,14 @@ Although HOW manages to generate plans by localizing displacements to regions sm
 \subsection{CROSSTREES}
 
 
+
 Like all the previous planners, CROSSTREES starts by clustering the training data. Following this, it executes a decision tree algorithm using the clusters as class labels. Using a decision tree algorithm allows us to identify the most informative attributes to select in different clusters. The decision tree built in this fashion emulates a model built from the training data. 
 
 Using the decision tree, the test cases can be categorized into one of the branches of the tree. Now, to generate the contrast sets, we determine (1) What \textit{current} branch does a test case fall in?; (2) What \textit{desired} branch would the test case have to move to?; (3) What are the deltas between \textit{current} and \textit{desired}? The last question can be answered by finding the deltas in branches of the decision tree that lead to \textit{desired} from \textit{current}. For full algorithmic details, refer to \fig{xtrees_bare}.
 
 CROSSTREES offer a great number of benefits compared to the other methods that were discussed above. Firstly, they offer a visual medium for experts to identify and explore solutions spaces that are local to the problem. Secondly, they offer solutions that are much more stable than other instance based learners. This stability can be attributed to the consistency and general reproducibility of the tree structure. Thirdly, and perhaps most importantly, the tree summarizes the training data succinctly, making it easier for a business user to examine the solutions.
 
-A tree structure such as CROSSTREES are characterized by attributes such as size and depth. It is worth noting that these attributes have a profound impact on its performance. Our initial motivation for using CROSSTREES is that they can serve as a medium for experts to reason about a data. The size of the tree, if too large, jeopardizes the readability of the solutions by increasing the complexity. We have, therefore, endeavored to reduce the size of the tree by pruning away irrelevant solutions that do not contribute to better solutions (refer to step-2 of \fig{xtrees_bare})
+A tree structure such as CROSSTREES are characterized by attributes such as size and depth. It is worth noting that these attributes have a profound impact on its performance. Our initial motivation for using CROSSTREES is that they can serve as a medium for experts to reason about a data. The size of the tree, if too large, jeopardizes the readability of the solutions by increasing the complexity. We have, therefore, endeavored to reduce the size of the tree by pruning away irrelevant solutions that do not contribute to better solutions (refer to step-2 of \fig{xtrees_bare}). 
 
 
 \section{Experiments}
