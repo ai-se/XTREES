@@ -1,0 +1,42 @@
+\begin{figure}[t]
+	\small
+	~\hrule~
+	
+	{\bf Step 1: Distinguish between clusters using  decision trees}
+	
+	Use an entropy-based
+	decision tree (DT) learner to learn what attributes select for a given data. To limit tree size:
+	\bi
+	\item Only use the top $\alpha=33$\%  of the features, as determined by their information gain~\cite{Irani1993}. 
+	\item Only build the trees down to  max depth of $\beta=10$.
+	\item Only build subtrees if it contains at least $N^{\gamma=0.5}$ examples (where $N$ is the size of the training set).
+	\ei
+	{\em Score}  DT  leaf nodes  via the mean score of its majority cluster. 
+	
+	~\hrule~
+	
+	{\bf Step 2: Generating contrast sets from DT branches}
+	\begin{itemize}
+		\item Find the {\em current } cluster: take each test instance, run it down to a leaf in the DT tree.  
+		\item Find the {\em desired} cluster: 
+		\bi
+		\item Starting at {\em current}, ascend the tree $lvl\in \{0,1,2...\}$ levels;
+		\item Identify {\em sibling} clusters; i.e. leaf clusters that can be reached from level $lvl$ that are not {\em current }
+		\item Using the {\em score} defined above, find the {\em better} siblings; i.e. those with a {\em score} less than $\epsilon=0.5$ times the mean score of {\em current}. If none found, then repeat for $lvl += 1$
+		\item  Return the {\em closest} better sibling where distance is measured between the mean centroids of that sibling and {\em current}
+		\ei
+		\item Find the {\em delta}; i.e. the set difference between  conditions in the DT branch to {\em desired} and {\em current}. To find that delta:
+		\bi
+		\item
+		For discrete attributes,  return the value from {\em desired}. 
+		\item
+		For  numerics, return the numeric difference. 
+		\item
+		For numerics  into ranges, return a random number selected from the low and high boundaries of the that range.
+		\ei
+		\ei
+		~\hrule~
+		\caption{CROSSTREES. Controlled by the parameters
+			$\{\alpha, \beta, \gamma, \delta, \epsilon\}$ (set via engineering judgement).}
+		\label{fig:xtrees_bare}
+	\end{figure}

@@ -80,7 +80,7 @@ morecomment=[s][\color{Strings}]{'''}{'''},
 morekeywords={[1]import,from,class,def,for,while,if,is,in,elif,else,not,and,or,print,break,continue,return,True,False,None,access,as,,del,except,exec,finally,global,import,lambda,pass,print,raise,try,assert, dot, norm, zip, sorted},
 keywordstyle={[1]\color{Code}\bfseries},
 % additional keywords
-morekeywords={[3]fastmap,Slope,bPruning,clister,train,leafs,weightedFeatures,HOW,envy, score,kNN,contrastSet,exemplar,Prune, exemplar,nearestSlope,dist,displace,geometry,splitAcross2Points,leaves,How,nearest,bPruning,Stats,divide,recurse,weight1,project, furthest, split,WHERE,clusterer, getContours,envied, fWeight, nearestContour, projection, mutate, HERE, knn},
+morekeywords={[3]fastmap,Slope,bPruning,clister,train,leafs,weightedFeatures,HOW,envy, score,kNN,contrastSet,exemplar,Prune, FSel, exemplar,nearestSlope,dist,displace,geometry,splitAcross2Points,leaves,How,nearest,bPruning,Stats,divide,recurse,weight1,project, furthest, split,WHERE,clusterer, getContours,envied, fWeight, nearestContour, projection, mutate, HERE, knn},
 keywordstyle={[3]\color{Keywords}\bfseries},
 morekeywords={[2]@invari},
 keywordstyle={[2]\color{Decorators}\slshape},
@@ -229,7 +229,12 @@ There are a wide variety of clustering methods to choose from. A study by Ganesa
 For this purposes of this work, we have chosen WHERE, a clustering scheme which is capable of generating at least $\sqrt{N}$ clusters given $N$ instances. In addition to this, WHERE has been shown to run fast while ignoring spurious dimensions~\cite{menzies2013}. This is particularly useful, for much of the SE data is noisy, they contain a information not associated with the target variable. 
 
 \subsection{Finding Contrasts}
-All the following methods use clustering in the form of WHERE, a top-down clustering method which recursively splits the data in two along a dimension that represents the highest variability, shown as Step-1 in figure \ref{fig:xtrees_bare}. 
+All the following methods use clustering in the form of WHERE, a top-down clustering method which recursively splits the data in two along a dimension that represents the highest variability. It works as follows:
+\bi
+\item Find   two   distance samples from the data, say  $X,Y$. This can be done by  picking any case $W$ at random, then setting $X$ to its most distant case, then setting $Y$ to the case most distant from $X$ (this requires only $O(2N)$ comparisons of $N$ cases).
+\item Project each case $Z$ onto a {\tt Slope} that  runs between $X,Y$ using the cosine rule. 
+\item Split the data at the median $X$ value of all cases and recurse on each half  (stopping when one half has less  than $\sqrt{N}$ of the original population).
+\ei		
 
 Clustering is followed by generating \textit{contrast sets}. These contrast sets represent recommendations on what could be altered to better improve an outcome. In this work we have explored several algorithms as possible tools to identify contrast between clusters. These fall into two broad categories:
 \begin{enumerate}
@@ -268,72 +273,7 @@ Although HOW manages to generate plans by localizing displacements to regions sm
 
 % However, not all domains come with reliable models. For instance, a model that encompasses all the intricate issues that may lead to defects in software would be very large and indeed rather complex. In addition to this, finding empirical data to validate such models can be hard to come by and also time consuming ~\cite{me09i,me09j}. 
 
-
-\begin{figure}[t]
-	\small
-	~\hrule~
-	
-	{\bf Step 1: Top down clustering using WHERE}
-	The data is recursively divided in clusters using WHERE as follows:
-	\begin{itemize}
-		
-		\item Find   two   distance cases,  $X,Y$
-		by picking any case $W$ at random, then setting $X$ to its most
-		distant case, then setting $Y$ to the case most distant from
-		$X$
-		(this requires only $O(2N)$ comparisons
-		of $N$ cases).
-		\item Project each case $Z$
-		onto a {\tt Slope} that  runs between $X,Y$ using the cosine
-		rule. 
-		\item Split the data at the median $X$ value of all cases and
-		recurses on each half  (stopping when
-		one half has less  than $\sqrt{N}$ of the original population).
-	\end{itemize}		
-	
-	~\hrule~
-	
-	{\bf Step 2: Distinguish between clusters using  decision trees}
-	
-	Call each leaf from WHERE a  ``class''. Use an entropy-based
-	decision tree (DT) learner to learn what attributes select for each ``class''. To limit tree size:
-	\bi
-	\item Only use the top $\alpha=33$\%  of the features, as determined by their information gain~\cite{Irani1993}. 
-	\item Only build the trees down to  max depth of $\beta=10$.
-	\item Only build subtrees if it contains at least $N^{\gamma=0.5}$ examples (where $N$ is the size of the training set).
-	\ei
-	{\em Score}  DT  leaf nodes  via the mean score of its majority cluster. 
-	
-	~\hrule~
-	
-	{\bf Step 3: Generating contrast sets from DT branches}
-	\begin{itemize}
-		\item Find the {\em current } cluster: take each test instance, run it down to a leaf in the DT tree.  
-		\item Find the {\em desired} cluster: 
-		\bi
-		\item Starting at {\em current}, ascend the tree $lvl\in \{0,1,2...\}$ levels;
-		\item Identify {\em sibling} clusters; i.e. leaf clusters that can be reached from level $lvl$ that are not {\em current }
-		\item Using the {\em score} defined above, find the {\em better} siblings; i.e. those with a {\em score} less than $\epsilon=0.5$ times the mean score of {\em current}. If none found, then repeat for $lvl += 1$
-		\item  Return the {\em closest} better sibling where distance is measured between the mean centroids of that sibling and {\em current}
-		\ei
-		\item Find the {\em delta}; i.e. the set difference between  conditions in the DT branch to {\em desired} and {\em current}. To find that delta:
-		\bi
-		\item
-		For discrete attributes,  return the value from {\em desired}. 
-		\item
-		For  numerics, return the numeric difference. 
-		\item
-		For numerics  into ranges, return a random number selected from the low and high boundaries of the that range.
-		\ei
-		\ei
-		~\hrule~
-		\caption{CROSSTREES. Controlled by the parameters
-			$\{\alpha, \beta, \gamma, \delta, \epsilon\}$ (set via engineering judgement).}
-		\label{fig:xtrees_bare}
-	\end{figure}
-
-
-
+\input{tex/dtree.tex}
 \subsection{DECISION TREES}
 
 Trustworthy domain models are a popular alternatives to CBR planners. In our previous work, we have used executing source code as a "model" to check if our mutations to test suites minimize the test suite size while maximizing the number of statements covered~\cite{me09m,andrews07,andrews10}. However, we do not always have access to ready-to-use models. Further, finding empirical data to validate existing models can be hard. 
@@ -433,19 +373,17 @@ For SQLite, the data  contains 4,553 configurations for prediction modeling and 
 \input{tex/results_conf.tex}
 \input{tex/prediction_stats.tex}
 
-\begin{figure*}[t]
+\begin{figure}[t]
 \begin{minipage}{0.5\textwidth}
-\includegraphics[width=0.9\linewidth]{Deltas-Ivy.eps}
+\includegraphics[width=0.9\linewidth]{_figs/Deltas-Lucene.eps}
 \label{fig:delta_ivy}
-
 \end{minipage}
 \begin{minipage}{0.5\textwidth}
-\includegraphics[width=0.9\linewidth]{Deltas-BDBJ.eps}
+\includegraphics[width=0.9\linewidth]{_figs/Deltas-BDBJ.eps}
 \label{fig:delta_apache}
 \end{minipage}
 \caption{Performance Comparison showing the number of times a certain feature requires to be changed. X-axis lists the various features that make up a data set. The y-axis contains the frequency of change in \%.}
-
-\end{figure*}
+\end{figure}
 
 The clear advantage of our current work is that it can be readily and automatically applied to domains with historical data. However, the obvious drawback with this approach is that our assessment of the plans is only as good as the predictor. To mitigate for this {\em problem of poor predictors}, it is wise to demand certain standards for {\em satisfactory} thresholds. 
 
@@ -457,7 +395,7 @@ Most predictors in this domain were far from perfect;
 But several of these predictors could
 be salvaged using some sampling and optimization methods (see the notes on SMOTE and differential evolution, below).
 \ei
-As shown in \fig{j}, we   explore numerous examples of the Jureczko   object-oriented static code data sets: Ant, Camel, Ivy, Jedit,   Log4, Lucene, Poi, Synapse, Velocity, Xalan, Xerces\footnote{Available from the object-oriented defects section of the PROMISE respository openscience.us/repo/defect/ck.}. 
+As shown in \fig{j}, we   explore numerous examples of the Jureczko   object-oriented static code data sets: Ant, Camel, Ivy, Jedit,   Log4, Lucene, Poi, Synapse, Velocity, Xalan, Xerces\footnote{Available from the object-oriented defects section of the PROMISE respository~\cite{promiserepo}.}. 
 Given access to $V$ released
 versions, we test on version $V$ and train on the available data from $V-1$ earlier releases (as
 shown in \fig{j}, this means that we are training on hundreds to thousands

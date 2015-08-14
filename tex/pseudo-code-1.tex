@@ -19,13 +19,13 @@ def kNN(training, testing, F=33):
     two=exemplar(nearest(one, better))
     return one, two
   
-  def Prune(list, Frac):
+  def FSel(list, Frac):
     "Return top Frac % of the list"
     
   def contrastSet(t):
     clusters = WHERE(training)
     one, two = envy(t,clusters)
-    return Prune(one-two, Frac=F)
+    return FSel(one-two, Frac=F)
   
   # ---- Begin Main Code ---------------
   return [contrastSet(t) for t in testing]
