@@ -147,7 +147,7 @@ This paper is aims to study such planners. The planners fall into three broad ca
  to reduce defects and decrease program runtime.
  For the test data of this paper, those improvements   reduce
  the expected values of defect counts and  runtimes to    
- 45\%,\%  (median) and 66\%,20\% (best case) of the initial values, respectively.
+ 45\%,61.5\%  (median) and 22\%,6\% (best case) of the initial values, respectively.
 \end{abstract}
 \section{Introduction}
 We propose a novel {\em planning} approach called CROSSTREES for learning changes to a software system
@@ -160,7 +160,7 @@ comment on ``what is'' and not ``what to do''. For example, a clustering
 algorithm might find clumps of similar examples, but does not comment on the minimal
 change(s) required to move from clump to clump.
 
-Our approach is important for two reasons. Firstly, business users now demanding analytics tools that support a business-level interpretation of their data. At a panel on software analytics at ICSE’12, industrial practitioners lamented the state of the art in data mining and software engineering~\cite{menzies12a}. Panelists commented that ``prediction is all well and good, but what about decision making?''. That is, these panelists are more interested in the interpretations and follow-up that occurs after the mining, rather than just the mining itself. For example:
+Our approach is important for two reasons. Firstly, business users now demanding analytics tools that support a business-level interpretation of their data. At a panel on software analytics at ICSE`12, industrial practitioners lamented the state of the art in data mining and software engineering~\cite{menzies12a}. Panelists commented that ``prediction is all well and good, but what about decision making?''. That is, these panelists are more interested in the interpretations and follow-up that occurs after the mining, rather than just the mining itself. For example:
 \bi
 \item
 Instead of just accepting {\em predictions} on how many software defects to expect, business users might now demand a {\em plan} to reduce the likelihood of those defects.
@@ -185,8 +185,81 @@ half of the paper then presents an extensive evaluation of CROSSTREES on
 the Jureczko  and Seigmund data sets. This is followed by notes on related work
 and validity.
 
-\section{From Clustering to  CROSSTREES}
+\section{ Methods for Learning Changes}
+ This paper experimentally compares four methods for inputting software project data and outputting
+ recommendations on what to change.
+ For case studies that illustrate how this method works, we use data from Jureczko et al.'s object-oriented JAVA systems~\cite{jureczko10} (shown in \fig{ck} and \fig{jd}) and
+  software system   configuration data from by  Seigmund et al.~\cite{sven12} (see \fig{cpm}).
+  
+  The Jurecko data records number of known defects for each class, where the classes are described in terms of
+  nearly two dozen metrics such as number of children, lines of code, etc.
+  
+  The Seigmund data records the runtime of compiled systems. To generate that data, Seigmund et al. perturbed
+  the configuration parameters in the Makefiles of six systems: Apache, SQLite, LLVM, x264 and two versions of the
+  Berkeley database (one written in ``C'' and one in Java). To ensure that the perturbations
+  were valid, the option space was modeled as a tree that included knowledge of what
+  options were mandatory, optional, or were alternatives (see \fig{bdbc}).
+  Given those perturbations, the systems were then compiled and 
+  Seigmund et al. recorded how long each perturbation took to complete a test suite. 
+  
+
+\input{tex/jur_char.tex}
+
+ \begin{figure}
+ \scriptsize
+ \begin{center}
+ \begin{tabular}{r|rr}
+ data set & cases & \% defective\\\hline
+  ant &947& 22\\
+  camel& 1819& 19\\
+ jedit& 1257& 2\\
+ ivy &352& 11\\
+ log4j& 244 &92\\
+ lucebe &442 &59\\
+ poi& 936 &64\\
+ synapse &379 &34\\
+ velocity& 410& 34\\
+ xalan& 2411& 99\\
+ xerces &1055& 74
+ \end{tabular}
+ \end{center}
+ \caption{The Jureczko data sets (columns in the format of \fig{ck}).}\label{fig:jd}
+ \end{figure}
  
+ \begin{figure}[!t]
+\scriptsize
+\begin{tabular}{llllll}
+  \hline
+  \rowcolor{lightgray}
+Project & Domain & Lang. & LOC & Features & Config\\\hline
+Berkeley DB CE & Database & C & 219,811 & 18 & 2560\\
+Berkeley DB JE & Database & Java & 42,596 & 32  & 400\\
+Apache & Web Server & C & 230,277 & 9 & 192\\
+SQLite & Database & C & 312,625 & 39 & 3,932,160\\
+LLVM & Compiler & C++ & 47,549 & 11 & 1024\\
+x264 & Video Enc. & C& 45,743 & 16 & 1152\\\hline
+\end{tabular}
+ 
+\caption{Seigmund data sets: details on the data sets.
+For SQLite, the data  contains 4,553 configurations for prediction modeling and 100 additional random configurations for prediction evaluation, see \cite{vapp}.}\label{fig:cpm}
+\end{figure}
+
+\begin{figure}[!t]
+\includegraphics[width=1\linewidth]{_figs/BDBC.eps}
+\caption{Feature model for the Berkeley database (``C'' version). }\label{fig:bdbc}
+\end{figure}
+
+Research has shown that given the above data, it is possible to build
+predictors for defective classes (in the Jureczko data) or for the runtime
+of a compiled system (in the Seigmund data) (e.g. see ~\cite{sven12,nam13,he13,peters13,Menzies2013:local,me09b,me11f,me07b}).
+This paper is about the next step {\em after} prediction. We envisonage as scenario
+where business users are presented a prediction and they do not like what they see; e.g. the runtimes are too long of the number of defects is too high. Such users will
+then ask a {\em planning}  question; i.e. ``what can we change to do better than that?'' The rest of this paper
+defines and explores four methods for generating those plans.
+
+\subsection{Method1: Centroid Deltas}
+
+
 In the summer of 2011 and 2012, one of us (Menzies) spent two months
 	working on-site at Microsoft Redmond,
 	observing data mining analysts.  In that study, he took special
@@ -397,32 +470,7 @@ then (3)~return data on the {\em before, after} predictions.
 
 \subsection{Data}
 
-We applied planners to reduce (a) the number of defects found in Jureczko et al.'s object-oriented JAVA systems~\cite{jureczko10}; (b) the runtime of the  software systems   configured by  Seigmund et al.~\cite{sven12}. \fig{ck} shows Jureczko data attributes and \fig{cpm} shows the  Seigmund data attributes which were more diverse than the Jurecko data since they contain the results of applying many  mutators to the configuration options of the Makefiles of  BerkeleyDB (the Java  and  C versions),  Apache,  SQLite,  LLVM, and x264.  
 
-
-\input{tex/jur_char.tex}
-\begin{figure}[!t]
-\scriptsize
-\begin{tabular}{llllll}
-  \hline
-  \rowcolor{lightgray}
-Project & Domain & Lang. & LOC & Features & Config\\\hline
-Berkeley DB CE & Database & C & 219,811 & 18 & 2560\\
-Berkeley DB JE & Database & Java & 42,596 & 32  & 400\\
-Apache & Web Server & C & 230,277 & 9 & 192\\
-SQLite & Database & C & 312,625 & 39 & 3,932,160\\
-LLVM & Compiler & C++ & 47,549 & 11 & 1024\\
-x264 & Video Enc. & C& 45,743 & 16 & 1152\\\hline
-\end{tabular}
- 
-\caption{Seigmund data sets: details on the data sets.
-For SQLite, the data  contains 4,553 configurations for prediction modeling and 100 additional random configurations for prediction evaluation, see \cite{vapp}.}\label{fig:cpm}
-\end{figure}
-
-\begin{figure}[!t]
-\includegraphics[width=0.9\linewidth]{_figs/BDBC.eps}
-\caption{Feature Model}\label{fig:bdbc}
-\end{figure}
 
 
 \input{tex/results_jur.tex}
