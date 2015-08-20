@@ -107,19 +107,25 @@ firstnumber=last
 \begin{document}  
 \conferenceinfo{ISCE}{'16 Austin, Texas}
 
-\title{Prediction is Hard (Especially About the Future)}
-\numberofauthors{2} 
+\title{Learning Useful Changes\\(to Reduce Runtimes and Software Defects)}
+\numberofauthors{3} 
 \author{
 \alignauthor 
-Rahul Krishna \\
-       \affaddr{CS, NcState, USA}\\
-       {i.m.ralk@gmail.com}
+Rahul~Krishna,~Tim Menzies,~Xipeng~Shen \\
+       \affaddr{Com. Sci., NC State, USA}\\
+       {\{i.m.ralk,~tim.menzies,\\xipengshen\}@gmail.com}
 \alignauthor
-Tim Menzies\\
-       \affaddr{CS, NcState, USA}\\
-       {tim.menzies@gmail.com}}
+Naveen   Lekkalapudi\\
+ \affaddr{Software Consultant } \\ 
+       \affaddr{Washington D.C.}\\ 
+       {navek91@gmail.com}
+\alignauthor
+Lucas Layman \\
+       \affaddr{Fraunhofer CESE  } \\ 
+       \affaddr{College Park, USA}\\ 
+       {llayman@fc-md.umd.edu}
 \setlength{\columnsep}{7mm}
-
+}
 \maketitle
 \begin{abstract}
  As business users demand more insightful
@@ -141,24 +147,68 @@ Tim Menzies\\
  to reduce defects and decrease program runtime.
  For the test data of this paper, those improvements   reduce
  the expected values of defect counts and  runtimes to    
- 72\%,75\%  (median) and 66\%,20\% (best case) of the initial values, respectively.cy
+ 72\%,75\%  (median) and 66\%,20\% (best case) of the initial values, respectively.
 \end{abstract}
 \section{Introduction}
-	How should we handle ``unpopulular'' results
-	for data analytics? For example, if a business manager is presented
-	with a data mining result that troubles them (e.g. an estimate of
-	development time that is distressingly long), what advice
-	can we offer them on management actions to {\em change} that estimate?
-	
-	This is an important question, and one with much currency in industry.
-	In the summer of 2011 and 2012, one of us (Menzies) spent two months
+We propose a novel {\em planning} approach called CROSSTREES for learning changes to a software system
+such that its performance ``improvess'', according to some measure. For  casew
+stuides, we apply CROSSTREES to   (1)~reducethe predicted number
+of defects and (2)~reduce the runtimes of five system. 
+
+The approach discussed here is novel since most data miners used in software analytics
+comment on ``what is'' and not ``what to do''. For example, a clustering
+algorithm might find clumps of similar examples, but does not comment on the minimal
+change(s) required to move from clump to clump.
+
+Our approach is important for two reasons. Firstly, business users now demanding analytics tools that support a business-level interpretation of their data. At a panel on software analytics at ICSE’12, industrial practitioners lamented the state of the art in data mining and software engineering~\cite{menzies12a}. Panelists commented that ``prediction is all well and good, but what about decision making?''. That is, these panelists are more interested in the interpretations and follow-up that occurs after the mining, rather than just the mining itself. For example:
+\bi
+\item
+Instead of just accepting {\em predictions} on how many software defects to expect, business users might now demand a {\em plan} to reduce the likelihood of those defects.
+\item
+Instead of just accepting {\em predictions} on the runtime time of their software, business users might now demand a {\em plan} to reduce that runtime. 
+\ei
+A second reason for the importance of our approach is, as shown below,
+when asked how to change a project in order to achieve a result, it is surprisingly
+difficult to use standard methods (e.g. clustering) to find those changes.
+In the case study that motivated this paper, we how  standard data mining methods
+can generate  seemingly
+useful insights, but which are in fact completely ineffectual. On the other hand,
+using CROSSTREES, we can propose changes that significantly reduce:
+\bi
+\item The  defects found  in Jureczko et al.'s    JAVA systems~\cite{jureczko10}.
+\item The runtime of the  software    configured by  Seigmund et al.~\cite{sven12}.
+\ei 
+Since CROSSTREES is a somewhat novel algorithm, we present it in tutorial form.
+The next section walks the reader through a sequence of approaches that start
+with a standard clustering algorithm, and progresses on to CROSSTREES. The second
+half of the paper then presents an extensive evaluation of CROSSTREES on 
+the Jureczko  and Seigmund data sets. This is followed by notes on related work
+and validity.
+
+\section{From Clustering to  CROSSTREES}
+ 
+In the summer of 2011 and 2012, one of us (Menzies) spent two months
 	working on-site at Microsoft Redmond,
-	observing data mining analysts.  He
-	noted how Microsoft's data scientists
-	discussed their data with  business users. 
-	One surprising outcome of that study was just how
-	little time was spent  
-	inspecting  of the output of data miners as compared to another process, which we call {\em peeking}.
+	observing data mining analysts.  In that study, he took special
+	note about how Microsoft's data scientists
+	discussed the results of their data mining sessions with  business users. 
+	
+	One surprising observation was how  
+	little time was spent by business users 
+	inspecting  of the output of standard data miners. Prior to that visit,
+	we had the mistaken impression that   decision trees,
+	clustering algorithms, etc were useful ``off-the-shelf''; i.e    business
+	users would inspect and understand the output of those tools.
+	
+Standard data mining tools are not necessarily the best tool for supporting that dialogue.
+Menzies found that he had to do considerable work pre-processing data mining output
+prior to the weekly briefing meetings for the business users. Initially,
+that pre-processing was just clustering. This evolved into feature selection and finally
+the a case-based reasoning tool called HOW.  
+
+
+	
+	as compared to another process, which we call {\em peeking}.
 	In {\em peeking}, analysts and users spend much time
 	inspecting and discussing small samples of either raw or exemplary or synthesized project data.  Further, very little of those discussions were  focused on classification
 	(the addition of a labels to some unlabelled data). Rather, much time
@@ -195,12 +245,12 @@ Tim Menzies\\
 	While method (a) is widely used (e.g.~\cite{Menzies2010}),
 	to the best of our knowledge, this combination of (abc) has not been thoroughly explored before.
 
-This paper assesses two methods  for ``peeking'': a model-based method called CROSSTREES and an instance-based method   called HOW. 
-CROSSTREES were first developed by Lekkalapudi and Menzies to  explaining results from multi-objective optimizers~\cite{nva14}. This paper is the first
-to apply CROSSTREES to defect prediction and contrast set learning. Also, that prior work evaluated
-CROSSTREES against multi-objective optimizers and not   instance-based methods.
+This paper assesses two methods  for ``peeking'': a model-based method called DTREE and an instance-based method   called HOW. 
+DTREE were first developed by Lekkalapudi and Menzies to  explaining results from multi-objective optimizers~\cite{nva14}. This paper is the first
+to apply DTREE to defect prediction and contrast set learning. Also, that prior work evaluated
+DTREE against multi-objective optimizers and not   instance-based methods.
 
-This paper uses three criteria to assess the value of HOW and CROSSTREES for
+This paper uses three criteria to assess the value of HOW and DTREE for
 learning actionable analytics:
 \be
 \item
@@ -217,7 +267,7 @@ it must generate {\em succinct} changes.
 Recommendations should be {\em stable}; i.e. they shouldn't widely vary due to minor changes in the data. Hence, in our experiments, we will add a little randomness to our analysis then report results across 20 repeated runs. 
 \ee
 We will find that
- {\em effectiveness} of CROSSTREES and HOW are similar, but   CROSSTREES wins on {\em succinctness} and {\em stability}.
+ {\em effectiveness} of DTREE and HOW are similar, but   DTREE wins on {\em succinctness} and {\em stability}.
 
 \section{Cluster and Contrast}
 \label{clust_contrast}
@@ -369,6 +419,12 @@ x264 & Video Enc. & C& 45,743 & 16 & 1152\\\hline
 For SQLite, the data  contains 4,553 configurations for prediction modeling and 100 additional random configurations for prediction evaluation, see \cite{vapp}.}\label{fig:cpm}
 \end{figure}
 
+\begin{figure}[!t]
+\includegraphics[width=0.9\linewidth]{_figs/BDBC.eps}
+\caption{Feature Model}\label{fig:bdbc}
+\end{figure}
+
+
 \input{tex/results_jur.tex}
 \input{tex/results_conf.tex}
 \input{tex/prediction_stats.tex}
@@ -464,6 +520,7 @@ The hypothesis test $H$ used here is a conjunction of the A12 effect size test a
 The results for each data, for different planners, are shown in \fig{jur} and \fig{conf}. All
 \subsection{Discussion}
 \section{Threats to Validity}
+\input{tex/results_models.tex}
 \section{Conclusion}
 \section*{Acknowledgements}
 \bibliographystyle{plain}
