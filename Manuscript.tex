@@ -107,7 +107,7 @@ firstnumber=last
 \begin{document}  
 \conferenceinfo{ISCE}{'16 Austin, Texas}
 
-\title{Learning Useful Changes\\(to Reduce Runtimes and Software Defects)}
+\title{How to Learn Useful Changes to Software Projects\\(to Reduce Runtimes and Software Defects)}
 \numberofauthors{3} 
 \author{
 \alignauthor 
@@ -134,49 +134,73 @@ Lucas Layman \\
  some result, they also need tools that generate ``plans'';
  i.e. specific suggestions on  what to change  in order to
  improve on the predicted values.
- 
-This paper is aims to study such planners. The planners fall into three broad categories (1) Cluster-specific planners (K Nearest Neighbors); (2) Instance specific planners (HOW); (3) Decision Tree based planners. 
-Our experiments show that the latter (decision tree planners)
-works best, measured both in terms of the {\em simplicity} of the plan
-and the {\em size} of the improvements.
-For example, in the   test data of this paper, the  improvements   reduce
- the expected values of defect counts and  runtimes to    
+This paper defines an evaluation strategy for evaluating such  planners and applies it to four different planning methods.
+It is shown that our  strategy  can (a) recognize   inferior planning methods and  (b) select useful planning methods.
+Using the best method found by this evaluation strategy,  we can
+reduce
+ the expected values of defect counts and  runtimes of software projects to    
  45\%,61.5\%  (median) and 22\%,6\% (best case) of the initial values, respectively.
 \end{abstract}
 \section{Introduction}
 We propose a novel {\em planning} approach called CROSSTREES for learning changes to a software system
 such that its performance ``improves'', according to some measure. For  case 
-studies, we apply CROSSTREES to   (1)~reduce the predicted number
-of defects and (2)~reduce the runtimes of five system. 
-
+studies, we apply CROSSTREES to  reduce the expected value of:
+\bi
+\item  Defects     in Jureczko et al.'s    JAVA systems~\cite{jureczko10}.
+\item Runtimes   in   software    configured by  Siegmund et al.~\cite{sven12}.
+\ei 
 The approach discussed here is novel since most data miners used in software analytics
 comment on ``what is'' and not ``what to do''. For example, a clustering
 algorithm might find clumps of similar examples, but does not comment on the minimal
 change(s) required to move from clump to clump.
 
-Our approach is important for two reasons. Firstly, business users now demanding analytics tools that support a business-level interpretation of their data. At a panel on software analytics at ICSE`12, industrial practitioners lamented the state of the art in data mining and software engineering~\cite{menzies12a}. Panelists commented that ``prediction is all well and good, but what about decision making?''. That is, these panelists are more interested in the interpretations and follow-up that occurs after the mining, rather than just the mining itself. For example:
+Our approach is important since business users are demanding analytics tools that support  a  business-level interpretation of their data. At a panel on software analytics at ICSE`12, industrial practitioners lamented the state of the art in software analytics~\cite{menzies12a}. Panelists commented  ``prediction is all well and good, but what about decision making?''. Note that these panelists are more interested in the interpretations and follow-up that occurs after the mining, rather than just the mining itself. So:
 \bi
 \item
 Instead of just accepting {\em predictions} on how many software defects to expect, business users might now demand a {\em plan} to reduce the likelihood of those defects.
 \item
 Instead of just accepting {\em predictions} on the runtime time of their software, business users might now demand a {\em plan} to reduce that runtime. 
 \ei
-A second reason for the importance of our approach is, as shown below,
-when asked how to change a project in order to achieve a result, it is surprisingly
-difficult to use standard methods (e.g. clustering) to find those changes.
-In the case study that motivated this paper, we how  standard data mining methods
-can generate  seemingly
-useful insights, but which are in fact completely ineffectual. On the other hand,
-using CROSSTREES, we can propose changes that significantly reduce:
+This main contribution of this paper is to  define an evaluation strategy for this kind of reasoning, and to show that (using that strategy) we
+can (a)~select useful planning methods while (b)~culling clearly
+inferior planning methods. 
+For example,
+this paper compares CROSSTREES against three simpler methods that are found to be inferior.
+Consider  a table of data
+with many independent features and one dependent feature (where the latter is usually called
+the ``class''). All our methods find clumps of related
+examples, then generates specific change recommendations
+for each clumps:
 \bi
-\item The  defects found  in Jureczko et al.'s    JAVA systems~\cite{jureczko10}.
-\item The runtime of the  software    configured by  Siegmund et al.~\cite{sven12}.
-\ei 
+\item
+Method1, Method2, and Method3
+use ``unsupervised clustering''; i.e. examples are clumped together if they have
+similar values for their independent features. 
+\item
+CROSSTREES is our implementation of Method4.
+This method uses ``supervised clustering'';
+i.e. examples are clumped together if that  reduces the dependent feature {\em variability}. For or continuous and discrete values,
+the {\em variability} can be measured using standard deviation\footnote{$\sigma = \sqrt{\sum^n_i \left( (x_i - \bar{x})^2/(n-1)\right)}$} or entropy\footnote{If $n$ discrete values occur at frequency
+$f_1,f_2,.. f_n$, then \mbox{$N = \sum f_i$} and $p_i = f_i/N$ and entropy is 
+$- \sum_i p_i{\ldot}\mathit{log}_2(p_i)$.}, respectively.
+\ei
+As seen below, Method1 and Method2 are clearly inferior.
+Method3 and Method4 will be shown to be equivalent, measured in terms of change effectiveness. However, Method4 will be recommended since its change recommendations are
+far simpler. 
+
+Of course, there are many more ways than these four
+to generate recommendations on how to change projects.
+But the goal of this paper is not to claim that (e.g.) Method4 is some absolute best algorithm. Rather, it is
+to offer an evaluation strategy that  can assess alternate proposals for generating
+plans. Our hope is that other   researchers repeat our experiments in order to repeat and/or improve
+and/or refute our results. To that end, all our materials and data sets are available on-line.
+
+The rest of this paper is structured as follows.
 Since CROSSTREES is a somewhat novel algorithm, we present it in tutorial form.
 After describing our test data,
-this paper  walks the reader through a sequence of approaches that start
-with a standard clustering algorithm, and progresses on to CROSSTREES. The second
-half of the paper then presents an extensive evaluation of CROSSTREES on 
+this paper  walks the reader through four methods that start
+with a standard clustering algorithm, the  progresses on to CROSSTREES. The second
+half of the paper then presents an extensive evaluation of these methods using 
 the Jureczko  and Siegmund data sets. This is followed by notes on related work
 and validity.
 
@@ -184,26 +208,25 @@ and validity.
 \input{tex/jur_char.tex}
 
 \section{Test Domains}
- This paper experimentally compares four methods for inputting software project data and outputting
- recommendations on what to change. For case studies that illustrate how this method works, we use data from Jureczko et al.'s object-oriented JAVA systems~\cite{jureczko10}  and
+For case studies material, we use data from Jureczko et al.'s object-oriented JAVA systems~\cite{jureczko10}  and
   software system   configuration data from by  Siegmund et al.~\cite{sven12}.
   
    The Jurecko data records number of known defects for each class, where the classes are described in terms of
   nearly two dozen metrics such as number of children, lines of code, etc.
-For details on the Jurecko data, see  \fig{ck} and \fig{jd}.
+For details on the Jurecko data, see  \fig{ck} and \fig{jd}. 
  
-  The Siegmund data records  runtimes of compiled systems. To make that data, Siegmund et al. perturbed
+  The Siegmund data, described in \fig{cpm},  records  the runtimes of compiled systems. To make that data, Siegmund et al. perturbed
   the configuration parameters in the Makefiles of six systems: Apache, SQLite, LLVM, x264 and two versions of the
   Berkeley database (one written in ``C'' and one in Java). 
-  Given those perturbations, the systems were then compiled and 
-  Siegmund et al. recorded how long each perturbation took to run a test suite. For details on the Siegmund  data, see \fig{cpm}.
-  To ensure that the perturbations
-  were valid, the option space was modeled as a tree that included knowledge of what
-  options were mandatory, optional, or were alternatives (see \fig{bdbc}).
+   \fig{bdbc} shows an example of a feature model defining valid combinations of settings to on the
+   the Siegmund et al. datasets. These feature models were used by Siegmund et al. to ensure all their perturbations are value
+   (we will use the same models to cull invalid plans).
+  Given those valid perturbations, the systems were then compiled and 
+  Siegmund et al. recorded how long each perturbation took to run a test suite. 
+  
   
 
-
- \begin{figure}
+ \begin{figure}[!b]
  \scriptsize
  \begin{center}
  \begin{tabular}{r|rr}
@@ -257,17 +280,12 @@ a business user is presented a prediction and they do not like what they see; e.
 then ask a {\em planning}  question; i.e. ``what can we change to do better than that?'' The rest of this paper
 defines and evaluates different methods for answering that question.
 
-
-\subsection{Method0: Non-automatic Approaches}
-
-For the purposes of completeness, we offer first some notes
-on how  {\em not} to generate recommendations for changes.  
-
+Before doing that, we digress to comment on manual methods for generating such plans.
 One way to change projects for the better is to ask smart experienced
 people for their opinion on how to (e.g.) reduce defects and/or decrease runtimes. Sometimes
 such advice 
 is an effective strategy and sometimes it is not.
-According to Passos et al.~\cite{passos11},  warn that developers
+According to Passos et al.~\cite{passos11},  developers
 may  assume that the lessons they learn from a few past
 projects are general to 
 all their future projects. They comment ``past experiences were taken into account without 
@@ -276,9 +294,9 @@ much consideration for their context~\cite{passos11}.
   supposed software engineering    ``gurus'' rarely use lessons
   from past projects to improve their future reasoning and that such poor
   past advice can be detrimental to new projects.~\cite{jorgensen09}.
-  Based on that research, we proposed a ``trust, but verify'' approach.
-  If a software guru offers some sage wisdom, then it is wise to (a)~follow that
-  advice but (b)~also ask some other oracle if there were any better options
+  
+  Accordingly, we   proposed a ``trust, but verify'' approach.
+  If a software guru offers some sage wisdom,  it is wise to ask some other oracle if there were any better options
   (just as a sanity check).
   The rest of this paper discusses some methods to build automatic oracles 
   to implement that   sanity check.
@@ -308,33 +326,21 @@ lower variance in the predictions).
 In summary, 
 it is useful to have automatic methods to recommend changes. Such
 methods can fill in for human gurus (if such gurus are absent) or 
-offer a second opinion that (possibly)  a different perspective to the human guru.
+to offer a second opinion.
 Also, prior to making automatic recommendations, it is wise to first stratify the data
 (clump it into related examples) then generate advice specific to each clump.
 In the following, we will use various methods that generate numerous clumps as follows:
   $N$ examples will be divided into groups containing at most $\alpha=\sqrt{N}$
-  examples\footnote{We denote variables
-  set via  engineering judgement  with Greek letters; e.g. $\alpha$.
+  examples.
+  
+  In the following, note our convention. All variables
+  set via  our engineering judgement  with Greek letters; e.g. $\alpha$.
   In this paper, we show our current settings to these variables produces useful
-  results.  Future papers should check if different
-  settings to these variables are more useful.}.
+  results. In other work~\cite{krall14}, we are exploring tuning methods to automatically
+  find better settings but  we have nothing definitive yet to report
+  on auto-tuning planners.
  
- This clumping to gether of different examples  can be operationalized in numerous ways. Consider  a table of data
-with many independent features and one dependent feature (where the latter is usually called
-the ``class''):
-\bi
-\item
-Method1, Method2, and Method3
-use ``unsupervised clustering''; i.e. examples are clumped together if they have
-similar values for their independent features. 
-\item
-Method4 uses ``supervised clustering'';
-i.e. examples are clumped together if that  reduces the dependent feature {\em variability}.
-\ei
-For or continuous and discrete values,
-the {\em variability} can be measured using standard deviation\footnote{$\sigma = \sqrt{\sum^n_i \left( (x_i - \bar{x})^2/(n-1)\right)}$} or entropy\footnote{If $n$ discrete values occur at frequency
-$f_1,f_2,.. f_n$, then \mbox{$N = \sum n_i$} and $p_i = f_i/N$ and entropy is 
-$-1 * \sum_i p_ilog_2(p_i)$.}, respectively).  
+
 \subsection{Method1: Sorted Centroids}
 
 One method for learning changes is as follows.  
@@ -381,7 +387,7 @@ Using the features mentioned in the top-most rows (where changes selects for the
 	\begin{figure}[t]\small
 	\begin{tabular}{|p{.95\linewidth}|}\hline 
 		WHERE  divides data into  groups of size $\alpha=\sqrt{N}$ using 
-		 Aha et al.'s standard Euclidean distance measure~\cite{aha91}.  For $F$ independent features, the measure returns   $d(X,Y)=\sqrt{\sum_i^F \left(\Delta(X_i,Y_i)^2\right)}/\sqrt{F}$
+		 Aha et al.'s standard Euclidean distance measure~\cite{aha91}.  For $F$ independent features, the measure returns   $d(X,Y)=\sqrt{\sum_i^F  \Delta(X_i,Y_i)^2}/\sqrt{F}$
 			(the denominator normalizes the output to $0 \le d \le 1$).
 			Within $\Delta$, if   $X_i,Y_i$ are both missing  values, then  return 1.
 			Otherwise, replace any  missing items with values that maximizes the following.
