@@ -4,11 +4,25 @@ How to Learn Useful Changes to Software Projects(to Reduce Runtimes and Software
 
 Submitted to ICSE'16.
 
+## Bibtex
+
+```
+@misc{xtrees16a,
+  authors=       "Rahul Krishna, Tim Menzies, Xipeng Shen, 
+                  Naveen Lekkalapudi, Lucas Layman",
+  title=         "How to Learn Useful Changes to Software Projects
+                  (to Reduce Runtimes and Software Defects)",
+  inProceedings= "ICSE'16, submitted",
+  year=2016
+}
+```
 ## Authors
 
 + Rahul Krishna, Tim Menzies,Xipeng Shen
-  + Com. Sci., NC State, USA
-  + {i.m.ralk, tim.menzies,xipengshen}@gmail.com
+  + Com. Sci., NC State, USA 
+  + i.m.ralk @gmail.com
+  + tim.menzies@gmail.com
+  + xipengshen}@gmail.com
 + Naveen Lekkalapudi
   + Bellhops, Washington D.C. 
   + navek91@gmail.com
@@ -18,8 +32,8 @@ Submitted to ICSE'16.
 
 ## Data
 
-+ [Jurecko defect data][(http://openscience.us/repo/defect/ck)
-+ [Siegmund et al. runtime data](http://openscience.us/repo/performance-predict (for Siegmund).
++ [Jurecko defect data](http://openscience.us/repo/defect/ck)
++ [Siegmund et al. runtime data](http://openscience.us/repo/performance-predict).
 
 ## Latex source
 
