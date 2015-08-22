@@ -13,16 +13,16 @@ Submitted to ICSE'16.
   title=         "How to Learn Useful Changes to Software Projects
                   (to Reduce Runtimes and Software Defects)",
   inProceedings= "ICSE'16, submitted",
-  year=2016
+  year=          2016
 }
 ```
 ## Authors
 
-+ Rahul Krishna, Tim Menzies,Xipeng Shen
++ Rahul Krishna, Tim Menzies, Xipeng Shen
   + Com. Sci., NC State, USA 
-  + i.m.ralk @gmail.com
+  + i.m.ralk@gmail.com
   + tim.menzies@gmail.com
-  + xipengshen}@gmail.com
+  + xipengshen@gmail.com
 + Naveen Lekkalapudi
   + Bellhops, Washington D.C. 
   + navek91@gmail.com
