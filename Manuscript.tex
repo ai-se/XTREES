@@ -9,14 +9,14 @@
 \usepackage{amsmath}
 \usepackage{url}
 \usepackage{balance}
-\newcommand{\bi}{\begin{itemize}[leftmargin=0.4cm]}
+\newcommand{\bi}{\begin{itemize}}
 \newcommand{\ei}{\end{itemize}}
 \newcommand{\be}{\begin{enumerate}}
 \newcommand{\ee}{\end{enumerate}}
 \newcommand{\tion}[1]{\S\ref{sect:#1}}
 \newcommand{\fig}[1]{Figure~\ref{fig:#1}}
 \newcommand{\eq}[1]{Equation~\ref{eq:#1}}
-\setlist{nolistsep,leftmargin=5mm}
+%\setlist{nolistsep,leftmargin=5mm}
 %\usepackage[pdftex]{graphicx}
 \usepackage{program}
 \newcommand{\Sample}{{\bf SAMPLE}}
@@ -111,12 +111,12 @@ firstnumber=last
 \numberofauthors{3} 
 \author{
 \alignauthor 
-Rahul~Krishna,~Tim Menzies,~Xipeng~Shen \\
+Rahul~Krishna\\Tim Menzies, Xipeng~Shen \\
        \affaddr{Com. Sci., NC State, USA}\\
        {\{i.m.ralk,~tim.menzies,\\xipengshen\}@gmail.com}
 \alignauthor
 Naveen   Lekkalapudi\\
- \affaddr{Software Consultant } \\ 
+ \affaddr{Bellhops } \\ 
        \affaddr{Washington D.C.}\\ 
        {navek91@gmail.com}
 \alignauthor
@@ -130,22 +130,16 @@ Lucas Layman \\
 \begin{abstract}
  As business users demand more insightful
  analytics, data scientists need to change
- their tools. Instead of merely predicting 
+ their tools. Instead of just predicting 
  some result, they also need tools that generate ``plans'';
- i.e. specific suggestions on  how to change values in order to
- improve on some predicted value.
+ i.e. specific suggestions on  what to change  in order to
+ improve on the predicted values.
  
-This paper is aims to study such planners. The planners fall into three broad categories (1) Cluster specific planners (K Nearest Neighbors); (2) Instance specific planners (HOW); (3) Decision Tree based planners. These planners are employed as tools for proposing changes to independent
- variables in order to improve on 
- the predictions of the dependent variables. Unlike other approaches
- for learning optimizations to software, these planners do not require
- an underlying model of the domain. Also, these plans
- are designed to result in {\em minimal displacement}
- to current practice.
- 
- This paper uses these learners to learn methods
- to reduce defects and decrease program runtime.
- For the test data of this paper, those improvements   reduce
+This paper is aims to study such planners. The planners fall into three broad categories (1) Cluster-specific planners (K Nearest Neighbors); (2) Instance specific planners (HOW); (3) Decision Tree based planners. 
+Our experiments show that the latter (decision tree planners)
+works best, measured both in terms of the {\em simplicity} of the plan
+and the {\em size} of the improvements.
+For example, in the   test data of this paper, the  improvements   reduce
  the expected values of defect counts and  runtimes to    
  45\%,61.5\%  (median) and 22\%,6\% (best case) of the initial values, respectively.
 \end{abstract}
@@ -176,34 +170,38 @@ useful insights, but which are in fact completely ineffectual. On the other hand
 using CROSSTREES, we can propose changes that significantly reduce:
 \bi
 \item The  defects found  in Jureczko et al.'s    JAVA systems~\cite{jureczko10}.
-\item The runtime of the  software    configured by  Seigmund et al.~\cite{sven12}.
+\item The runtime of the  software    configured by  Siegmund et al.~\cite{sven12}.
 \ei 
 Since CROSSTREES is a somewhat novel algorithm, we present it in tutorial form.
-The next section walks the reader through a sequence of approaches that start
+After describing our test data,
+this paper  walks the reader through a sequence of approaches that start
 with a standard clustering algorithm, and progresses on to CROSSTREES. The second
 half of the paper then presents an extensive evaluation of CROSSTREES on 
-the Jureczko  and Seigmund data sets. This is followed by notes on related work
+the Jureczko  and Siegmund data sets. This is followed by notes on related work
 and validity.
 
-\section{ Methods for Learning Changes}
- This paper experimentally compares four methods for inputting software project data and outputting
- recommendations on what to change.
- For case studies that illustrate how this method works, we use data from Jureczko et al.'s object-oriented JAVA systems~\cite{jureczko10} (shown in \fig{ck} and \fig{jd}) and
-  software system   configuration data from by  Seigmund et al.~\cite{sven12} (see \fig{cpm}).
-  
-  The Jurecko data records number of known defects for each class, where the classes are described in terms of
-  nearly two dozen metrics such as number of children, lines of code, etc.
-  
-  The Seigmund data records the runtime of compiled systems. To generate that data, Seigmund et al. perturbed
-  the configuration parameters in the Makefiles of six systems: Apache, SQLite, LLVM, x264 and two versions of the
-  Berkeley database (one written in ``C'' and one in Java). To ensure that the perturbations
-  were valid, the option space was modeled as a tree that included knowledge of what
-  options were mandatory, optional, or were alternatives (see \fig{bdbc}).
-  Given those perturbations, the systems were then compiled and 
-  Seigmund et al. recorded how long each perturbation took to complete a test suite. 
-  
 
 \input{tex/jur_char.tex}
+
+\section{Test Domains}
+ This paper experimentally compares four methods for inputting software project data and outputting
+ recommendations on what to change. For case studies that illustrate how this method works, we use data from Jureczko et al.'s object-oriented JAVA systems~\cite{jureczko10}  and
+  software system   configuration data from by  Siegmund et al.~\cite{sven12}.
+  
+   The Jurecko data records number of known defects for each class, where the classes are described in terms of
+  nearly two dozen metrics such as number of children, lines of code, etc.
+For details on the Jurecko data, see  \fig{ck} and \fig{jd}.
+ 
+  The Siegmund data records  runtimes of compiled systems. To make that data, Siegmund et al. perturbed
+  the configuration parameters in the Makefiles of six systems: Apache, SQLite, LLVM, x264 and two versions of the
+  Berkeley database (one written in ``C'' and one in Java). 
+  Given those perturbations, the systems were then compiled and 
+  Siegmund et al. recorded how long each perturbation took to run a test suite. For details on the Siegmund  data, see \fig{cpm}.
+  To ensure that the perturbations
+  were valid, the option space was modeled as a tree that included knowledge of what
+  options were mandatory, optional, or were alternatives (see \fig{bdbc}).
+  
+
 
  \begin{figure}
  \scriptsize
@@ -223,7 +221,7 @@ and validity.
  xerces &1055& 74
  \end{tabular}
  \end{center}
- \caption{The Jureczko data sets (columns in the format of \fig{ck}).}\label{fig:jd}
+ \caption{ Jureczko data: columns in the format of \fig{ck}.}\label{fig:jd}
  \end{figure}
  
  \begin{figure}[!t]
@@ -240,26 +238,180 @@ LLVM & Compiler & C++ & 47,549 & 11 & 1024\\
 x264 & Video Enc. & C& 45,743 & 16 & 1152\\\hline
 \end{tabular}
  
-\caption{Seigmund data sets: details on the data sets.
+\caption{Siegmund data.
 For SQLite, the data  contains 4,553 configurations for prediction modeling and 100 additional random configurations for prediction evaluation, see \cite{vapp}.}\label{fig:cpm}
 \end{figure}
 
 \begin{figure}[!t]
 \includegraphics[width=1\linewidth]{_figs/BDBC.eps}
-\caption{Feature model for the Berkeley database (``C'' version). }\label{fig:bdbc}
+\caption{ Berkeley database feature model   (``C'' version). }\label{fig:bdbc}
 \end{figure}
 
+\section{Methods for Learning Changes}
 Research has shown that given the above data, it is possible to build
 predictors for defective classes (in the Jureczko data) or for the runtime
-of a compiled system (in the Seigmund data) (e.g. see ~\cite{sven12,nam13,he13,peters13,Menzies2013:local,me09b,me11f,me07b}).
-This paper is about the next step {\em after} prediction. We envisonage as scenario
-where business users are presented a prediction and they do not like what they see; e.g. the runtimes are too long of the number of defects is too high. Such users will
+of a compiled system (in the Siegmund data); e.g. see ~\cite{sven12,nam13,he13,Menzies2013:local,me09b,me11f,me07b}.
+
+This paper is about the next step {\em after} prediction. Suppose
+a business user is presented a prediction and they do not like what they see; e.g. the runtimes are too long of the number of defects is too high. This user may
 then ask a {\em planning}  question; i.e. ``what can we change to do better than that?'' The rest of this paper
-defines and explores four methods for generating those plans.
-
-\subsection{Method1: Centroid Deltas}
+defines and evaluates different methods for answering that question.
 
 
+\subsection{Method0: Non-automatic Approaches}
+
+For the purposes of completeness, we offer first some notes
+on how  {\em not} to generate recommendations for changes.  
+
+One way to change projects for the better is to ask smart experienced
+people for their opinion on how to (e.g.) reduce defects and/or decrease runtimes. Sometimes
+such advice 
+is an effective strategy and sometimes it is not.
+According to Passos et al.~\cite{passos11},  warn that developers
+may  assume that the lessons they learn from a few past
+projects are general to 
+all their future projects. They comment ``past experiences were taken into account without 
+much consideration for their context~\cite{passos11}.  
+ J{\o}rgensen \& Gruschke~\cite{jorgensen09} concur with Passos et al. They report that 
+  supposed software engineering    ``gurus'' rarely use lessons
+  from past projects to improve their future reasoning and that such poor
+  past advice can be detrimental to new projects.~\cite{jorgensen09}.
+  Based on that research, we proposed a ``trust, but verify'' approach.
+  If a software guru offers some sage wisdom, then it is wise to (a)~follow that
+  advice but (b)~also ask some other oracle if there were any better options
+  (just as a sanity check).
+  The rest of this paper discusses some methods to build automatic oracles 
+  to implement that   sanity check.
+  
+Another way find good changes to a project
+would be to rely
+on the peer review processes used by the 
+SE research community. This approach would propose changes to software
+projects that concur with internationally accept best practices. There are three
+problems with that approach. Firstly, given the rapid pace of change in software
+engineering, we may be asking questions for which there is no currently accept
+``best practice''. For example, only very recently has there been any work
+of predicting software runtimes based on choices within Makefiles. While the work
+of Siegmund et al.~\cite{sven12} is certainly state of the art, it does
+cannot yet represent ``internationally accept best practices'' since that work is so
+recent. 
+
+Secondly, given the diversity of SE products and practices
+and personnel, it may well be that the current project being discussed is 
+substantively different to prior work. 
+Numerous recent {\em local learning} results compare (1) single models
+learned from all available data to (2) multiple models learned from clusters within the data~\cite{betten14,yang11,yang13,minku13,me12d,me11m,posnett11}.
+A repeated result in those studies in that the local models generated the better effort
+and defect predictions (better median results,
+lower variance in the predictions).
+
+In summary, 
+it is useful to have automatic methods to recommend changes. Such
+methods can fill in for human gurus (if such gurus are absent) or 
+offer a second opinion that (possibly)  a different perspective to the human guru.
+Also, prior to making automatic recommendations, it is wise to first stratify the data
+(clump it into related examples) then generate advice specific to each clump.
+In the following, we will use various methods that generate numerous clumps as follows:
+  $N$ examples will be divided into groups containing at most $\alpha=\sqrt{N}$
+  examples\footnote{We denote variables
+  set via  engineering judgement  with Greek letters; e.g. $\alpha$.
+  In this paper, we show our current settings to these variables produces useful
+  results.  Future papers should check if different
+  settings to these variables are more useful.}.
+ 
+ This clumping to gether of different examples  can be operationalized in numerous ways. Consider  a table of data
+with many independent features and one dependent feature (where the latter is usually called
+the ``class''):
+\bi
+\item
+Method1, Method2, and Method3
+use ``unsupervised clustering''; i.e. examples are clumped together if they have
+similar values for their independent features. 
+\item
+Method4 uses ``supervised clustering'';
+i.e. examples are clumped together if that  reduces the dependent feature {\em variability}.
+\ei
+For or continuous and discrete values,
+the {\em variability} can be measured using standard deviation\footnote{$\sigma = \sqrt{\sum^n_i \left( (x_i - \bar{x})^2/(n-1)\right)}$} or entropy\footnote{If $n$ discrete values occur at frequency
+$f_1,f_2,.. f_n$, then \mbox{$N = \sum n_i$} and $p_i = f_i/N$ and entropy is 
+$-1 * \sum_i p_ilog_2(p_i)$.}, respectively).  
+\subsection{Method1: Sorted Centroids}
+
+One method for learning changes is as follows.  
+  Cluster project data by reflecting just on the indepedent variables,
+  Next, build one centroid for each cluster (using the median and mode value for continuous
+and discrete values, respectively).
+After that, write a spreadsheet with one column per centroid;
+\bi
+\item
+Sort the columns such that any current projects client fall into the left-most
+columns. That is, make the left-hand-side of the sheet  ``current usual practice''
+and the right-hand side  ``alternatives to current usual practice''.
+\item
+Sort the rows of that spreadsheet such that the rows with
+maximum  variability appear at the top 
+\ei
+Now show the sheet to the business user, encouraging them to make recommendations by
+\bi
+\item
+Comparing the left and right-sided columns;
+\item
+Using the features mentioned in the top-most rows (where changes selects for the most different centroids).
+\ei
+	Recent results suggest that, we clustering on independent variables of software project data,
+	we are free to select from a wide range of 
+	clustering methods.  Ganesan~\cite{div14} explored 
+	different clustering methods for SE data using   effort and defect data from
+	the PROMISE repository~\cite{promiserepo}.
+	That study explored
+	K-Means, mini-batch-K-Means, DBscan, EM, Ward, and the WHERE algorithm discussed
+	below.
+	Clusters were assessed via the performance of prediction 
+	learned from the clusters by Random Forests (for defect prediction)
+	and M5prime or linear regression (for effect estimation).  Ganesan found
+	that the details of the clustering method were less important than ensuring that  a large number of clusters were generated.
+
+	Accordingly, we select a clustering method that generates a large
+	number of small cluster
+	($\sqrt{N}$ clusters
+	from $N$ examples, that runs fasts, which has shown promise in prior work~\cite{Menzies2013}, and which ignores spurious dimensions (the last item is important since, in our experience, much SE data is ``noisey''; i.e. contains signals not associated with the target variable). For the rest of this article,
+	we use  the top-down
+	bi-clustering method described in \fig{contast_trees} which recursively divides the
+	data in two  using a dimension that captures the greatest variability in the data. 
+	\begin{figure}[t]\small
+	\begin{tabular}{|p{.95\linewidth}|}\hline 
+		WHERE  divides data into  groups of size $\alpha=\sqrt{N}$ using 
+		 Aha et al.'s standard Euclidean distance measure~\cite{aha91}.  For $F$ independent features, the measure returns   $d(X,Y)=\sqrt{\sum_i^F \left(\Delta(X_i,Y_i)^2\right)}/\sqrt{F}$
+			(the denominator normalizes the output to $0 \le d \le 1$).
+			Within $\Delta$, if   $X_i,Y_i$ are both missing  values, then  return 1.
+			Otherwise, replace any  missing items with values that maximizes the following.
+			For numerics $\Delta$ normalizes $X_i,Y_i$ (to the range 0,1 for min,max) then
+			returns 
+			$X_i - Y_i$. For discrete variables, $\Delta$ returns 0,1 if $X_i,Y_i$ are the
+			same,different (respectively).  
+		Using this measure, WHERE runs as follows:
+		\begin{enumerate}[leftmargin=3mm]
+			\item Find   two   distance cases,  $X,Y$
+			by picking any case $W$ at random, then setting $X$ to its most
+			distant case, then setting $Y$ to the case most distant from
+			$X$
+			(which requires only $O(2N)$ comparisons).
+			\item Project each case $Z$
+			to position $x$ along a    lines that  runs from $X$ to $Y$, If $a,b$ re distances  $Z$ to $X,Y$  then  $x = (a^2+c^2 - b^2)/(2ac)$.
+			\item Split the data at the median $x$ value of all cases.
+			\item For   splits larger than  $\sqrt{N}$, call this algorithm recursively  from step1.
+		\end{enumerate}\\\hline
+		\end{tabular}
+		\caption{Top-down division of data with WHERE.}\label{fig:where}
+		\end{figure}
+		
+		
+	
+		
+
+In theory, One  advantage of this method is that it focuses the attention of the business users
+away from rows that do not select for different centroids and towards differences between
+current usual practice and everything else.  
 In the summer of 2011 and 2012, one of us (Menzies) spent two months
 	working on-site at Microsoft Redmond,
 	observing data mining analysts.  In that study, he took special
@@ -526,16 +678,16 @@ then only two of our data sets ({\em ivy,ant}) are ``good'' enough.
 However, the ``tuned'' columns of \fig{j} show that we can salvage some of the data sets. Pelayo and Dick~\cite{pelayo07} report that defect prediction is improved by SMOTE~\cite{Chawla2002}; i.e. an over-sampling of minority-class examples. Also, Fu et al.~\cite{fu:fse16} report that parameter tuning with differential evolution~\cite{storn97} can quickly explore the tuning options of Random Forest to find better settings for the (e.g.) size of the forest, the termination criteria
 for tree generation, etc. The rows marked with $\star$ in \fig{j} show data sets whose performance was improved remarkably by these techniques. For example, in {\em poi}, the recall increased by 4\% while the false alarm rate dropped by 21\%. However,  as might have been expected, we could not salvage the data sets in the  three bottom rows.
 
-Turning now to the Seigmund data, the lessons learnt from the planners advise on how  to change the configurations settings within a Makefile (in order to make resulting compiled code  run faster). Here, performance can be measured in terms of  difference between the predicted runtime $p$ of test case items and their actual runtimes $a$ using  $s=\frac{abs(a - p)}{a}$.
+Turning now to the Siegmund data, the lessons learnt from the planners advise on how  to change the configurations settings within a Makefile (in order to make resulting compiled code  run faster). Here, performance can be measured in terms of  difference between the predicted runtime $p$ of test case items and their actual runtimes $a$ using  $s=\frac{abs(a - p)}{a}$.
 
-This paper  explores six Seigmund configuration data sets:  Berkeley DB (Java and C versions), Apache, SQLite, LLVM, and
+This paper  explores six Siegmund configuration data sets:  Berkeley DB (Java and C versions), Apache, SQLite, LLVM, and
   x264\footnote{Available from the performance prediction section of PROMISE
   http://openscience.us/repo/performance-predict.}. 
   After splitting that data into equal sized train:test groups, a Random Forest
   Regressor trained on one half, then applied to the other, achieved nearly perfect scores of \[s=\{99.9, 99.8, 99.4, 99.1, 96.1\}\] 
   
-That is, we can be very confident that the predictors from the Seigmund data can assess
-our plans. (Aside: if the reader doubts that such high scores are achievable, we note that these scores are consistent with those achieved by predictors built by Seigmund et al.~\cite{sven12}.)
+That is, we can be very confident that the predictors from the Siegmund data can assess
+our plans. (Aside: if the reader doubts that such high scores are achievable, we note that these scores are consistent with those achieved by predictors built by Siegmund et al.~\cite{sven12}.)
 
 In summary, while we cannot trust predictors from some of our defect data sets,
 we can plan ways to reduce defects in {\em jedit, ivy, ant, lucene} and {\em poi}.
@@ -544,9 +696,9 @@ parameter tunings, those techniques were applied to the training data and {\em n
 the test data; i.e. we took care that no clues from the test set were ever used in this tuning process.
 
 \subsection{Assessment}
-\fig{work} showed how we build and test our planners. The dependent variables of Jureczko and Seigmund data sets are discrete and continuous in nature, respectively. Hence, while choosing the predictor, we used Random Forest (1) as a classifier for Jureczko data and (2) as a regressor for Seigmund data. Additionally, for both the data sets, we designed a setup that repeated the trials 40 times (the value 40 was chosen to satisfy the minimum sample size requirements of the central limit theorem):
+\fig{work} showed how we build and test our planners. The dependent variables of Jureczko and Siegmund data sets are discrete and continuous in nature, respectively. Hence, while choosing the predictor, we used Random Forest (1) as a classifier for Jureczko data and (2) as a regressor for Siegmund data. Additionally, for both the data sets, we designed a setup that repeated the trials 40 times (the value 40 was chosen to satisfy the minimum sample size requirements of the central limit theorem):
 \bi
-\item For Seigmund data, we randomized the order of the data, training on one half while identifying treatment plans on the remaining test data.
+\item For Siegmund data, we randomized the order of the data, training on one half while identifying treatment plans on the remaining test data.
 \item For the Jureczko data, we used the training and testing sets of \fig{j}. 
 \ei
 The 40 repeats defined above were repeated for each planner. A Scott-Knott procedure was used to test for statistical differences in the result. The Scott-Knott procedure was recommended by Mittas \& Angelis in their 2013 IEEE TSE paper~\cite{mittas13}.
@@ -570,7 +722,11 @@ The results for each data, for different planners, are shown in \fig{jur} and \f
 \section{Threats to Validity}
 \input{tex/results_models.tex}
 \section{Conclusion}
+
+works for more than defects and tunrimes
+
 \section*{Acknowledgements}
+The work has partially funded by a National Science Foundation CISE CCF award \#1506586.
 \bibliographystyle{plain}
 
 \bibliography{References}
