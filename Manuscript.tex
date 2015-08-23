@@ -7,7 +7,7 @@
 \usepackage{cite}
 \usepackage{framed,graphicx,xcolor}
  
-
+\usepackage{stfloats}
 
 \usepackage[shortlabels]{enumitem} 
 \usepackage{amsmath}
@@ -57,7 +57,7 @@
 \definecolor{Operators}{rgb}{0,0,0}
 \definecolor{Background}{rgb}{1,1,1}
 
- 
+ \definecolor{lavenderpink}{rgb}{0.98, 0.68, 0.82}
 \newcommand{\G}{\cellcolor{green}}
 \newcommand{\Y}{\cellcolor{yellow}}
 
@@ -226,96 +226,9 @@ methods can fill in for human gurus (if such gurus are absent) or
 to offer a second opinion.
 Also, prior to making automatic recommendations, it is wise to first stratify the data
 (clump it into related examples) then generate advice specific to each clump.
-
 Accordingly, the rest of this paper defines and evaluates
 automatic methods to find plans from
-  $N$ examples divided  into  clumps containing at most \mbox{ $\alpha=\sqrt{N}$}
-  examples. 
-
-
-\input{tex/prediction_stats.tex}
-
-\section{Test Domains}
-To assess our planning methods, we use data from Jureczko et al.'s object-oriented JAVA systems~\cite{jureczko10}  and
-  software system   configuration data from by  Siegmund et al.~\cite{sven12}.
-  See github.com/ai-se/XTREES\#data for full access to this data.
-  
-  
-   The Jurecko data records number of known defects for each class, where the classes are described in terms of
-  nearly two dozen metrics such as number of children, lines of code, etc.
-For details on the Jurecko data, see  \fig{ck} and \fig{jd}. 
- 
-  The Siegmund data, described in \fig{cpm},  records  the runtimes of compiled systems. To make that data, Siegmund et al. perturbed
-  the configuration parameters in the Makefiles of six systems: Apache, SQLite, LLVM, x264 and two versions of the
-  Berkeley database (one written in ``C'' and one in Java). 
-   \fig{bdbc} shows an example of a feature model defining valid combinations of settings to on the
-   the Siegmund et al. datasets. These feature models were used by Siegmund et al. to ensure all their perturbations are value
-   (we will use the same models to cull invalid plans).
-  Given those valid perturbations, the systems were then compiled and 
-  Siegmund et al. recorded how long each perturbation took to run a test suite. 
-  
-  
-  Our evaluation strategy (discussed below) divides this data into a training a test set.
-  From the train set we apply a data miner (to learn a quality predictor) and
-  four planning methods (to learn different plans). Next, using the train set,
-  we apply the plans and ask the quality predictor to assess the results.
-  
-  Note that this approach depends on having effective predictors for assessing the results.
-  For the Siegmind data, this criteria was   relatively easy to achieve.
-  The data in those data sets have a continuous class (runtime of the compiled system)
-  so the performance of a quality predictor can  be measured in terms of  difference between the predicted runtime $p$ of test case items and their actual runtimes $a$ using  $s= 1 - \frac{abs(a - p)}{a}$ (and {\em higher} values are {\em better}).
-This paper  explores six Siegmund configuration data sets:  Berkeley DB (Java and C versions), Apache, SQLite, LLVM, and
-  x264. 
-  As a preliminary study, we split that data   into equal sized train:test groups
-  and trained a Random Forest
-  Regressor\footnote{From the SciKit learn kit~\cite{Pedregosa2012}.}   on one half, then applied to the other. This  achieved nearly perfect scores of \[s=\{99.9, 99.8, 99.4, 99.1, 96.1\}\] 
-That is, we can be very confident that the predictors from the Siegmund data can assess
-our plans. (Aside: if the reader doubts that such high scores are achievable, we note that these scores are consistent with those achieved by predictors built by Siegmund et al.~\cite{sven12}.)
-
-
-
- It proved to be somewhat more complicated to commission the Jureczko data sets for this study.
- For the Jureczko OO data sets, we found:
-\bi
-\item
-Most quality predictors built from this data were far from perfect;
-\item 
-But several of these predictors could
-be salvaged using some sampling and optimization methods (see the notes on SMOTE and differential evolution, below).
-\ei
-As shown in \fig{j}, we   explore numerous examples of the Jureczko   object-oriented static code data sets: Ant, Camel, Ivy, Jedit,   Log4, Lucene, Poi, Synapse, Velocity, Xalan, Xerces\footnote{Available from the object-oriented defects section of the PROMISE respository~\cite{promiserepo}.}. 
-Given access to $V$ released
-versions, we test on version $V$ and train on the available data from $V-1$ earlier releases (as
-shown in \fig{j}, this means that we are training on hundreds to thousands
-of classes and testing on smaller test suites).
-Note the three bottom rows marked with $\times$: these contain predominately
-defective classes (two-thirds, or more) and in such data sets, it is hard to distinguish
-good from bad (since there are so many bad examples). 
-
-
-For the  Jureczko   data,
-the plans generated by our planners advise on  how to change static code attributes in order to reduce defects in Java classes. Here, prediction performance of Random Forest can be measured using:
-\bi
-\item Probability of detection (a.k.a. ``pd'' or recall):  the percent of faulty classes in
-the test data detected
-by the {\em predictor}.
-\item Probability of false alarm (a.k.a. ``pf''): the percent of non-fault
-classes that are {\em predicted} to be defective.
-\ei 
-
-The ``untuned'' columns of \fig{j} shows Random Forest's {\em pd,pf}
-values generated after learning from the training data and then being applied to the test data.
-If we define ``good'' to mean $\mathit{pd}>60 \wedge \mathit{pf} < 40$\%,
-then only two of our data sets ({\em ivy,ant}) are ``good'' enough. 
-
-However, the ``tuned'' columns of \fig{j} show that we can salvage some of the data sets. Pelayo and Dick~\cite{pelayo07} report that defect prediction is improved by SMOTE~\cite{Chawla2002}; i.e. an over-sampling of minority-class examples. Also, Fu et al.~\cite{fu:fse16} report that parameter tuning with differential evolution~\cite{storn97} can quickly explore the tuning options of Random Forest to find better settings for the (e.g.) size of the forest, the termination criteria
-for tree generation, etc. The rows marked with $\star$ in \fig{j} show data sets whose performance was improved remarkably by these techniques. For example, in {\em poi}, the recall increased by 4\% while the false alarm rate dropped by 21\%. However,  as might have been expected, we could not salvage the data sets in the  three bottom rows.
-
-In summary, while we cannot trust predictors from some of our defect data sets,
-we can plan ways to reduce defects in {\em jedit, ivy, ant, lucene} and {\em poi}.
-One important detail to be stressed here is that, when we applied    SMOTE-ing and
-parameter tunings, those techniques were applied to the training data and {\em not}
-the test data; i.e. we took care that no clues from the test set were ever used in this tuning process.
+  $N$ examples divided  into  many clumps.
 
 
  \begin{figure}
@@ -357,14 +270,103 @@ x264 & Video Enc. & C& 45,743 & 16 & 1152\\\hline
 For SQLite, the data  contains 4,553 configurations for prediction modeling and 100 additional random configurations for prediction evaluation, see \cite{vapp}.}\label{fig:cpm}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[!t]
 \includegraphics[width=1\linewidth]{_figs/BDBC.eps}
 \caption{ Berkeley database feature model   (``C'' version). }\label{fig:bdbc}
 \end{figure}
 
 
+\input{tex/prediction_stats.tex}
 
-	\begin{figure} 
+\section{Test Domains}
+To assess our planning methods, we use data from Jureczko et al.'s object-oriented JAVA systems~\cite{jureczko10}  and
+  software system   configuration data from by  Siegmund et al.~\cite{sven12}.
+  See github.com/ai-se/XTREES\#data for full access to this data.
+  
+  
+   The Jurecko data records number of known defects for each class, where the classes are described in terms of
+  nearly two dozen metrics such as number of children, lines of code, etc.
+For details on the Jurecko data, see  \fig{ck} and \fig{jd}. 
+ 
+  The Siegmund data, described in \fig{cpm},  records  the runtimes of compiled systems. To make that data, Siegmund et al. perturbed
+  the configuration parameters in the Makefiles of six systems: Apache, SQLite, LLVM, x264 and two versions of the
+  Berkeley database (one written in ``C'' and one in Java). 
+   \fig{bdbc} shows an example of a feature model defining valid combinations of settings to on the
+   the Siegmund et al. datasets. These feature models were used by Siegmund et al. to ensure all their perturbations are value
+   (we will use the same models to cull invalid plans).
+  Given those valid perturbations, the systems were then compiled and 
+  Siegmund et al. recorded how long each perturbation took to run a test suite. 
+  
+  
+  Our evaluation strategy (discussed below) divides this data into a training a test set.
+  From the train set we apply a data miner (to learn a quality predictor) and
+  four planning methods (to learn different plans). Next, we apply
+  those plans to the  test set and ask the quality predictor to assess the results.
+  
+  Note that this approach depends on having effective predictors for assessing the results.
+  For the Siegmind data, this criteria was   relatively easy to achieve.
+  The data in those data sets have a continuous class (runtime of the compiled system)
+  so the performance of a quality predictor can  be measured in terms of  difference between the predicted runtime $p$ of test case items and their actual runtimes $a$ using  $s= 1 - \frac{abs(a - p)}{a}$ (and {\em higher} values are {\em better}).
+This paper  explores six Siegmund configuration data sets:  Berkeley DB (Java and C versions), Apache, SQLite, LLVM, and
+  x264. 
+  As a preliminary study, we split that data   into equal sized train:test groups
+  and trained a Random Forest
+  Regressor (from the SciKit learn kit~\cite{Pedregosa2012})   on one half, then applied to the other. This  achieved nearly perfect scores of \[s=\{99.9, 99.8, 99.4, 99.1, 96.1\}\] 
+That is, we can be very confident that the predictors from the Siegmund data can assess
+our plans. (Aside: if the reader doubts that such high scores are achievable, we note that these scores are consistent with those achieved by predictors built by Siegmund et al.~\cite{sven12}.)
+
+
+
+ It proved to be  more complicated to commission the Jureczko data sets for this study.
+ For that data, we found:
+\bi
+\item
+ Quality predictors built from this data are far from perfect;
+\item 
+But several of these predictors could
+be salvaged using the techniques discussed in this section.
+\ei
+ \fig{j} shows our preliminary studies with the Jureczko   data.
+Given access to $V$ released
+versions, we test on version $V$ and train on the available data from $V-1$ earlier releases (as
+shown in \fig{j}, this means that we are training on hundreds to thousands
+of classes and testing on smaller test suites).
+Note the three bottom \colorbox{lavenderpink}{highlighted} rows marked with $\times$: these contain predominately
+defective classes (two-thirds, or more).  In such data sets, it is hard to distinguish
+good from bad (since there are so many bad examples). 
+
+
+The  Jureczko data uses non-numeric discrete classes (``defective'' or ``not'').
+For such data, quality predictor   is be measured using:
+\bi
+\item Probability of detection (a.k.a. ``pd'' or recall):  the percent of faulty classes in
+the test data detected
+by the {\em predictor}.
+\item Probability of false alarm (a.k.a. ``pf''): the percent of non-fault
+classes that are {\em predicted} to be defective.
+\ei 
+As a preliminary study, we split the Jureczko  data   into equal sized train:test groups.
+Random Forests (again, from the SciKit learn kit~\cite{Pedregosa2012}) were
+built from the training data, then applied to the test data.
+The ``untuned'' columns of \fig{j} shows those results.
+If we define ``good'' to mean $\mathit{pd}>60 \wedge \mathit{pf} < 40$\%,
+then only two of our data sets ({\em ivy,ant}) are ``good'' enough for this study.
+
+Fortunately,
+the ``tuned'' columns of \fig{j} show that we can salvage some of the data sets. Pelayo and Dick~\cite{pelayo07} report that defect prediction is improved by SMOTE~\cite{Chawla2002}; i.e. an over-sampling of minority-class examples. Also, Fu et al.~\cite{fu:fse16} report that parameter tuning with differential evolution~\cite{storn97} can quickly explore the tuning options of Random Forest to find better settings for the (e.g.) size of the forest, the termination criteria
+for tree generation, etc. The rows marked with $\star$ in \fig{j} show data sets whose performance was improved remarkably by these techniques. For example, in {\em poi}, the recall increased by 4\% while the false alarm rate dropped by 21\%. However,  as might have been expected, we could not salvage the data sets in the  three bottom rows.
+
+In summary, while we cannot trust predictors from some of our defect data sets,
+we can plan ways to reduce defects in {\em jedit, ivy, ant, lucene} and {\em poi}.
+Accordingly, when this study explores the Jureczko data, we will use these five data sets.
+
+(Aside: One important detail to be stressed here is that, when we applied    SMOTE-ing and
+parameter tunings, those techniques were applied to the training data and {\em not}
+the test data; i.e. we took care that no clues from the test set were ever used in this tuning process.)
+
+
+
+	\begin{figure}[!t]
 	\begin{shaded}
   ~\hrule~
   
@@ -540,6 +542,9 @@ and the best in that $C_j$ cluster.
 Note that, as with Method2, this method's plans only mentions the  $\beta=33\%$ most informative features. 
 %\input{tex/pseudo-code-1.tex}
 
+
+\input{tex/dtree.tex}
+
 \subsection{Method4 = XTREES = Deltas in Decision Tree Branches}
 
 {\em Summary:} Method4 builds a decision tree,  then generates
@@ -567,8 +572,6 @@ The last question can be answered by finding the deltas in branches of the decis
 
 
 
-
-\input{tex/dtree.tex}
 
 
 \input{tex/results_models.tex}
