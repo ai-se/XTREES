@@ -288,7 +288,7 @@ changes, we may have a new example that has never seen before. Therefore, it sho
 
 {\centerline {\em Can we trust the predictions made on such new examples?}}
 
-Our answer is ``yess'', if those changes select for the {\em region of competency} of the predictor. When we assess
+Our answer is ``yes'', if those changes select for the {\em region of competency} of the predictor. When we assess
 any data miner, there are two ``clouds'' of data:
 \bi
 \item One cloud is the space of training examples.
@@ -296,17 +296,50 @@ any data miner, there are two ``clouds'' of data:
 \ei
 We should mistrust a model learned from data mining if the test examples  too far removed from the training data; i.e. if
 these two clouds are too far apart. To test for ``too far'', we can run a data mining experiment to test how well
-a model learned from the training data applies to the test data. Such experiments return some performance value, from
-which we can say that if ever any new data falls into the combined region of the training+test cloud, then we should expect
-at least that level of performance.
-
-A corollary of the above is that if we are changing examples, and making predictions about those changed examples,
-then:
+a model learned from the training data applies to the test data. Such experiments return some performance value.
+Given this, two things can be said about predictions on changed examples:
 \bi
-\item Predictions about changes that move examples towards/away from the cloud of training data can be trusted more/less (respectively).
-\item More specifically: predictions  about changes that  fall within the space of the training+test data, will be at least
-as accurate as the 
+\item Predictions  about changes that  fall within the space of the training+test data, will be at least
+as reliable as the performance value found in the data mining experiment.
+\item More generally, predictions about changes that move examples towards/away from the cloud of training data can be trusted more/less (respectively).
 \ei  
+Accodringly, all the methods of this paper make {\em trust-increasing} recommendations. That is, they push change examples {\em towards} the
+training examples.  To see how this works, 
+ \fig{howxy} is from the {\em ivy} data
+set, which is one of the Jureczk data set. It shows: (1)~the training examples, (2)~the test examples, and (3)~the
+changed  examples displaced after applying one of our planning methods.
+To generate that figure, we placed all of 1+2+3 into the same data set then computed the first
+two  components (using PCA). Note that the  the   changed examples
+cases  (shown in green)  fall closer to the training cases (shown in gray) than
+the test cases (shown in red).  That is, if we believe
+that the gray data is  suitable for assessing
+the test cases (as indicated by the {\em ivy} results from \fig{j}), then it follows
+that we believe even more in the predictions
+generated from the displaced data).
+
+This pattern of \fig{howxy} (where the displaced test cases are found closer to  the training cases than the test cases) has been observed in all the other data sets studied in this
+paper. Hence,  we can assert that
+predictors learned from these training data have some authority in the regions
+used to generate the plans\footnote{If the reader is concerned that this 2d projection
+losses important information, then they should note that two separate  studies~\cite{papa13,divya15}
+have confirmed that building defect predictors from this 2d space are just as effective
+as predictors learned using all the defect attributes of \fig{ck}.}. 
+
+
+\begin{figure}
+\begin{center}\includegraphics[width=3in]{figs/2d.png}\end{center}
+\caption{Training cases (in gray), test cases (in red) and 
+test cases displaced by HOW (in green). Note how the green (displaced) cases are closer to the  training
+date than the original test data
+i.e. predictors trained on the training cases and
+applied to the test cases should
+work just as well, or better, on the displaced test cases.}\label{fig:howxy}
+\end{figure}
+%XXX end
+
+That said, one thing to be said here
+is that we {\em strongly} recommend that predictors are assessed prior to planning. That is
+issue is explored further in the next section. 
 
 
 \input{tex/prediction_stats.tex}
