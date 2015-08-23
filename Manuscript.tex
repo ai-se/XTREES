@@ -112,7 +112,15 @@ reduce
  45\%,61.5\%  (median) and 22\%,6\% (best case) of the initial values, respectively.
 \end{abstract}
 \section{Introduction}
-We propose a novel {\em planning} approach called XTREES for learning changes to a software system
+Business users are demanding  tools that support    business-level interpretations of their data. At a panel on software analytics at ICSE`12, industrial practitioners lamented the state of the art in software analytics~\cite{menzies12a}. Panelists commented  ``prediction is all well and good, but what about decision making?''. Note that these panelists were more interested in the interpretations and follow-up that occurs after the mining, rather than just the mining itself. So:
+\bi
+\item
+Instead of just accepting {\em predictions} on how many software defects to expect, business users might now demand a {\em plan} to reduce the likelihood of those defects.
+\item
+Instead of just accepting {\em predictions} on the runtime time of their software, business users might now demand a {\em plan} to reduce that runtime. 
+\ei
+In response to this business-level demands for planners,
+we propose a novel {\em planning} approach called XTREES for learning changes to a software system
 such that its performance ``improves'', according to some measure. For  case 
 studies, we apply XTREES to  reduce the expected value of:
 \bi
@@ -123,30 +131,6 @@ The approach discussed here is novel since most data miners used in software ana
 comment on ``what is'' and not ``what to do''. For example, a clustering
 algorithm might find clumps of similar examples, but does not comment on the minimal
 change(s) required to move from clump to clump.
-
-Our approach is important since business users are demanding analytics tools that support  a  business-level interpretation of their data. At a panel on software analytics at ICSE`12, industrial practitioners lamented the state of the art in software analytics~\cite{menzies12a}. Panelists commented  ``prediction is all well and good, but what about decision making?''. Note that these panelists are more interested in the interpretations and follow-up that occurs after the mining, rather than just the mining itself. So:
-\bi
-\item
-Instead of just accepting {\em predictions} on how many software defects to expect, business users might now demand a {\em plan} to reduce the likelihood of those defects.
-\item
-Instead of just accepting {\em predictions} on the runtime time of their software, business users might now demand a {\em plan} to reduce that runtime. 
-\ei
-This main contribution of this paper is to  define an evaluation strategy for this kind of reasoning, and to show that (using that strategy) we
-can (a)~select useful planning methods while (b)~culling clearly
-inferior planning methods. 
-We apply this strategy to XTREES and three alternate planning methods to find:
-\bi
-\item Two methods that are clearly inferior;
-\item One method that proposes complex changes, which work as well as XTREES;
-\item And XTREES, that proposes very simple changes.
-\ei
-Of course, there are many more methods for generating plans and
-no   one paper can survey them all.
-But the goal of this paper is not to claim that (e.g.) XTREES is some absolute optimal algorithm. Rather, it is
-to offer a baseline result (with XTREES) and an  evaluation strategy that  can assess  if alternate methods are better than XTREES.
-Our hope is that other   researchers apply this strategy  to repeat and/or improve
-and/or refute our results. To that end, all our materials and data sets are available on-line, see
-github.com/ai-se/XTREES.
 
 The rest of this paper is structured as follows.
 Since XTREES is a somewhat novel algorithm, we present it in tutorial form.
@@ -231,7 +215,7 @@ automatic methods to find plans from
   $N$ examples divided  into  many clumps.
 
 
- \begin{figure}
+ \begin{figure}[!t]
  \small
  \begin{center}
  \begin{tabular}{r|rr}
@@ -351,6 +335,7 @@ built from the training data, then applied to the test data.
 The ``untuned'' columns of \fig{j} shows those results.
 If we define ``good'' to mean $\mathit{pd}>60 \wedge \mathit{pf} < 40$\%,
 then only two of our data sets ({\em ivy,ant}) are ``good'' enough for this study.
+Note that, as might have been expected, none of the three bottom rows of \fig{j} were ``good''.
 
 Fortunately,
 the ``tuned'' columns of \fig{j} show that we can salvage some of the data sets. Pelayo and Dick~\cite{pelayo07} report that defect prediction is improved by SMOTE~\cite{Chawla2002}; i.e. an over-sampling of minority-class examples. Also, Fu et al.~\cite{fu:fse16} report that parameter tuning with differential evolution~\cite{storn97} can quickly explore the tuning options of Random Forest to find better settings for the (e.g.) size of the forest, the termination criteria
@@ -464,18 +449,15 @@ where you want to be  (which we will call $C_j$).
   
 
 After clustering some training data using the WHERE algorithm of  \fig{where}.C, this method:
-\bi
-\item
- Replaces all clusters with a  centroid $C_i$ computed from the mean/mode value of each
-continuous/discrete feature.
-\item Finds the closest centroid $C_j$ that has a better
+replaces all clusters with a  centroid $C_i$ computed from the mean/mode value of each
+continuous/discrete feature. After that, it
+finds the closest centroid $C_j$ that has a better
 performance score. For defect data, ``better'' means fewer defects while for the config data,
 ``better'' means faster runtimes.
-\item Caches the  delta in the independent features between $C_i$ and $C_j$. For continuous
+Next, this method caches the  delta in the independent features between $C_i$ and $C_j$. For continuous
 features, this delta is $C_j - C_i$. For discrete values, this delta is the value of that feature
 in $C_j$. 
-\ei
-Next, for every test case, Method1 use the distance measure $d$ shown in \fig{where}.B to find
+Finally, for every test case, Method1 use the distance measure $d$ shown in \fig{where}.B to find
 the nearest centroid $C_i$.  It then proposes a plan for improving that test case
 that is the conjunction of all the deltas between $C_i$ and $C_j$.
 
@@ -502,16 +484,18 @@ containing just the top $\beta=33\%$ most informative features. Here, ``informat
 that the values of a feature are good for selecting a small set of clusters (ideally,
 just one).
 This can be estimated using the Fayyad-Iranni INFOGAIN algorithm~\cite{FayIra93Multi}
-as follows:
-\bi
-\item Ran WHERE to generate   clusters;
-\item Discretize numeric features using the Fayyad-Iranni discretizer
-(divide numeric columns into bins $B_i$, each of which  select for the fewest cluster ids);
-\item Let feature $F$ have bins $B_i$, each of which contains $n_i$ rows.
-\item Let each bin $B_i$ have entropy $e_i$ computed from the frequency of clusters seen in that bin (computed from \fig{where}.A).
-\item Cull the features as per Papakroni; i.e. just use the $\beta=33\%$ most informative features
+as follows.
+
+Firstly, 
+run  WHERE to generate   clusters/ Next,
+discretize numeric features using the Fayyad-Iranni discretizer
+(divide numeric columns into bins $B_i$, each of which  select for the fewest cluster ids).
+Let feature $F$ have bins $B_i$, each of which contains $n_i$ rows
+and 
+let each bin $B_i$ have entropy $e_i$ computed from the frequency of clusters seen in that bin (computed from \fig{where}.A).
+Cull the features as per Papakroni; i.e. just use the $\beta=33\%$ most informative features
 where  the   value of  feature $F$ is $\sum_i e_i\frac{n_i}{N}$ ($N$ is the number of rows).
-\ei
+
 After that, Method2 works line Method1 but now the   plans  only
 mention the $\beta=33\%$ most informative features.
 \subsection{Method3 = BIC = Method2 + Best-in-cluster}
@@ -521,14 +505,14 @@ mention the $\beta=33\%$ most informative features.
 {\em Details:}
 One problem with Method2 is that it makes little use of the detailed knowledge
 of the examples that are squashed together to form the centroids. Accordingly,
-our Method3 works like Method2 but some important differences:
-\bi
-\item Clusters are summarized in {\em two} examples: (1)~the centroid found in Method1 and
+our Method3 works like Method2 but some important differences.
+
+In Method3, clusters are summarized in {\em two} examples: (1)~the centroid found in Method1 and
 (2)~the best-in-cluster example; i.e. the  example in that cluster
 with the best performance score.
-\item As before, each centroid $C_i$ is annotated with the nearest centroid $C_j$
+Next, as before, each centroid $C_i$ is annotated with the nearest centroid $C_j$
 with a better performance score.
-\item When generating a plan for a test instance, Method3:
+Howver, after that,  when generating a plan for a test instance, Method3:
 \bi
 \item
 Find the test cases's nearest centroid $C_i$;
@@ -537,7 +521,6 @@ Finds the associated better centroid $C_j$ and its associated best-in-cluster ex
 \item
 Computes a plan to change the test case  from the delta between the test case
 and the best in that $C_j$ cluster.
-\ei
 \ei
 Note that, as with Method2, this method's plans only mentions the  $\beta=33\%$ most informative features. 
 %\input{tex/pseudo-code-1.tex}
@@ -702,9 +685,32 @@ Recent results suggest that, when clustering on independent variables of softwar
 	from $N$ examples) that runs fasts, which has shown promise in prior work~\cite{Menzies2013}, and which ignores spurious dimensions (the last item is important since, in our experience, much SE data is ``noisey''; i.e. contains signals not associated with the target variable.
 	
 \section{Threats to Validity}
+\section{Related Work}
+dashboards
+
+strucftureal learners (bayes)
+
 \section{Conclusion}
 
 works for more than defects and tunrimes
+
+This main contribution of this paper was to  define an evaluation strategy for this kind of reasoning, and to show that (using that strategy) we
+can (a)~select useful planning methods while (b)~culling clearly
+inferior planning methods. 
+We apply this strategy to XTREES and three alternate planning methods to find:
+\bi
+\item Two methods that are clearly inferior;
+\item One method that proposes complex changes, which work as well as XTREES;
+\item And XTREES, that proposes very simple changes.
+\ei
+Of course, there are many more methods for generating plans and
+no   one paper can survey them all.
+But the goal of this paper is not to claim that (e.g.) XTREES is some absolute optimal algorithm. Rather, it is
+to offer a baseline result (with XTREES) and an  evaluation strategy that  can assess  if alternate methods are better than XTREES.
+Our hope is that other   researchers apply this strategy  to repeat and/or improve
+and/or refute our results. To that end, all our materials and data sets are available on-line, see
+github.com/ai-se/XTREES.
+
 
 \section*{Acknowledgements}
 The work has partially funded by a National Science Foundation CISE CCF award \#1506586.
