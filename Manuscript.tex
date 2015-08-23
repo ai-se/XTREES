@@ -6,6 +6,8 @@
 \usepackage{comment}
 \usepackage{cite}
 \usepackage{framed,graphicx,xcolor}
+
+ 
  
 \usepackage{stfloats}
 
@@ -17,7 +19,7 @@
 \newcommand{\ei}{\end{itemize}}
 \newcommand{\be}{\begin{enumerate}}
 \newcommand{\ee}{\end{enumerate}}
-\newcommand{\tion}[1]{\S\ref{sect:#1}}
+\newcommand{\tion}[1]{\textsection\ref{sect:#1}}
 \newcommand{\fig}[1]{Figure~\ref{fig:#1}}
 \newcommand{\eq}[1]{Equation~\ref{eq:#1}}
 %\setlist{nolistsep,leftmargin=5mm}
@@ -121,8 +123,8 @@ Instead of just accepting {\em predictions} on the runtime time of their softwar
 \ei
 In response to this business-level demands for planners,
 we propose a novel {\em planning} approach called XTREES for learning changes to a software system
-such that its performance ``improves'', according to some measure. For  case 
-studies, we apply XTREES to  reduce the expected value of:
+such that its performance ``improves'', according to some measure. This paper uses XTREES
+to reduce  the expected value of:
 \bi
 \item  Defects     in Jureczko et al.'s    JAVA systems~\cite{jureczko10}.
 \item Runtimes   in   software    configured by  Siegmund et al.~\cite{sven12}.
@@ -132,8 +134,15 @@ comment on ``what is'' and not ``what to do''. For example, a clustering
 algorithm might find clumps of similar examples, but does not comment on the minimal
 change(s) required to move from clump to clump.
 
+The contributions of this paper are two-fold:
+\be
+\item
+The  XTREES planner, which has not been previously pubslished. For demonstration purposes, we show XTREES
+working to reduce software runtimes and software defects. That said, the method is quite general to any table of data with weighted class values (so that XTREES
+can determine that some rows are preferred and some are to be avoided).  
+\item An evaluation strategy used to comparatively assess planners. As  shown below, that strategy less us identify  inferior planners. With this strategy, other researchers could assess improvements or alternatives to the XTREE planner. 
+\ei
 The rest of this paper is structured as follows.
-Since XTREES is a somewhat novel algorithm, we present it in tutorial form.
 After describing our test data,
 this paper  walks the reader through four methods that start
 with a standard clustering algorithm, the  progresses on to XTREES. The second
@@ -173,6 +182,28 @@ much consideration for their context~\cite{passos11}.
   The rest of this paper discusses some methods to build automatic oracles 
   to implement that   sanity check.
   
+  
+ \begin{figure}[!t]
+ \small
+ \begin{center}
+ \begin{tabular}{r|rr}
+ data set & cases & \% defective\\\hline
+  ant &947& 22\\
+  camel& 1819& 19\\
+ jedit& 1257& 2\\
+ ivy &352& 11\\
+ log4j& 244 &92\\
+ lucebe &442 &59\\
+ poi& 936 &64\\
+ synapse &379 &34\\
+ velocity& 410& 34\\
+ xalan& 2411& 99\\
+ xerces &1055& 74
+ \end{tabular}
+ \end{center}
+ \caption{ Jureczko data: columns in the format of \fig{ck}.}\label{fig:jd}
+ \end{figure}
+ 
 Another way  to find   changes to a project
 might be to rely
 on the peer review processes used by the 
@@ -215,28 +246,8 @@ automatic methods to find plans from
   $N$ examples divided  into  many clumps.
 
 
- \begin{figure}[!t]
- \small
- \begin{center}
- \begin{tabular}{r|rr}
- data set & cases & \% defective\\\hline
-  ant &947& 22\\
-  camel& 1819& 19\\
- jedit& 1257& 2\\
- ivy &352& 11\\
- log4j& 244 &92\\
- lucebe &442 &59\\
- poi& 936 &64\\
- synapse &379 &34\\
- velocity& 410& 34\\
- xalan& 2411& 99\\
- xerces &1055& 74
- \end{tabular}
- \end{center}
- \caption{ Jureczko data: columns in the format of \fig{ck}.}\label{fig:jd}
- \end{figure}
  
- \begin{figure}
+ \begin{figure}[!t]
 \scriptsize
 \begin{tabular}{llllll}
   \hline
@@ -260,18 +271,57 @@ For SQLite, the data  contains 4,553 configurations for prediction modeling and 
 \end{figure}
 
 
-\input{tex/prediction_stats.tex}
+\section{A Frequently Asked Question}
 
-\section{Test Domains}
+
+  Our evaluation strategy (discussed below) divides this data into a training a test set.
+  From the train set we apply a data miner (to learn a quality predictor) and
+  various planning methods (to learn different plans). Next, we try applying
+  each of those plans to the  test set and ask the quality predictor to assess the changed examples.
+  Finally, we say that the  ``best'' planner is the one that most reduces the predicted values
+  in the changed examples.
+  
+When discussing this strategy, a common concern is as follows. XTREES is evaluated by  comparing
+predicted performance scores before and after a planner makes changes to the feature values of an example:
+After making those
+changes, we may have a new example that has never seen before. Therefore, it should be asked:
+
+{\centerline {\em Can we trust the predictions made on such new examples?}}
+
+Our answer is ``yess'', if those changes select for the {\em region of competency} of the predictor. When we assess
+any data miner, there are two ``clouds'' of data:
+\bi
+\item One cloud is the space of training examples.
+\item Another cloud is the space of test examples.
+\ei
+We should mistrust a model learned from data mining if the test examples  too far removed from the training data; i.e. if
+these two clouds are too far apart. To test for ``too far'', we can run a data mining experiment to test how well
+a model learned from the training data applies to the test data. Such experiments return some performance value, from
+which we can say that if ever any new data falls into the combined region of the training+test cloud, then we should expect
+at least that level of performance.
+
+A corollary of the above is that if we are changing examples, and making predictions about those changed examples,
+then:
+\bi
+\item Predictions about changes that move examples towards/away from the cloud of training data can be trusted more/less (respectively).
+\item More specifically: predictions  about changes that  fall within the space of the training+test data, will be at least
+as accurate as the 
+\ei  
+
+
+\input{tex/prediction_stats.tex}
+  \section{Test Domains}
 To assess our planning methods, we use data from Jureczko et al.'s object-oriented JAVA systems~\cite{jureczko10}  and
   software system   configuration data from by  Siegmund et al.~\cite{sven12}.
   See github.com/ai-se/XTREES\#data for full access to this data.
   
   
    The Jurecko data records number of known defects for each class, where the classes are described in terms of
-  nearly two dozen metrics such as number of children, lines of code, etc.
-For details on the Jurecko data, see  \fig{ck} and \fig{jd}. 
- 
+  nearly two dozen metrics such as number of children, lines of code, etc. For details on the Jurecko data, see  \fig{ck} and \fig{jd}. 
+ For the most part, the methods of this paper treat
+  the Jurecko as a discrete class data set, where {\em defects} are true if the raw defect count is greater than zero.
+  The one exception will be the `best-in-cluster'' method that reflects on the numeric value of the raw defect count (see \tion{BIC}).
+
   The Siegmund data, described in \fig{cpm},  records  the runtimes of compiled systems. To make that data, Siegmund et al. perturbed
   the configuration parameters in the Makefiles of six systems: Apache, SQLite, LLVM, x264 and two versions of the
   Berkeley database (one written in ``C'' and one in Java). 
@@ -282,10 +332,6 @@ For details on the Jurecko data, see  \fig{ck} and \fig{jd}.
   Siegmund et al. recorded how long each perturbation took to run a test suite. 
   
   
-  Our evaluation strategy (discussed below) divides this data into a training a test set.
-  From the train set we apply a data miner (to learn a quality predictor) and
-  four planning methods (to learn different plans). Next, we apply
-  those plans to the  test set and ask the quality predictor to assess the results.
   
   Note that this approach depends on having effective predictors for assessing the results.
   For the Siegmind data, this criteria was   relatively easy to achieve.
@@ -498,7 +544,7 @@ where  the   value of  feature $F$ is $\sum_i e_i\frac{n_i}{N}$ ($N$ is the numb
 
 After that, Method2 works line Method1 but now the   plans  only
 mention the $\beta=33\%$ most informative features.
-\subsection{Method3 = BIC = Method2 + Best-in-cluster}
+\subsection{Method3 = BIC = Method2 + Best-in-cluster}\label{sect:BIC}
 
 {\em Summary:} Method3 is like Method2, but it uses more knowledge about the training data.
 
