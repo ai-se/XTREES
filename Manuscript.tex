@@ -303,10 +303,10 @@ Given this, two things can be said about predictions on changed examples:
 as reliable as the performance value found in the data mining experiment.
 \item More generally, predictions about changes that move examples towards/away from the cloud of training data can be trusted more/less (respectively).
 \ei  
-Accodringly, all the methods of this paper make {\em trust-increasing} recommendations. That is, they push change examples {\em towards} the
+Accordingly, all the methods of this paper make {\em trust-increasing} recommendations. That is, they push change examples {\em towards} the
 training examples.  To see how this works, 
  \fig{howxy} is from the {\em ivy} data
-set, which is one of the Jureczk data set. It shows: (1)~the training examples, (2)~the test examples, and (3)~the
+set, which is one of the Jureczko data set. It shows: (1)~the training examples, (2)~the test examples, and (3)~the
 changed  examples displaced after applying one of our planning methods.
 To generate that figure, we placed all of 1+2+3 into the same data set then computed the first
 two  components (using PCA). Note that the  the   changed examples
@@ -327,9 +327,9 @@ as predictors learned using all the defect attributes of \fig{ck}.}.
 
 
 \begin{figure}
-\begin{center}\includegraphics[width=3in]{figs/2d.png}\end{center}
-\caption{Training cases (in gray), test cases (in red) and 
-test cases displaced by HOW (in green). Note how the green (displaced) cases are closer to the  training
+\includegraphics[width=1in]{_figs/2d.png} 
+\caption{Training examples (in gray), test examples (in red) and 
+changed exampled genreated by a planner (in green). Note how the green (displaced) cases are closer to the  training
 date than the original test data
 i.e. predictors trained on the training cases and
 applied to the test cases should
