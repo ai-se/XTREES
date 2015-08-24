@@ -106,10 +106,9 @@ Lucas Layman \\
  some result, they also need tools that generate ``plans'';
  i.e. specific suggestions on  what to change  in order to
  improve on the predicted values.
-This paper defines an evaluation strategy for evaluating such  planners and applies it to four different planning methods.
-It is shown that our  strategy  can (a) recognize   inferior planning methods and  (b) select useful planning methods.
-Using the best method found by this evaluation strategy,  we can
-reduce
+ 
+This presents such a tool, called XTREES and evaluates it against three alternatives.
+In our experiments, XTREES reduced
  the expected values of defect counts and  runtimes of software projects to    
  45\%,61.5\%  (median) and 22\%,6\% (best case) of the initial values, respectively.
 \end{abstract}
@@ -152,12 +151,15 @@ and validity.
 
 
 \section{Preliminaries}\label{sect:prelim}
+
 \subsection{From Prediction to Planning}
  
-
+ 
 This paper is about the next step {\em after} prediction. Suppose
 a business user is presented a prediction and they do not like what they see; e.g. the runtimes are too long of the number of defects is too high. This user may
-then ask a {\em planning}  question; i.e. ``what can we change to do better than that?'' 
+then ask a {\em planning}  question; i.e. ``what can we change to do better than that?''.
+
+ 
 
 Before exploring automatic methods to answer the planning question, we first comment
 on two manual methods.
@@ -270,7 +272,7 @@ the test cases (as indicated by the {\em ivy} results from \fig{j}), then it fol
 that we believe even more in the predictions
 generated from the displaced data).
 
-This pattern of \fig{howxy} (where the displaced test cases are found closer to  the training cases than the test cases) has been observed in all the other data sets studied in this
+This pattern of \fig{howxy} (where the changes examples are found closer to  the training cases than the test cases) has been observed in all the other data sets studied in this
 paper. Hence,  we can assert that
 predictors learned from these training data have some authority in the regions
 used to generate the plans\footnote{If the reader is concerned that this 2d projection
@@ -439,11 +441,11 @@ the test data; i.e. we took care that no clues from the test set were ever used 
 
 
 
-	\begin{figure}[!t]
+	\begin{figure} 
 	\begin{shaded}
   ~\hrule~
   
- {\bf Figure 5.A: Measuring Variability} 
+ {\bf Figure 7.A: Measuring Variability} 
 	
 	For  continuous and discrete values,
 the {\em variability} can be measured using standard deviation $\sigma$ or entropy $e$.
@@ -455,7 +457,7 @@ $f_1,f_2,.. f_n$ for \mbox{$N = \sum^n_{i=1} f_i$} and $p_i = f_i/N$.
 
   ~\hrule~
 	
-	{\bf Figure 5.B: Measuring distance}
+	{\bf Figure 7.B: Measuring distance}
 	
 	We use
 		 Aha et al.'s standard Euclidean distance measure~\cite{aha91}.  For $F$ independent features, the measure returns   $d(X,Y)=\sqrt{\sum_i^F  \Delta(X_i,Y_i)^2}/\sqrt{F}$
@@ -469,7 +471,7 @@ $f_1,f_2,.. f_n$ for \mbox{$N = \sum^n_{i=1} f_i$} and $p_i = f_i/N$.
 
  ~\hrule~
  
-	{\bf Figure 5.C: Top-down Clustering with WHERE}
+	{\bf Figure 7.C: Top-down Clustering with WHERE}
 	
 				WHERE  divides data into  groups of size $\alpha=\sqrt{N}$ using 
 		Using this measure, WHERE runs as follows:
@@ -492,13 +494,27 @@ $f_1,f_2,.. f_n$ for \mbox{$N = \sum^n_{i=1} f_i$} and $p_i = f_i/N$.
 	  
 	   ~\hrule~
 	   
-	{\bf Figure 5.D: Top-down division with Decision Trees}
+	{\bf Figure 7.D: Top-down division with Decision Trees}
 	
 	Find a split in the values of  independent features that most reduces the variability
   of the dependent feature (measured using \fig{where}.A). Divide data on that  feature's split and 
    for all splits bigger than $\alpha=\sqrt{N}$,  recurses on each split.
 	
 	 ~\hrule~
+	 
+	 	{\bf Figure 7.E: Finding the most informative rows}
+	
+
+Discretize all numeric features using the Fayyad-Iranni discretizer~\cite{FayIra93Multi}
+(divide numeric columns into bins $B_i$, each of which  select for the fewest cluster ids).
+Let feature $F$ have bins $B_i$, each of which contains $n_i$ rows
+and 
+let each bin $B_i$ have entropy $e_i$ computed from the frequency of clusters seen in that bin (computed from \fig{where}.A).
+Cull the the features as per Papakroni~\cite{papa13}; i.e. just use the $\beta=33\%$ most informative features
+where  the   value of  feature $F$ is $\sum_i e_i\frac{n_i}{N}$ ($N$ is the number of rows).
+
+~\hrule~ 
+
 	  \end{shaded}
 		\caption{Some algorithms used in this paper.}\label{fig:where}
 		\end{figure}
@@ -518,7 +534,8 @@ alternatives:
   \ei
   Note that all our methods have the two properties proposed in \tion{prelim}:
   \bi
-  \item They find different plans in different parts of the data;
+  \item They are {\em local learners}; i.e. different test examples
+  will be given plans that are specialized  to their particulars;
   \item They  are {\em trust-increasing} in the manner described in \tion{trust};
   i.e. they change changing examples such that they move {\em closer} to the training data.
   \ei
@@ -551,10 +568,10 @@ the nearest centroid $C_i$.  It then proposes a plan for improving that test cas
 that is the conjunction of all the deltas between $C_i$ and $C_j$.
 
 
-\subsection{Method2 = \\\CD+FS =  Method1  + Feature Selection }
+\subsection{Method2 =  CD+FS = \\ Method1  + Feature Selection }
  
-{\em Summary:} Method2 works like Method1, but this time, it only mentions the most
-informative features. Hence, Method2's plans are simpler.
+{\em Summary:} Method2 works line Method1 but now the   plans  only
+mention the $\beta=33\%$ most informative features. Hence, Method2's plans are simpler.
 
 {\em Details:} In most SE applications, not all features contribute equally to a problem.  Hence, one problem
 with the above method is that its plans comment on all features, even if those values are due
@@ -573,51 +590,41 @@ containing just the top $\beta=33\%$ most informative features. Here, ``informat
 that the values of a feature are good for selecting a small set of clusters (ideally,
 just one).
 This can be estimated using the Fayyad-Iranni INFOGAIN algorithm~\cite{FayIra93Multi}
-as follows.
+of \fig{where}.E.
 
-Firstly, 
-run  WHERE to generate   clusters/ Next,
-discretize numeric features using the Fayyad-Iranni discretizer
-(divide numeric columns into bins $B_i$, each of which  select for the fewest cluster ids).
-Let feature $F$ have bins $B_i$, each of which contains $n_i$ rows
-and 
-let each bin $B_i$ have entropy $e_i$ computed from the frequency of clusters seen in that bin (computed from \fig{where}.A).
-Cull the features as per Papakroni; i.e. just use the $\beta=33\%$ most informative features
-where  the   value of  feature $F$ is $\sum_i e_i\frac{n_i}{N}$ ($N$ is the number of rows).
 
-After that, Method2 works line Method1 but now the   plans  only
-mention the $\beta=33\%$ most informative features.
-\subsection{Method3 = BIC = Method2 + Best-in-cluster}\label{sect:BIC}
+\subsection{Method3 = BIC = \\  Method2 + Best-in-cluster}\label{sect:BIC}
 
 {\em Summary:} Method3 is like Method2, but it uses more knowledge about the training data.
 
 {\em Details:}
 One problem with Method2 is that it makes little use of the detailed knowledge
-of the examples that are squashed together to form the centroids. Accordingly,
-our Method3 works like Method2 but some important differences.
+of the examples that were squashed together to form the centroids. 
+Hence,
+in Method3, we collect more information about each cluster.
 
-In Method3, clusters are summarized in {\em two} examples: (1)~the centroid found in Method1 and
-(2)~the best-in-cluster example; i.e. the  example in that cluster
-with the best performance score.
-Next, as before, each centroid $C_i$ is annotated with the nearest centroid $C_j$
-with a better performance score.
-Howver, after that,  when generating a plan for a test instance, Method3:
-\bi
-\item
-Find the test cases's nearest centroid $C_i$;
-\item
-Finds the associated better centroid $C_j$ and its associated best-in-cluster example.
-\item
-Computes a plan to change the test case  from the delta between the test case
-and the best in that $C_j$ cluster.
-\ei
+Method3 summarizes clusters into {\em two} examples: (1)~the centroid $C_x$ found in Method1 and
+(2)~the best-in-cluster $B_x$  example; i.e. the  example in that cluster
+with the best performance score. 
+For the Siegmud data, $B_x$ is the cluster member with the fastest runtime;
+for the Jureczko data, $B_x$  is the cluster member with lowest raw defect count
+(resolving ties at random).
+
+Next,  each centroid is connected by a line to its nearest centroid.
+ In that line, we say $C_i,C_j$ are the centroids associated with worst/best centroid performance scores.  
+
+For each test instance, Method3 
+find the nearest line; selects the  best end $C_j$ of that line;  then extracts $B_j$ (which is the
+ best-in-cluster associated with  $C_j$).
+The returned plan is then computed   from the delta between the test case
+and $B_j$.
 Note that, as with Method2, this method's plans only mentions the  $\beta=33\%$ most informative features. 
 %\input{tex/pseudo-code-1.tex}
 
 
 \input{tex/dtree.tex}
 
-\subsection{Method4 = XTREES = Deltas in Decision Tree Branches}
+\subsection{Method4 =  XTREES =\\ Deltas in Decision Tree Branches}
 
 {\em Summary:} Method4 builds a decision tree,  then generates
 plans from the difference between two branches:
@@ -629,11 +636,9 @@ the algorithm used for the initial clustering. Unsupervised methods like WHERE
 execute without knowledge of the target class.
 {\em Supervised} methods, on the other hand, are allowed to reflect on more knowledge including
 the values in the target class. In theory, this extra knowledge can lead to better data mining.
-Accordingly, Method4 uses a supervised method to generate its plans.
-
-In summary, XTREES uses the decision tree algorithm of \fig{where}.D to divide the data.
-Decision trees have branches down to leaves. 
-XTREES builds plans by asking three questions:
+Accordingly, XTREES uses a supervised method to generate its plans.
+Specifically, it  uses the decision tree algorithm of \fig{where}.D to divide the data.
+Next, XTREES builds plans from the branches of the decision trees. It does so by asking three questions:
 \be
 \item
 What {\em current} branch does a test case fall in?
@@ -646,13 +651,10 @@ The last question can be answered by finding the deltas in branches of the decis
 
 
 
-\input{tex/results_models.tex}
-
-
 \section{Experiments}
 
   
-\begin{figure}[!t]
+\begin{figure}[!b]
 \small 
 \[
 \begin{array}{r}
@@ -662,20 +664,20 @@ The last question can be answered by finding the deltas in branches of the decis
 \left\{\begin{array}{l}\mathit{train}
         \left\{\begin{array}{l}
                 \mathrm{learn\;a\;}\mathrm{predictor\;}\mathrm{(e.g.\;via \;Random\;Forest)}\\
-                \mathrm{learn\;a\;}\mathrm{planner\;}\mathrm{(e.g.\;via \; HOW)}
+                \mathrm{learn\;a\;}\mathrm{planner\;}\mathrm{(e.g.\;via \; XTREES)}
               \end{array}\right.
        \\
       ~\\
 \mathit{test}  
     \left\{\begin{array}{l@{~}l}
-           \mathit{actual}& =\mathrm{Defects \hspace{2pt} in \hspace{2pt}}\mathit{test}\\
-           \mathrm{\bf if\;}\mathit{actual} & >  \mathit{0}\\
+           \mathit{before}& =\mathrm{Performance\; scores \hspace{2pt} in \hspace{2pt}}\mathit{test}\\
+           \mathrm{\bf if\;}\mathit{before} & >  \mathit{0}\\
            \mathrm{\bf then} &
            \left\{
             \begin{array}{l}
                 \mathit{test'} = \mathrm{planner}(\mathit{test})\\
                 \mathit{after} =\mathrm{predictor}(\mathit{test'})\\ 
-                \mathrm{{\bf return}\;} \mathit{actual},\mathit{after}
+                \mathrm{{\bf return}\;} R=\frac{\mathit{after}}{\mathit{before}}
             \end{array}
           \right.
    \end{array}\right.
@@ -685,32 +687,102 @@ The last question can be answered by finding the deltas in branches of the decis
 \caption{How to use {\em predictors} for {\em planning}.}\label{fig:work}
 \end{figure}
 
+This section describes an experimental design (and results) for evaluating the above four methods. 
 
-\subsection{Setup}
+\subsection{A Strategy for Evaluation Planners}
 
-In the experiments shown below,  we use the planners to comment on how to reduce
-software defects by adjusting certain static code parameters of the code\footnote{Such parameters can be manually adjusted by programmers or (for large scale changes) automatically adjusted using code refactoring
-tools, as shown by Binkely et al. in 2006~\cite{Binkley2006} and more recently by Mkaouer et al. in 2015~\cite{Mkaouer15}.}.
+\subsubsection{Performance Measures}
 
+For a planning system designed for business users, we seek two properties:
+\bi
+\item {\em Effectiveness:}    i.e.  if  its recommendations  are  applied  then  some  statistically significant  change  should  be  observed. 
+\item {\em Succinctness:} given two plans with the same effectiveness, we prefer the shorter one.
+Such shorter plans are easier to explain (less to show) and faster to implement (less to change).
+\ei
+ In the following, we will show that XTREES and one other method (BIC) are equally effective
+ but XTREES is more succinct (proposes changes to fewer features). 
+ 
+\subsubsection{Collecting Data}
 
-\fig{work} shows our proposal to verify if the recommendations made by our planners actually work. Accordingly, we divide the
+\fig{work} shows our experimental design.  Initially, we divide the
 project data  into two disjoint sets {\em train} and {\em test}
 (so \mbox{{\em train} $\cap ${\em test} $=\;\emptyset$}).
-Next, from the train set, we build both a {\em planner} as well
-as a {\em  predictor}. Our general framework does not   commit to any particular choice of { planner} or { predictor} but, for the purposes of this paper, our {\em planner} will be from \ref{clust_contrast} and our {\em predictor} will be the Random Forest Classifier~\cite{Breiman2001} and Random Forest Regressor taken from the SciKit Learn toolkit~\cite{Pedregosa2012}.  
+Next, from the train set, we build both a {\em planner} and
+ a {\em  predictor}. 
 
+Our general framework does not   commit to any particular choice of { planner} or { predictor} but, for the purposes of this paper:
+\bi
+\item Our {\em planner} will be one of Methods 1,2,3,4;
+\item Our  {\em predictor} will be the Random Forest Classifier~\cite{Breiman2001} (for discrete classes) and Random Forest Regressor (for continuous classes) taken from  SciKit Learn~\cite{Pedregosa2012}.   We use these
+data miners since extensive studies have shown these to be amongst the better alternatives for mining software data~\cite{lessmann}.
+\ei
 As for the {\em test} data, this is passed to the { predictor}
-to measure the baseline prediction accuracy, false alarm, and recall.
-If our { predictors} fail to perform adequately on the test data,
+to measure performance statistics related to effectiveness. 
+
+If our { predictors} fail to perform effectively on the test data,
 then we cannot trust them to comment on our plans. Accordingly,
-if that performance is unsatisfactory, we abort.
+if that performance is unsatisfactory, we abort. Recall from the above discussion that this step indicated
+we should not use some of the  Jureczko data.
+
 Else, we (1)~apply the { planner} to alter the {\em test} data;
 then (2)~apply the { predictor} to the altered data $test'$;
-then (3)~return data on the {\em before, after} predictions.
+then (3)~return data on the {\em before, after} predictions expressed as the ratio $R=\frac{\mathit{after}}{\mathit{before}}$.
+This is a unit-less ratio with the following properties:
+\bi
+\item If $R= 1$, this means  ``no change from baseline''; 
+\item If $R < 1$, this indicates some reduction to the baseline;
+\item If $R > 1$, this indicates ``optimization failure''.
+\ei
+Also, to measure succinctness, we count the number of features in the plan.
 
-\subsection{Data}
+\subsubsection{Studying Repeated Samples}
+Our methods contain some stochastic algorithms; e.g. WHERE's selection of ``what example to explore first'' (see \fig{where}.C) and
+  XTREES' occasional use of a random guess when deciding what part of a discretized range to include in the plan
+  (see \fig{xtrees_bare}). Hence, we report the $R$ values seen in 40 repeated runs
+  (with different random number seeds).
+The the value 40 was chosen to be  larger than the 30 samples  required
+to satisfy the central limit theorem.
+   
+Our results are presented by the line diagrams like those shown on the right-hand-side of the following example table.
+The black dot shows the median $R$ value and the horizontal likes stretch over the inter-quartile
+range (hereafter, IQR) that is the space from the 25th percentile value to
+the 75th percentile value.
+
+\begin{center}
+
+{\small  \begin{tabular}{{l@{~~~~}l@{~~~~}r@{~~~~}r@{~~}c@{}r}}\hline
+\arrayrulecolor{lightgray}
+\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
+1 &         XTREE &    0.49  &  0.13 & \quart{7}{25}{17}{115} \\\hline  
+2 &      CD &    0.59  &  0.18 & \quart{15}{34}{36}{115} \\
+2 &          BIC &    0.60  &  0.12 & \quart{24}{24}{38}{115} \\\hline  
+3 &      CD+FS &    0.62  &  0.06 & \quart{36}{12}{42}{115} \arrayrulecolor{black}\\\hline \end{tabular}}
+\end{center}
+
+In this example, the rows are  sorted on the median values of each method. Note that all the methods
+have   $R<1$ values; i.e. all these methods reduced the expected value of the performance score in that experiment
+while XTREE achieved the greatest reduction (down to 49\% of the original value).
 
 
+The above table has a  left-hand-side  {\bf Rank} column. This column reports if
+the values for each method are statistically different and are more than trivially different. 
+In this example, table, CD and BIC are ranked together while XTREES and CD+FS are ranked best and worst, respectively.
+  
+  \subsubsection{Statistical Methods}
+  We compute {\bf Rank} using a Scott-Knott test recommended by Mittas and  Angelis~\cite{mittas13}. 
+In that test, using the median values of each method,  
+sort a list of  $l=40$ values of $R$ values found in  $ls=4$ different methods. 
+Then,
+splits $l$ into sub-lists $m,n$ in order to maximize the expected value of
+ differences  in the observed performances
+before and after divisions. E.g. for lists $l,m,n$ of size $ls,ms,ns$ where $l=m\cup n$:
+ \[E(\Delta)=\frac{ms}{ls}abs(m.\mu - l.\mu)^2 + \frac{ns}{ls}abs(n.\mu - l.\mu)^2\]
+Scott-Knott  applies an statistical  hypothesis test $H$ to check
+if $m,n$ are significantly different  (in our case, the conjunction of A12 and bootstrapping). 
+If so, Scott-Knott  recurses on the splits.
+In other words, the Scott-Knott procedure being used here divides the data if \textit{both} bootstrap sampling and effect size test agree that a division is statistically significant (with a confidence of 99\%) and not a small effect ($A12 \ge 0.6$).
+
+For a justification of the use of non-parametric bootstrapping, see Efron \& Tibshirani~\cite[p220-223]{efron93}. For a justification of the use of effect size tests see Shepperd\&MacDonell~\cite{shepperd12a}; Kampenes~\cite{kampenes07}; and Kocaguenli et al.~\cite{Kocaguneli2013:ep}. These researchers warn that even if an hypothesis test declares two populations to be ``significantly'' different, then that result is misleading if the ``effect size'' is very small. Hence, to assess the performance differences we first must rule out small effects using A12, a test   recently endorsed by Arcuri and Briand at ICSE'11~\cite{arcuri11}.
 
 
 \input{tex/results_jur.tex}
@@ -727,36 +799,29 @@ then (3)~return data on the {\em before, after} predictions.
 \end{minipage}
 \caption{Performance Comparison showing the number of times a certain feature requires to be changed. X-axis lists the various features that make up a data set. The y-axis contains the frequency of change in \%.}
 \end{figure}
+ 
 
-The clear advantage of our current work is that it can be readily and automatically applied to domains with historical data. However, the obvious drawback with this approach is that our assessment of the plans is only as good as the predictor. To mitigate for this {\em problem of poor predictors}, it is wise to demand certain standards for {\em satisfactory} thresholds. 
+ 
 
+\subsection{Results}
 
+all the smoting and tuning running in train.
 
-\subsection{Assessment}
-\fig{work} showed how we build and test our planners. The dependent variables of Jureczko and Siegmund data sets are discrete and continuous in nature, respectively. Hence, while choosing the predictor, we used Random Forest (1) as a classifier for Jureczko data and (2) as a regressor for Siegmund data. Additionally, for both the data sets, we designed a setup that repeated the trials 40 times (the value 40 was chosen to satisfy the minimum sample size requirements of the central limit theorem):
+  The dependent variables of Jureczko and Siegmund data sets are discrete and continuous in nature, respectively. Hence, while choosing the predictor, we used Random Forest (1) as a classifier for Jureczko data and (2) as a regressor for Siegmund data.
 \bi
 \item For Siegmund data, we randomized the order of the data, training on one half while identifying treatment plans on the remaining test data.
 \item For the Jureczko data, we used the training and testing sets of \fig{j}. 
 \ei
-The 40 repeats defined above were repeated for each planner. A Scott-Knott procedure was used to test for statistical differences in the result. The Scott-Knott procedure was recommended by Mittas \& Angelis in their 2013 IEEE TSE paper~\cite{mittas13}.
+The 40 repeats defined above were repeated for each planner and the results processed as described in the last section.
 
-This method
-sorts a list of $l$ treatments with $ls$ measurements by their median
-score. It then
-splits $l$ into sub-lists $m,n$ in order to maximize the expected value of
- differences  in the observed performances
-before and after divisions. E.g. for lists $l,m,n$ of size $ls,ms,ns$ where $l=m\cup n$:
- $E(\Delta)=\frac{ms}{ls}abs(m.\mu - l.\mu)^2 + \frac{ns}{ls}abs(n.\mu - l.\mu)^2$.
-Scott-Knott  applies an  hypothesis test $H$ to check
-if $m,n$ are significantly different. If so, Scott-Knott  recurses on the splits.
 
-The hypothesis test $H$ used here is a conjunction of the A12 effect size test and a non-parametric bootstrap sampling. In other words, the Scott-Knott procedure being used here divides the data if \textit{both} bootstrap sampling and effect size test agree that a division is statistically significant (with a confidence of 99\%) and not a small effect ($A12 \ge 0.6$). For a justification of the use of non-parametric bootstrapping, see Efron \& Tibshirani~\cite[p220-223]{efron93}. For a justification of the use of effect size tests see Shepperd\&MacDonell~\cite{shepperd12a}; Kampenes~\cite{kampenes07}; and Kocaguenli et al.~\cite{Kocaguneli2013:ep}. These researchers warn that even if an hypothesis test declares two populations to be ``significantly'' different, then that result is misleading if the ``effect size'' is very small. Hence, to assess the performance differences we first must rule out small effects using A12, a test   recently endorsed by Arcuri and Briand at ICSE'11~\cite{arcuri11}.
-
-\subsection{Results}
 \input{tex/deltas_avg.tex}
 The results for each data, for different planners, are shown in \fig{jur} and \fig{conf}. All
-\subsection{Discussion}	whye where?
-Recent results suggest that, when clustering on independent variables of software project data,
+\subsection{Discussion} 
+
+	
+\section{Related work}
+results suggest that, when clustering on independent variables of software project data,
 	we are free to select from a wide range of 
 	clustering methods.  Ganesan~\cite{div14} explored 
 	different clustering methods for SE data using   effort and defect data from
@@ -772,12 +837,33 @@ Recent results suggest that, when clustering on independent variables of softwar
 	number of small cluster
 	($\sqrt{N}$ clusters
 	from $N$ examples) that runs fasts, which has shown promise in prior work~\cite{Menzies2013}, and which ignores spurious dimensions (the last item is important since, in our experience, much SE data is ``noisey''; i.e. contains signals not associated with the target variable.
-	
-\section{Threats to Validity}
+	ats to Validity}
+
+
+\input{tex/results_models.tex}
+
+
+
 \section{Related Work}
 dashboards
 
 strucftureal learners (bayes)
+
+ 
+
+Many data mining methods offer a succinct summary of project data
+e.g. see the Bayes nets
+favored by Dejaeger et al.~\cite{Dejaeger13}; or   the regression models
+learned by Nagappan~\cite{Nagappan05}.
+Another  technique is to offer a dashboard that visualizes project data.
+For example, the dashboards
+provided by the Hackystat team~\cite{Johnson09} presents extensive and detailed
+summaries of programmer behavior.
+
+Some users do not like being told what to do... they prefer to have the current world explained to them 
+-- but those dashboards typically do not learn threshold points
+(that report where action is needed) nor do they offer specific advice on what actions to take.
+
 
 \section{Conclusion}
 

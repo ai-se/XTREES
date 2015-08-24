@@ -1,4 +1,4 @@
-\begin{figure*}[htbp]
+\begin{figure*}[!t]
 \begin{center}
 \begin{minipage}{.44\linewidth}
 %\noindent\begin{minipage}{0.5\textwidth}
@@ -6,10 +6,10 @@
   {\small \begin{tabular}{l@{~~~}l@{~~~}r@{~~~}r@{~~~}c}
 \arrayrulecolor{lightgray}
 \textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
-  1 &        DTREE &    0.69  &  0.07 & \quart{0}{10}{3}{49} \\
-\hline  2 &          HOW &    0.96  &  0.04 & \quart{40}{6}{43}{49} \\
-\hline  3 &      kNN &    0.98  &  0.02 & \quart{46}{3}{46}{49} \\
-\hline  4 &      kNN+FS &    1.0  &  0.0 & \quart{49}{0}{49}{49} \\
+  1 &        XTREES &    0.69  &  0.07 & \quart{0}{10}{3}{49} \\
+\hline  2 &          BIC &    0.96  &  0.04 & \quart{40}{6}{43}{49} \\
+\hline  3 &      CD   &    0.98  &  0.02 & \quart{46}{3}{46}{49} \\
+\hline  4 &      CD+FS &    1.00 &  0.0 & \quart{49}{0}{49}{49} \\
 \hline \end{tabular}}
 \end{minipage}
 \begin{minipage}{.44\linewidth}
@@ -17,10 +17,10 @@
 {\small \begin{tabular}{l@{~~~}l@{~~~}r@{~~~}r@{~~~}c}
 \arrayrulecolor{lightgray}
 \textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
-  1 &        DTREE &    0.88  &  0.0 & \quart{0}{0}{0}{49} \\
-\hline  2 &          HOW &    0.97  &  0.01 & \quart{37}{4}{37}{49} \\
-\hline  3 &      kNN &    1.0  &  0.0 & \quart{49}{0}{49}{49} \\
-  3 &      kNN+FS &    1.0  &  0.0 & \quart{49}{0}{49}{49} \\
+  1 &        XTREES &    0.88  &  0.0 & \quart{0}{0}{0}{49} \\
+\hline  2 &          BIC &    0.97  &  0.01 & \quart{37}{4}{37}{49} \\
+\hline  3 &      CD  &    1.00 &  0.0 & \quart{49}{0}{49}{49} \\
+  3 &      CD+FS  &    1.00 &  0.0 & \quart{49}{0}{49}{49} \\
 \hline \end{tabular}}
 \end{minipage}\\
 \begin{minipage}{.44\linewidth}
@@ -29,10 +29,10 @@
   {\small \begin{tabular}{l@{~~~}l@{~~~}r@{~~~}r@{~~~}c}
 \arrayrulecolor{lightgray}
 \textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
-  1 &        DTREE &    0.57  &  0.08 & \quart{0}{7}{7}{44} \\
-\hline  2 &      kNN+FS &    1.0  &  0.01 & \quart{44}{1}{44}{44} \\
-  2 &      kNN &    1.02  &  0.02 & \quart{44}{2}{46}{44} \\
-  2 &          HOW &    1.04  &  0.07 & \quart{43}{6}{48}{44} \\
+  1 &        XTREES &    0.57  &  0.08 & \quart{0}{7}{7}{44} \\
+\hline  2 &      CD+FS &    1.00 &  0.01 & \quart{44}{1}{44}{44} \\
+  2 &      CD  &    1.02  &  0.02 & \quart{44}{2}{46}{44} \\
+  2 &          BIC &    1.04  &  0.07 & \quart{43}{6}{48}{44} \\
 \hline \end{tabular}}
 \end{minipage}
 \begin{minipage}{.44\linewidth}
@@ -41,10 +41,10 @@
   {\small \begin{tabular}{l@{~~~}l@{~~~}r@{~~~}r@{~~~}c}
 \arrayrulecolor{lightgray}
 \textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
-  1 &        DTREE &    0.06  &  0.06 & \quart{0}{2}{0}{45} \\
-\hline  2 &          HOW &    0.34  &  0.09 & \quart{12}{5}{14}{45} \\
-\hline  3 &      kNN+FS &    0.97  &  0.04 & \quart{43}{2}{44}{45} \\
-\hline  4 &      kNN &    1.0  &  0.09 & \quart{45}{4}{45}{45} \\
+  1 &        XTREES &    0.06  &  0.06 & \quart{0}{2}{0}{45} \\
+\hline  2 &          BIC &    0.34  &  0.09 & \quart{12}{5}{14}{45} \\
+\hline  3 &      CD+FS &    0.97  &  0.04 & \quart{43}{2}{44}{45} \\
+\hline  4 &      CD  &    1.00 &  0.09 & \quart{45}{4}{45}{45} \\
 \hline \end{tabular}}
 \end{minipage}\\
 \begin{minipage}{.44\linewidth}
@@ -53,10 +53,10 @@
   {\small \begin{tabular}{l@{~~~}l@{~~~}r@{~~~}r@{~~~}c}
 \arrayrulecolor{lightgray}
 \textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
-  1 &        DTREE &    0.99  &  0.03 & \quart{0}{49}{16}{33} \\
-  1 &          HOW &    1.0  &  0.0 & \quart{33}{0}{33}{33} \\
-  1 &      kNN &    1.0  &  0.0 & \quart{33}{0}{33}{33} \\
-  1 &      kNN+FS &    1.01  &  0.0 & \quart{49}{0}{49}{33} \\
+  1 &        XTREES &    0.99  &  0.03 & \quart{0}{49}{16}{33} \\
+  1 &          BIC &    1.00 &  0.0 & \quart{33}{0}{33}{33} \\
+  1 &      CD  &    1.00 &  0.0 & \quart{33}{0}{33}{33} \\
+  1 &      CD+FS &    1.01  &  0.0 & \quart{49}{0}{49}{33} \\
 \hline \end{tabular}}
 \end{minipage}
 \begin{minipage}{.44\linewidth}
@@ -65,10 +65,10 @@
   {\small \begin{tabular}{l@{~~~}l@{~~~}r@{~~~}r@{~~~}c}
 \arrayrulecolor{lightgray}
 \textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
-  1 &        DTREE &    0.54  &  0.03 & \quart{0}{3}{0}{48} \\
-\hline  2 &          HOW &    0.95  &  0.02 & \quart{42}{2}{43}{48} \\
-\hline  3 &      kNN &    1.0  &  0.0 & \quart{48}{0}{48}{48} \\
-  3 &      kNN+FS &    1.01  &  0.01 & \quart{48}{1}{49}{48} \\
+  1 &        XTREES &    0.54  &  0.03 & \quart{0}{3}{0}{48} \\
+\hline  2 &          BIC &    0.95  &  0.02 & \quart{42}{2}{43}{48} \\
+\hline  3 &      CD  &    1.00 &  0.0 & \quart{48}{0}{48}{48} \\
+  3 &      CD+FS &    1.01  &  0.01 & \quart{48}{1}{49}{48} \\
 \hline \end{tabular}}
 \end{minipage}
 \end{center}
