@@ -151,7 +151,7 @@ the Jureczko  and Siegmund data sets. This is followed by notes on related work
 and validity.
 
 
-\section{Preliminaries}
+\section{Preliminaries}\label{sect:prelim}
 \subsection{From Prediction to Planning}
  
 
@@ -259,7 +259,7 @@ Given this, one thing  can be asserted about predictions on changed examples:
 Accordingly, all the methods of this paper make {\em trust-increasing} recommendations. That is, they push change examples {\em towards} the
 training examples.  To see how this works, 
  \fig{howxy} is from the {\em ivy} data
-set, which is one of the Jureczko data set. It shows: (1)~the training examples, (2)~the test examples, and (3)~the
+set, which is one of the Jureczko data sets explored in this paper. It shows: (1)~the training examples, (2)~the test examples, and (3)~the
 changed  examples displaced after applying one of our planning methods.
 To generate that figure, we placed all of 1+2+3 into the same data set then computed the first
 two  components (using PCA). Note that the  the   changed examples
@@ -344,10 +344,10 @@ issue is explored further in the next section.
 \item
 Where possible, planners should be assessed via some external
 oracle that can accurately assess new examples. For an example of that kind of analysis,
-see our Validity section, later in this paper.
+see the Validity section, later in this paper.
 \ei
 
-  \section{Test Domains}
+  \section{Test Data}
 To assess our planning methods, we use data from Jureczko et al.'s object-oriented JAVA systems~\cite{jureczko10}  and
   software system   configuration data from by  Siegmund et al.~\cite{sven12}.
   See github.com/ai-se/XTREES\#data for full access to this data.
@@ -393,20 +393,17 @@ our plans. (Aside: if the reader doubts that such high scores are achievable, we
 
 
  It proved to be  more complicated to commission the Jureczko data sets for this study.
- For that data, we found:
-\bi
-\item
- Quality predictors built from this data are far from perfect;
-\item 
-But several of these predictors could
+ For that data, we found that the
+ quality predictors built from this data are far from perfect;
+However, for some data sets, the  predictors could
 be salvaged using the techniques discussed in this section.
-\ei
+
  \fig{j} shows our preliminary studies with the Jureczko   data.
 Given access to $V$ released
 versions, we test on version $V$ and train on the available data from $V-1$ earlier releases (as
 shown in \fig{j}, this means that we are training on hundreds to thousands
 of classes and testing on smaller test suites).
-Note the three bottom \colorbox{lavenderpink}{highlighted} rows marked with $\times$: these contain predominately
+Note the   \colorbox{lavenderpink}{three bottom rows}   marked with $\times$: these contain predominately
 defective classes (two-thirds, or more).  In such data sets, it is hard to distinguish
 good from bad (since there are so many bad examples). 
 
@@ -426,10 +423,10 @@ built from the training data, then applied to the test data.
 The ``untuned'' columns of \fig{j} shows those results.
 If we define ``good'' to mean $\mathit{pd}>60 \wedge \mathit{pf} < 40$\%,
 then only two of our data sets ({\em ivy,ant}) are ``good'' enough for this study.
-Note that, as might have been expected, none of the three bottom rows of \fig{j} were ``good''.
+Note that, as might have been expected, none of the \colorbox{lavenderpink}{three bottom rows} of \fig{j} were ``good''.
 
 Fortunately,
-the ``tuned'' columns of \fig{j} show that we can salvage some of the data sets. Pelayo and Dick~\cite{pelayo07} report that defect prediction is improved by SMOTE~\cite{Chawla2002}; i.e. an over-sampling of minority-class examples. Also, Fu et al.~\cite{fu:fse16} report that parameter tuning with differential evolution~\cite{storn97} can quickly explore the tuning options of Random Forest to find better settings for the (e.g.) size of the forest, the termination criteria
+the ``tuned'' columns of \fig{j} show that we can salvage some of the data sets. Pelayo and Dick~\cite{pelayo07} report that defect prediction is improved by SMOTE~\cite{Chawla2002}; i.e. an over-sampling of minority-class examples. Also, Fu et al.~\cite{fu:ase15} report that parameter tuning with differential evolution~\cite{storn97} can quickly explore the tuning options of Random Forest to find better settings for the (e.g.) size of the forest, the termination criteria
 for tree generation, etc. The rows marked with $\star$ in \fig{j} show data sets whose performance was improved remarkably by these techniques. For example, in {\em poi}, the recall increased by 4\% while the false alarm rate dropped by 21\%. However,  as might have been expected, we could not salvage the data sets in the  three bottom rows.
 
 In summary, while we cannot trust predictors from some of our defect data sets,
@@ -453,8 +450,8 @@ the {\em variability} can be measured using standard deviation $\sigma$ or entro
 Note that \mbox{$\sigma = \sqrt{\sum^n_{i=1} \left( \frac{x_i - \bar{x})^2}{n-1}\right)}$}
 where $\bar{x}$ is the mean of  numeric features $x_1,x_2,..x_n$.
 Also \mbox{$e = - \sum^n_{i=1} p_i \mathit{log}_2(p_i)$} 
-for  $n$ discrete values occurring at frequency
-$f_1,f_2,.. f_n$. That is, \mbox{$N = \sum^n_{i=1} f_i$} and $p_i = f_i/N$.
+for  $n$ discrete values  at frequency
+$f_1,f_2,.. f_n$ for \mbox{$N = \sum^n_{i=1} f_i$} and $p_i = f_i/N$.
 
   ~\hrule~
 	
@@ -483,9 +480,9 @@ $f_1,f_2,.. f_n$. That is, \mbox{$N = \sum^n_{i=1} f_i$} and $p_i = f_i/N$.
 			$X$
 			(which requires only $O(2N)$ comparisons).
 			\item Project each case $Z$
-			to position $x$ along a    lines that  runs from $X$ to $Y$, If $a,b$ re distances  $Z$ to $X,Y$  then  $x = (a^2+c^2 - b^2)/(2ac)$.
+			to position $x$ on a    lines running from $X$ to $Y$: if $a,b$  are distances  $Z$ to $X,Y$  then  $x = (a^2+c^2 - b^2)/(2ac)$.
 			\item Split the data at the median $x$ value of all cases.
-			\item For   splits larger than  $\alpha=\sqrt{N}$, call this algorithm recursively  from step1.
+			\item For   splits larger than  $\alpha=\sqrt{N}$, recurse   from step1.
 		\end{enumerate}
  In terms of related work,
 	  the above is similar in approach to Boley's PDDP algorithm~\cite{boley98}, but PDDP requires an $O(N^2)$ calculation
@@ -497,9 +494,9 @@ $f_1,f_2,.. f_n$. That is, \mbox{$N = \sum^n_{i=1} f_i$} and $p_i = f_i/N$.
 	   
 	{\bf Figure 5.D: Top-down division with Decision Trees}
 	
-	Find a split in the values of the independent features that most reduces the variability
-  of the dependent feature\footnote{}. The data is then divided on that feature's split and 
-  the tree learner recurses on each split (stopping when any split is smaller than $\alpha=\sqrt{N}$).
+	Find a split in the values of  independent features that most reduces the variability
+  of the dependent feature (measured using \fig{where}.A). Divide data on that  feature's split and 
+   for all splits bigger than $\alpha=\sqrt{N}$,  recurses on each split.
 	
 	 ~\hrule~
 	  \end{shaded}
@@ -519,13 +516,16 @@ alternatives:
 	\item
  Method4 uses the decision tree learner of \fig{where}.D. 
   \ei
-  
-  Note that all our methods are {\em trust-increasing} in the manner described in \tion{trust}.
-  
+  Note that all our methods have the two properties proposed in \tion{prelim}:
+  \bi
+  \item They find different plans in different parts of the data;
+  \item They  are {\em trust-increasing} in the manner described in \tion{trust};
+  i.e. they change changing examples such that they move {\em closer} to the training data.
+  \ei
 The following descriptions of the methods adopts the following convention. All variables
   set via  our engineering judgement  with Greek letters; e.g. $\alpha,\beta,\gamma$.
   In this paper, we show our current settings to these variables produces useful
-  results. In other work~\cite{krall14}, we are exploring tuning methods to automatically
+  results. Elsewhere\cite{krall14,fu:ase15}, we are exploring tuning methods to 
   find better settings but  we have nothing definitive yet to report
   on auto-tuning planners.
 
@@ -536,19 +536,14 @@ The following descriptions of the methods adopts the following convention. All v
 where you want to be  (which we will call $C_j$).
  
  {\em Details:} Method1 clusters project data by reflecting   on the independent variables, then
-  reporting the delta between the cluster centroids. The advantage of Method1 is its
-  simplicity. However, as shown by our evaluation strategy, it is not an useful
-  method for generating effective plans.
-  
-  
-
-After clustering some training data using the WHERE algorithm of  \fig{where}.C, this method:
+  reporting the delta between the cluster centroids. 
+  After clustering   training data using the WHERE algorithm of  \fig{where}.C, Method1
 replaces all clusters with a  centroid $C_i$ computed from the mean/mode value of each
 continuous/discrete feature. After that, it
 finds the closest centroid $C_j$ that has a better
-performance score. For defect data, ``better'' means fewer defects while for the config data,
-``better'' means faster runtimes.
-Next, this method caches the  delta in the independent features between $C_i$ and $C_j$. For continuous
+performance score. For defect data, ``better'' means fewer defective examples while for the config data,
+``better'' means lower median runtimes for the examples in that cluster.
+Method1 then caches the  delta between the independent features between $C_i$ and $C_j$. For continuous
 features, this delta is $C_j - C_i$. For discrete values, this delta is the value of that feature
 in $C_j$. 
 Finally, for every test case, Method1 use the distance measure $d$ shown in \fig{where}.B to find
@@ -556,7 +551,7 @@ the nearest centroid $C_i$.  It then proposes a plan for improving that test cas
 that is the conjunction of all the deltas between $C_i$ and $C_j$.
 
 
-\subsection{Method2 = CD+FS =  Method1  + \\Feature Selection }
+\subsection{Method2 = \\\CD+FS =  Method1  + Feature Selection }
  
 {\em Summary:} Method2 works like Method1, but this time, it only mentions the most
 informative features. Hence, Method2's plans are simpler.
