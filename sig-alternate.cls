@@ -250,7 +250,7 @@
 \newdimen\auskip
 \newcount\auskipcount
 \newdimen\auskip
-\global\auskip=1pc
+\global\auskip=2pc
 \newdimen\allauboxes
 \allauboxes=\auwidth
 \newtoks\addauthors
