@@ -6,7 +6,7 @@
   {\small \begin{tabular}{l@{~~~}l@{~~~}r@{~~~}r@{~~~}c}
 \arrayrulecolor{lightgray}
 \textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
-  1 &        XTREES &    0.69  &  0.07 & \quart{0}{10}{3}{49} \\
+  1 &        XTREE &    0.69  &  0.07 & \quart{0}{10}{3}{49} \\
 \hline  2 &          BIC &    0.96  &  0.04 & \quart{40}{6}{43}{49} \\
 \hline  3 &      CD   &    0.98  &  0.02 & \quart{46}{3}{46}{49} \\
 \hline  4 &      CD+FS &    1.00 &  0.0 & \quart{49}{0}{49}{49} \\
@@ -17,7 +17,7 @@
 {\small \begin{tabular}{l@{~~~}l@{~~~}r@{~~~}r@{~~~}c}
 \arrayrulecolor{lightgray}
 \textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
-  1 &        XTREES &    0.88  &  0.0 & \quart{0}{0}{0}{49} \\
+  1 &        XTREE &    0.88  &  0.0 & \quart{0}{0}{0}{49} \\
 \hline  2 &          BIC &    0.97  &  0.01 & \quart{37}{4}{37}{49} \\
 \hline  3 &      CD  &    1.00 &  0.0 & \quart{49}{0}{49}{49} \\
   3 &      CD+FS  &    1.00 &  0.0 & \quart{49}{0}{49}{49} \\
@@ -29,7 +29,7 @@
   {\small \begin{tabular}{l@{~~~}l@{~~~}r@{~~~}r@{~~~}c}
 \arrayrulecolor{lightgray}
 \textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
-  1 &        XTREES &    0.57  &  0.08 & \quart{0}{7}{7}{44} \\
+  1 &        XTREE &    0.57  &  0.08 & \quart{0}{7}{7}{44} \\
 \hline  2 &      CD+FS &    1.00 &  0.01 & \quart{44}{1}{44}{44} \\
   2 &      CD  &    1.02  &  0.02 & \quart{44}{2}{46}{44} \\
   2 &          BIC &    1.04  &  0.07 & \quart{43}{6}{48}{44} \\
@@ -41,7 +41,7 @@
   {\small \begin{tabular}{l@{~~~}l@{~~~}r@{~~~}r@{~~~}c}
 \arrayrulecolor{lightgray}
 \textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
-  1 &        XTREES &    0.06  &  0.06 & \quart{0}{2}{0}{45} \\
+  1 &        XTREE &    0.06  &  0.06 & \quart{0}{2}{0}{45} \\
 \hline  2 &          BIC &    0.34  &  0.09 & \quart{12}{5}{14}{45} \\
 \hline  3 &      CD+FS &    0.97  &  0.04 & \quart{43}{2}{44}{45} \\
 \hline  4 &      CD  &    1.00 &  0.09 & \quart{45}{4}{45}{45} \\
@@ -53,7 +53,7 @@
   {\small \begin{tabular}{l@{~~~}l@{~~~}r@{~~~}r@{~~~}c}
 \arrayrulecolor{lightgray}
 \textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
-  1 &        XTREES &    0.99  &  0.03 & \quart{0}{49}{16}{33} \\
+  1 &        XTREE &    0.99  &  0.03 & \quart{0}{49}{16}{33} \\
   1 &          BIC &    1.00 &  0.0 & \quart{33}{0}{33}{33} \\
   1 &      CD  &    1.00 &  0.0 & \quart{33}{0}{33}{33} \\
   1 &      CD+FS &    1.01  &  0.0 & \quart{49}{0}{49}{33} \\
@@ -65,13 +65,18 @@
   {\small \begin{tabular}{l@{~~~}l@{~~~}r@{~~~}r@{~~~}c}
 \arrayrulecolor{lightgray}
 \textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
-  1 &        XTREES &    0.54  &  0.03 & \quart{0}{3}{0}{48} \\
+  1 &        XTREE &    0.54  &  0.03 & \quart{0}{3}{0}{48} \\
 \hline  2 &          BIC &    0.95  &  0.02 & \quart{42}{2}{43}{48} \\
 \hline  3 &      CD  &    1.00 &  0.0 & \quart{48}{0}{48}{48} \\
   3 &      CD+FS &    1.01  &  0.01 & \quart{48}{1}{49}{48} \\
 \hline \end{tabular}}
 \end{minipage}
 \end{center}
-\caption{Results: Seigmund data sets. For each of the  tables in this figure, better methods appear higher up. In these tables, median and IQR are the 50\textsuperscript{th} and the (75-25)\textsuperscript{th} percentiles. The IQR ranges are shown in the right column with black dot at the median. Horizontal lines divide the ``ranks'' found by Scott-Knott (shown in left column).
-}\label{fig:conf}
+\caption{Results: Seigmund data sets.
+Results from 40 repeats.
+Ratios of (1)~sum of software runtimes 
+(expected in the test
+examples) after they have been altered by a planner to (2)~the sum
+of the software runtimes in the 
+original test set.}\label{fig:conf1}
 \end{figure*}
