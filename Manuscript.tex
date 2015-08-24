@@ -137,7 +137,7 @@ change(s) required to move from clump to clump.
 The contributions of this paper are two-fold:
 \be
 \item
-The  XTREES planner, which has not been previously pubslished. For demonstration purposes, we show XTREES
+The  XTREES planner, which has not been previously published. For demonstration purposes, we show XTREES
 working to reduce software runtimes and software defects. That said, the method is quite general to any table of data with weighted class values (so that XTREES
 can determine that some rows are preferred and some are to be avoided).  
 \item An evaluation strategy used to comparatively assess planners. As  shown below, that strategy less us identify  inferior planners. With this strategy, other researchers could assess improvements or alternatives to the XTREE planner. 
@@ -150,9 +150,9 @@ half of the paper then presents an extensive evaluation of these methods using
 the Jureczko  and Siegmund data sets. This is followed by notes on related work
 and validity.
 
-\input{tex/jur_char.tex}
 
-\section{From Prediction to Planning}
+\section{Preliminaries}
+\subsection{From Prediction to Planning}
  
 
 This paper is about the next step {\em after} prediction. Suppose
@@ -182,27 +182,6 @@ much consideration for their context~\cite{passos11}.
   The rest of this paper discusses some methods to build automatic oracles 
   to implement that   sanity check.
   
-  
- \begin{figure}[!t]
- \small
- \begin{center}
- \begin{tabular}{r|rr}
- data set & cases & \% defective\\\hline
-  ant &947& 22\\
-  camel& 1819& 19\\
- jedit& 1257& 2\\
- ivy &352& 11\\
- log4j& 244 &92\\
- lucebe &442 &59\\
- poi& 936 &64\\
- synapse &379 &34\\
- velocity& 410& 34\\
- xalan& 2411& 99\\
- xerces &1055& 74
- \end{tabular}
- \end{center}
- \caption{ Jureczko data: columns in the format of \fig{ck}.}\label{fig:jd}
- \end{figure}
  
 Another way  to find   changes to a project
 might be to rely
@@ -246,62 +225,36 @@ automatic methods to find plans from
   $N$ examples divided  into  many clumps.
 
 
- 
- \begin{figure}[!t]
-\scriptsize
-\begin{tabular}{llllll}
-  \hline
-  \rowcolor{lightgray}
-Project & Domain & Lang. & LOC & Features & Config\\\hline
-Berkeley DB CE & Database & C & 219,811 & 18 & 2560\\
-Berkeley DB JE & Database & Java & 42,596 & 32  & 400\\
-Apache & Web Server & C & 230,277 & 9 & 192\\
-SQLite & Database & C & 312,625 & 39 & 3,932,160\\
-LLVM & Compiler & C++ & 47,549 & 11 & 1024\\
-x264 & Video Enc. & C& 45,743 & 16 & 1152\\\hline
-\end{tabular}
- 
-\caption{Siegmund data.
-For SQLite, the data  contains 4,553 configurations for prediction modeling and 100 additional random configurations for prediction evaluation, see \cite{vapp}.}\label{fig:cpm}
-\end{figure}
-
-\begin{figure}[!t]
-\includegraphics[width=1\linewidth]{_figs/BDBC.eps}
-\caption{ Berkeley database feature model   (``C'' version). }\label{fig:bdbc}
-\end{figure}
+\input{tex/jur_char.tex}
 
 
-\section{A Frequently Asked Question}
-
-
-  Our evaluation strategy (discussed below) divides this data into a training a test set.
-  From the train set we apply a data miner (to learn a quality predictor) and
-  various planning methods (to learn different plans). Next, we try applying
-  each of those plans to the  test set and ask the quality predictor to assess the changed examples.
-  Finally, we say that the  ``best'' planner is the one that most reduces the predicted values
-  in the changed examples.
-  
-When discussing this strategy, a common concern is as follows. XTREES is evaluated by  comparing
+\subsection{Trusting the Changes}\label{sect:trust}
+   XTREES is evaluated by  comparing
 predicted performance scores before and after a planner makes changes to the feature values of an example:
 After making those
-changes, we may have a new example that has never seen before. Therefore, it should be asked:
-
-{\centerline {\em Can we trust the predictions made on such new examples?}}
-
+changes, we may have a new example that has never seen before. Therefore, it must be asked:
+\bi
+\item
+{\em Can we trust the predictions made on such new examples?}
+\ei
 Our answer is ``yes'', if those changes select for the {\em region of competency} of the predictor. When we assess
 any data miner, there are two ``clouds'' of data:
 \bi
 \item One cloud is the space of training examples.
 \item Another cloud is the space of test examples.
 \ei
-We should mistrust a model learned from data mining if the test examples  too far removed from the training data; i.e. if
-these two clouds are too far apart. To test for ``too far'', we can run a data mining experiment to test how well
+For a visualization of these clouds, see \fig{howxy}.
+
+We should mistrust the predictions made by a  model   if it is being applied to examples far outside of its region of competency;
+i.e. to test examples that are too far removed from the training data.   
+To test for ``too far'', we can run a data mining experiment to test how well
 a model learned from the training data applies to the test data. Such experiments return some performance value.
-Given this, two things can be said about predictions on changed examples:
-\bi
-\item Predictions  about changes that  fall within the space of the training+test data, will be at least
+
+Note that predictions  about changes that  fall within the space of the training+test data, will be at least
 as reliable as the performance value found in the data mining experiment.
-\item More generally, predictions about changes that move examples towards/away from the cloud of training data can be trusted more/less (respectively).
+Given this, one thing  can be asserted about predictions on changed examples:
+\bi
+\item Predictions about changes that move examples towards/away from the cloud of training data can be trusted more/less (respectively).
 \ei  
 Accordingly, all the methods of this paper make {\em trust-increasing} recommendations. That is, they push change examples {\em towards} the
 training examples.  To see how this works, 
@@ -327,22 +280,73 @@ as predictors learned using all the defect attributes of \fig{ck}.}.
 
 
 \begin{figure}
-1 %\includegraphics[width=0.9\linewidth]{_figs/twod.jpg} 
+\includegraphics[width=2in]{_figs/twod.eps} 
 \caption{Training examples (in gray), test examples (in red) and 
-changed exampled genreated by a planner (in green). Note how the green (displaced) cases are closer to the  training
+changed examples generated by a planner (in green). Note how the green (changed) examples are closer to the  training
 date than the original test data
-i.e. predictors trained on the training cases and
-applied to the test cases should
-work just as well, or better, on the displaced test cases.}\label{fig:howxy}
+i.e. predictors trained on the training examples and
+applied to the test examples should
+work just as well, or better, on the changed test examples.}\label{fig:howxy}
 \end{figure}
 %XXX end
 
-That said, one thing to be said here
-is that we {\em strongly} recommend that predictors are assessed prior to planning. That is
+
+  
+ \begin{figure}[!t]
+ \small
+ \begin{center}
+ \begin{tabular}{r|rr}
+ data set & cases & \% defective\\\hline
+  ant &947& 22\\
+  camel& 1819& 19\\
+ jedit& 1257& 2\\
+ ivy &352& 11\\
+ log4j& 244 &92\\
+ lucebe &442 &59\\
+ poi& 936 &64\\
+ synapse &379 &34\\
+ velocity& 410& 34\\
+ xalan& 2411& 99\\
+ xerces &1055& 74
+ \end{tabular}
+ \end{center}
+ \caption{ Jureczko data: columns in the format of \fig{ck}.}\label{fig:jd}
+ \end{figure}
+ 
+ \begin{figure}[!t]
+\scriptsize
+\begin{tabular}{llllll}
+  \hline
+  \rowcolor{lightgray}
+Project & Domain & Lang. & LOC & Features & Config\\\hline
+Berkeley DB CE & Database & C & 219,811 & 18 & 2560\\
+Berkeley DB JE & Database & Java & 42,596 & 32  & 400\\
+Apache & Web Server & C & 230,277 & 9 & 192\\
+SQLite & Database & C & 312,625 & 39 & 3,932,160\\
+LLVM & Compiler & C++ & 47,549 & 11 & 1024\\
+x264 & Video Enc. & C& 45,743 & 16 & 1152\\\hline
+\end{tabular}
+ 
+\caption{Siegmund data.
+For SQLite, the data  contains 4,553 configurations for prediction modeling and 100 additional random configurations for prediction evaluation, see \cite{vapp}.}\label{fig:cpm}
+\end{figure}
+
+\begin{figure}[!t]
+\includegraphics[width=1\linewidth]{_figs/BDBC.eps}
+\caption{ Berkeley database feature model   (``C'' version). }\label{fig:bdbc}
+\end{figure}
+
+That said, the above comes with two important caveats:
+\bi
+\item 
+We   strongly recommend that predictors are assessed prior to planning. That
 issue is explored further in the next section. 
+\item
+Where possible, planners should be assessed via some external
+oracle that can accurately assess new examples. For an example of that kind of analysis,
+see our Validity section, later in this paper.
+\ei
 
-
-\input{tex/prediction_stats.tex}
   \section{Test Domains}
 To assess our planning methods, we use data from Jureczko et al.'s object-oriented JAVA systems~\cite{jureczko10}  and
   software system   configuration data from by  Siegmund et al.~\cite{sven12}.
@@ -365,8 +369,16 @@ To assess our planning methods, we use data from Jureczko et al.'s object-orient
   Siegmund et al. recorded how long each perturbation took to run a test suite. 
   
   
+\input{tex/prediction_stats.tex}
+
+  Our evaluation strategy (discussed below) divides this data into a training a test set.
+  From the train set we apply a data miner (to learn a quality predictor) and
+  various planning methods (to learn different plans). Next, we try applying
+  each of those plans to the  test set and ask the quality predictor to assess the changed examples.
+  Finally, we say that the  ``best'' planner is the one that most reduces the predicted values
+  in the changed examples.
   
-  Note that this approach depends on having effective predictors for assessing the results.
+  As mentioned in the last section,  this approach depends on having effective predictors for assessing the results.
   For the Siegmind data, this criteria was   relatively easy to achieve.
   The data in those data sets have a continuous class (runtime of the compiled system)
   so the performance of a quality predictor can  be measured in terms of  difference between the predicted runtime $p$ of test case items and their actual runtimes $a$ using  $s= 1 - \frac{abs(a - p)}{a}$ (and {\em higher} values are {\em better}).
@@ -507,7 +519,10 @@ alternatives:
 	\item
  Method4 uses the decision tree learner of \fig{where}.D. 
   \ei
-In the following, note our convention. All variables
+  
+  Note that all our methods are {\em trust-increasing} in the manner described in \tion{trust}.
+  
+The following descriptions of the methods adopts the following convention. All variables
   set via  our engineering judgement  with Greek letters; e.g. $\alpha,\beta,\gamma$.
   In this paper, we show our current settings to these variables produces useful
   results. In other work~\cite{krall14}, we are exploring tuning methods to automatically
