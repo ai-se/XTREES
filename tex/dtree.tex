@@ -1,4 +1,4 @@
-\begin{figure}[!t] 
+\begin{figure}[!b] 
 	\begin{shaded}
   ~\hrule~
 	
@@ -11,13 +11,9 @@ After that,	  find the {\em desired} leaf:
 		\begin{itemize}[leftmargin=3mm]
 		\item Starting at {\em current}, ascend the tree $lvl\in \{0,1,2...\}$ levels;
 		\item Identify {\em sibling} leaves; i.e. leaf clusters that can be reached from level $lvl$ that are not {\em current }
-		\item Using the {\em score} defined above, find the {\em better} siblings; i.e. those with a {\em score} less than $\gamma=0.5$ times the mean score of {\em current}.
-		 \bi
-		 \item 
-		   If none found, then repeat for $lvl += 1$
-		 \item
-		    Return no plan if the new $lvl$ is above the root.
-		 \ei
+		\item Using the {\em score} defined above, find the {\em better} siblings; i.e. those with a {\em score} less than $\gamma=0.5$ times the mean score of {\em current}. 
+		   If none found, then repeat for $lvl += 1$. Also,
+		    return no plan if the new $lvl$ is above the root. 
 		\item  Return the {\em closest} better sibling where distance is measured between the mean centroids of that sibling and {\em current}
 		\ei
 	 Also, find the {\em delta}; i.e. the set difference between  conditions in the decision tree branch to {\em desired} and {\em current}. To find that delta:

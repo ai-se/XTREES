@@ -139,18 +139,20 @@ change(s) required to move from clump to clump.
 The contributions of this paper are (1)  
    XTREE   (which is a new algorithm) and (2) an evaluation strategy for   planners.
 XTREE     works  on tables of data with weighted class values indicating what rows are ``good'' and what rows are ``bad''.
-In the case studies of this paper (reducing    software runtimes and software defects), our evalautions shows
- XTREE performing significantly better than   the planners we proposed in  prior   papers~\cite{me12c,krishna15}.
-
-The rest of this paper is structured as follows.
-After describing our test data,
-this paper  walks the reader through four methods that start
-with a standard clustering algorithm, the  progresses on to XTREE. The second
-half of the paper then presents an extensive evaluation of these methods using 
-the Jureczko  and Siegmund data sets. This is followed by notes on related work
+In the case studies of this paper  our evaluations shows
+ XTREE performing significantly ``better'' than   the planners we proposed in  prior   papers~\cite{me12c,krishna15},
+ where ``better'' means:
+\bi
+\item {\em Effective:}    i.e.  if  its recommendations  are  applied  then  some  statistically significant  change  in expected values of the results should  be  observed. 
+\item {\em Succinct:} i.e. given two plans with the same effectiveness, we prefer the shorter one.
+Such shorter plans are easier to explain (less to show) and faster to implement (less to change).
+\item {\em Surprising}; i.e. we want the planners to (occasionally) tell us things we do not know already (otherwise,
+there would be no point to using the planner).
+\ei 
+The rest of this paper is describes our data, our planners, and the experiment that
+ranks XTREE against alternate approaches.  This is followed by notes on related work
 and validity.
-
-To allow for reproducibility, all scripts and data used in this 
+Note that, to allow for reproducibility, all scripts and data used in this 
 study are available on-line at github.com/ai-se/XTREE.
 
 \section{Preliminaries}\label{sect:prelim}
@@ -209,7 +211,7 @@ Numerous recent {\em local learning} results compare (1) single models
 learned from all available data to (2) multiple models learned from clusters within the data~\cite{betten14,yang11,yang13,minku13,me12d,me11m,posnett11}.
 A repeated result in those studies in that the local models generated the better effort
 and defect predictions (better median results,
-lower variance in the predictions). This paper offers yet another locality result:
+lower variance in the predictions). \tion{surprise} of this  paper offers yet another locality result:
 \bi
 \item
 One standard rule in the literature
@@ -237,11 +239,9 @@ automatic methods to find plans from
    XTREE is evaluated by  comparing
 predicted performance scores before and after a planner makes changes to the feature values of an example:
 After making those
-changes, we may have a new example that has never seen before. Therefore, it must be asked:
-\bi
-\item
-{\em Can we trust the predictions made on such new examples?}
-\ei
+changes, we may have a new example that has never seen before. Therefore, it must be asked
+{\em ``can we trust the predictions made on such new examples?''}
+ 
 To answer this question, we note
 that data miners explore two  ``clouds'' of data: (1) the cloud of training examples and (2) the  cloud   of test examples.
 For a visualization of these clouds, see \fig{howxy}.
@@ -348,7 +348,7 @@ For SQLite, the data  contains 4,553 configurations for prediction modeling and 
 \end{figure}
 
 \begin{figure}[!t]
-\includegraphics[width=1\linewidth]{figs/BDBC.eps}
+\includegraphics[width=0.9\linewidth]{figs/BDBC.eps}
 \caption{ Berkeley database feature model   (``C'' version). }\label{fig:bdbc}
 \end{figure}
 
@@ -457,14 +457,13 @@ alternatives.
 	data in two  using a dimension that captures the greatest variability in the data. 
 	We proposed Method 1 and 2   in 2012~\cite{me12c} while Methods 3 comes from research conducted earlier this year~\cite{krishna15}.
  
- \subsection{  Method Properties}
-  Note that all   methods have the  properties proposed in \tion{prelim}:
-  \bi
-  \item They are {\em local learners}; i.e. different test examples
-  will be given plans that are specialized  to their particulars;
-  \item They  are {\em trust-increasing};
+ 
+  Note that all   methods have the  properties proposed in \tion{prelim}.
+  That is, they are {\em local learners}; i.e. different test examples
+  will be given plans that are specialized  to their particulars. Also,
+  they  are {\em trust-increasing}; 
   i.e. they change  examples such that they move {\em closer} to the training data.
-  \ei
+ 
 
  \subsection{  Methods}
 
@@ -652,7 +651,7 @@ This is a unit-less ratio with the following properties:
  \subsubsection{Statistical Methods}
  Our methods use some stochastic algorithms; e.g. WHERE's selection of ``what example to explore first'' (see \fig{where}.C) and
   XTREE' occasional use of a random guess when deciding what part of a discretized range to include in the plan
-  (see \fig{xtree_bare}). Hence, we report the $R$ values seen in 40 repeated runs
+  (see \fig{xtrees_bare}). Hence, we report the $R$ values seen in 40 repeated runs
   (with different random number seeds).
 The the value 40 was chosen to be  larger than the 30 samples  required
 to satisfy the central limit theorem.
@@ -717,7 +716,12 @@ In these experiments,   the dependent variables of Jureczko and Siegmund data se
  all the SMOTE-ing and Random Forst tunings (discussed in \tion{tesd})
 occurred in the {\em train} phase of \fig{design}.
 \ei
-\newpage\subsection{Experimental Results}
+ \subsection{Experimental Results}
+
+Recall from our introduction that we are assessing planners on three criteria:
+{\em effectiveness}, which is how much they reduce the expected value of the changed examples;
+{\em succinctness}, which is how many things we need to change to achieve a plan;
+and {\em surprise}, which is how different are the plans from standard truisms.
 
 % \begin{figure}[t]
 % \begin{minipage}{0.5\textwidth}
@@ -739,20 +743,16 @@ occurred in the {\em train} phase of \fig{design}.
 
 
 
-\begin{figure*}[bp]
+\begin{figure*}[!t]
 \centering
 \includegraphics[width=\linewidth]{figs/Deltas-both.eps}
-\caption{Performance Comparison showing the number of times a certain feature requires to be changed. X-axis lists the various features that make up a data set. The y-axis contains the frequency of change in \%.}\label{fig:changed}
+\caption{Percent frequency for how often certain feature was changed bu a plan.}\label{fig:changed}
 \end{figure*}
 
 \subsubsection{Effectiveness Results}
 
-For a planning system designed for business users, we seek two properties:
-\bi
-\item {\em Effectiveness:}    i.e.  if  its recommendations  are  applied  then  some  statistically significant  change  should  be  observed. 
-\item {\em Succinctness:} given two plans with the same effectiveness, we prefer the shorter one.
-Such shorter plans are easier to explain (less to show) and faster to implement (less to change).
-\ei 
+ 
+
 Measured in terms of effectiveness,
 some data sets were harder to optimize that others.  SQL (in \fig{conf1}) defied all 
 our methods for reducing runtimes. Also, BDBJ (in \fig{conf1}) was hard to optimize
@@ -766,7 +766,7 @@ Down to 6\% of the original baseline in BDBD  of \fig{conf1};
 \ei
 Overall, XTREE was most effective. It was always  the top-ranked method and (with 
 the exception of SQL), had significant reductions in the median performance
-values: median improvement of least 10\% lower (i.e. better) than the next ranked method
+values: median improvement of least 10\% lower (i.e. better) than the next ranked method.
 
 
 
@@ -798,115 +798,184 @@ In turns out that this holds true across nearly all our data sets.
 \fig{types} summarizes all the change frequencies for all data sets. As with  \fig{changed},
 there are fewer changed features in the config data than in the defect prediction data. 
 One explanation for that is the nature of the features: the
-config data has binary independent features while the defect data sets has continuous
-features. When exploring these different data types, it is possible to find more
-``gentle slopes'' the lead to small changes
-in the continuous features and more ``sharp cliffs'' that lead to major change in the discrete
-data. Hence, our planners make fewer larger changes in the config data.
-offer 
+defect data sets has continuous
+features while the 
+config data has binary independent features  (where so setting was turned ``on'' or ``off''). When exploring these different data types, it is possible to find more
+\bi
+\item
+``Fentle slopes'' the lead to small changes
+in  continuous space;
+\item
+ ``Sharp cliffs'' that lead to major change in the discrete
+space. 
+\ei
+Hence, our planners can make fewer larger changes in the config data.
+ For example, Method3 (BIC) and Method1 (CD) make far fewer changes in   data sets with discrete features (the Siegmund data) than in data with continuous features (the Jureczko data).  
+ 
+ As to the method that lead to best effectiveness in \fig{jur} and \fig{conf1}, we note from \fig{types}
+ that XTREE
+ has a consistent behavior in both the discrete and continuous data sets.  Specifically,  in all our data sets,
+ XTREE changes 
+ usually changes around a fifth of the features.
 
-Looing across the columns of \fig{types}, we see that Method3 (BIC) is the most
-succinct for data sets with deiscrete features (
+
 
 
 \input{tex/deltas_avg.tex}
 
-Method2 (CD+FSS) was more succinct than Method1 
-since the feature selection mechanism, removed most of
-the feature (evidence: the blue bars for CD+FSS appear least often in both plots). One
-repeated pattern in these results was that 
-when CD+FSS decided that a feature needs to be changed, it always changed it in all repoeats (see how the blue bars for CD+FSS are usually at 100\%). We conjecture that this is a side-effect
-of feature selection-- if you discard most of the controllables, then you always have to change the
-remaining.
-
-In terms of succinctness,  Method3 (BIC)  had different  nearly as unsuccinct as Method1 (see in those results
-that most features have black bars that extend up beyonf 50\% and often to near 100\%). 
-Method3 was more succinct for {\em BDBJ}
 
 
+\subsubsection{Surprising Results}\label{sect:surprise}
 
+If a planner only ever reports conclusions that were already known, then that planner offers
+little value-added over ``just use established wisdom''. Accordingly, we studied our results
+for plans that were somewhat counter-intuitive.
 
-As predicted in the above discussion on Method 1 (CD), this method always proposes changes  to most features. Method3 (BIC) often proposes changes to many features, which 
-would make its plan tedious to implement. 
-Method 2 (CD+FS)
-proposes less, due to its use of feature selection and, in the case of {\em BDBJ}, it fixates on changing just one feature (which
-probably explains why CD+FS performs so poorly for {\em BDBJ} in \fig{conf}). Finally, Method4 (XTREE) rarely fixates
-on changing one feature (only on {\em LUCENE}'s lines of code feature) and seems to prefer making many small changes,
-all over the space of features.
+Such a plan was seen in the {\em lucene} results of \fig{changed}. Recall the standard advice for
+OO systems: build classes that are internally cohesive with low coupling to other parts of the system.  
+\subsubsection{Summary}
+In summary, we  have two reasons to endorse XTREE. Firstly, it is usually far more effective than other
+methods. Secondly, even when we jump from continuous to discrete features, XTREE's plans consistently
+use just a small portion of the features. 
 
-\fig{changed} reports the changes just for   {\em lucene}) and {\em BDBJ}. \fig{types} shows the mean changes for features found by our
-four methods (here, mean change is the average height of the histogram bars seen in, say, \fig{changed}). Overall, Method1 (CD) and
-Method3 (BIC) make the most changes while XTREE and CD+FS make the fewest.
-
-
-
-\subsection{Discussion}
-
-
-These results let us comment on the assumptions of the various planning methods:
-\bi
-\item Assumption1: 
-\item Assumption2: 
-\item Assumption3:
-\item Assumption4:
-In all these results,  with one exception,  The  exception is SQL which (as shown in \fig{conf}), seems to defy all methods for optimization
-so XTREE can only reduce the expected values of the runtimes by 1\%.
-\ei
+In terms of the assumptions that motivated our different methods, we note that 
+{\em Assumption4} seems most powerful; i.e. for the purposes of planning,
+it is better to reflect on the target class.  
  
-\section{Validity}\label{sect:valid}
-	
-\section{Related work}
+\section{Threats to Validity}\label{sect:valid}
 
-mockus
 
-planning
+As with any empirical study, biases can affect the final results. Therefore, any
+conclusions made from this work must be considered with the following issues in
+mind.
 
-harman and change
 
-cbr
+\subsection{ Learner Bias}
+For building the defect predictors in this study, we elected
+to use  Random Forest  and Random Forest Regressors .
+We chose this approach,  based on its reputation for having the better  performance of 
+21 other learners for defect prediction~\cite{lessmann}.
+Data mining is a
+large and active field and any single study can only use a small
+subset of the known classification algorithms.  
 
-results suggest that, when clustering on independent variables of software project data,
-	we are free to select from a wide range of 
-	clustering methods.  Ganesan~\cite{div14} explored 
-	different clustering methods for SE data using   effort and defect data from
-	the PROMISE repository~\cite{promiserepo}.
-	That study explored
-	K-Means, mini-batch-K-Means, DBscan, EM, Ward, and the WHERE algorithm discussed
-	below.
-	Clusters were assessed via the performance of prediction 
-	learned from the clusters by Random Forests (for defect prediction)
-	and M5prime or linear regression (for effect estimation).  Ganesan found
-	that the details of the clustering method were less important than ensuring that  a large number of clusters were generated.
-	Accordingly, for clustering, we select a clustering method that generates a large
-	number of small cluster
-	($\sqrt{N}$ clusters
-	from $N$ examples) that runs fasts, which has shown promise in prior work~\cite{Menzies2013}, and which ignores spurious dimensions (the last item is important since, in our experience, much SE data is ``noisey''; i.e. contains signals not associated with the target variable.
-	ats to Validity
+That said, we have taken care to document in this paper the decisions made by engineering
+judgement that could effect our conclusions. The above code used a set of variables which future
+work should vary in order to test the internal validity of our conclusions:
+\bi
+\item All our planners divide data into groups of size $\alpha=\sqrt{N}$
+\item Method2 used the top $\beta=33\%$ most informative features (ranked using INFOGAIN);
+\item Method4 (XTREE) assumed that another sibling was useful if  had 
+ a  score less than $\gamma=0.5$ times the mean score of the current leaf.
+ \ei
+
+\subsection{  Sampling bias} threatens any data mining experiment; i.e., what matters
+there may not be true here. For example, the data sets used here comes from two sources
+(Seigmund et al. and Jureczko et al.) and any biases in their selection procedures
+threaten the validity of these results. 
+That said,
+the best we can do is define our methods and publicize our data and code so that other researchers can
+try to repeat our results and, perhaps, point out a previously unknown bias
+in our analysis. Hopefully, other researchers will emulate our methods in
+order to repeat, refute, or improve our results. 
+
+
+
+\subsection{  Evaluation bias} Another threat to validity of this work is our use
+of predictors learned on the training data to assess the impact of our planners.
+This issues was discussed in detail in \tion{trust}. 
+
+To those notes, we add a few more details. If possible, planners should be assessed via some external oracle that can accurately assess new examples. For example, in search-based software engineering,
+examples can be assigned objective scores via  some model. In this approach, a changed example can be assessed by
+generating actual objective scores from the model. 
+
 
 
 \input{tex/results_models.tex}
 
+For example, the COCOMO model from University of 
+Southern California estimates software development time using a combination of industrial data and some domain expertise
+from its author (Barry Boehm). \fig{coc} shows results from using COCOMO 
+as an oracle to assess our planning methods. In this experiment, random projects were used as COCOMO
+inputs. This generated an development time estimate for each example which we passed to our four methods.
+40 times, we let those methods propose changes to those projects. 
+For assessment purposes, the changes projects were then feed back to the COCOMO
+oracle. 
+
+As shown in \fig{coc}, those results endorsed the conclusions of the rest
+of this paper; i.e. that XTREE's supervised methods are best for generating plans on how to change
+example projects.
 
 
-\section{Related Work}
-dashboards
 
-strucftureal learners (bayes)
+	
+\newpage
+\section{Related work}
 
+\subsection{Planning in AI}
+
+The XTREE planner is somewhat different to the logical-based planners explored by 
+classical AI. 
+That kind of planning is a logical procedure~\cite{Fikes1971}
+that seeks an ordering on {\em operators} to take some domain
+{\em state} from a {\em start} state to a {\em  goal} state.
+This classical logical approach is known to suffer from
+computational bottlenecks~\cite{Bylander1994} while tools like XTREE will scale to any domains
+that can generate decision trees.
+  
+\subsection{Evaluating Changes}
+
+Some organizations have the resources to 
+run repeated trials to assess  different treatments.
+For example, in one remarkable recent study, Bente et al. report results
+were the same for specification that was developed  by four different organizations~\cite{Anda2009}. Given those kind of resources, it would be possible
+to (say) take a code base, assign it to different teams, make these teams  adopt different polices,
+then check in 12 months time
+ which teams have fewer defects than the others.  
  
 
-Many data mining methods offer a succinct summary of project data
-e.g. see the Bayes nets
-favored by Dejaeger et al.~\cite{Dejaeger13}; or   the regression models
-learned by Nagappan~\cite{Nagappan05}.
-Another  technique is to offer a dashboard that visualizes project data.
-For example, the dashboards
-provided by the Hackystat team~\cite{Johnson09} presents extensive and detailed
-summaries of programmer behavior.
+Very few industrial or research groups have access
+to the kinds of resources needed for this kind study  (evidence: in the six years since the
+publication of that work, we know of only one   similar study to Bente et al.). Also, given the
+diversity of modern software projects, it might be unreasonable to demand that all
+proposed changes for all projects are always evaluated by something like the Bente et al. study.
+Hence, 
+this paper has used data miners to build an oracle that can assess changed examples. The advantage
+of this approach is that it required far less resources to assess the effectiveness of proposed
+changes to a project.  
 
-Some users do not like being told what to do... they prefer to have the current world explained to them 
--- but those dashboards typically do not learn threshold points
-(that report where action is needed) nor do they offer specific advice on what actions to take.
+\subsection{Search-based SE}
+
+Another way way to propose changes to software artifacts
+is   via some search-based method~\cite{Harman2009,Harman2011}. Such SBSE methods are   evolutionary programs that 
+make
+ extensive changes to  some initial sample of project data
+ (perhaps 
+100s to 100,000s of mutations). Each of these mutations
+is reassessed using some domain model.
+Examples of these algorithms include GALE, NSGA-II, NSGA-III, SPEA2, IBEA, particle swarm optimization, MOEA/D, etc.~\cite{krall14,deb00a,zit02,zit04,%
+deb14,Cui2005a,zhang07:TEC}.
+
+One problem with these   SBSE methods is that they can  make extensive mutations to the data they are exploring. In the language
+of \tion{trust}, these methods may not be {\em trust-increasing} those algorithms make no attempt
+to mutate new examples away from the kinds of data used to commission the model (in which case, we would
+start doubting the model's output).
+
+Another issue with standard search-based SE methods is that they require ready access to 
+trustworthy domain model that can offer an assessment
+of newly generated examples. While some domains have such models (e.g. see the COCOMO effort estimation model
+used in the last section), our experience is that many others do not.  For example, 
+consider software defect prediction and all the intricate issues that may lead to defects in a product. A model that includes {\em all} those
+potential issues would be very large and complex. Further,
+the empirical data required to validate any/all parts
+of that model can be hard to find.
+
+What we would recommend is a two-pronged policy.
+In domains with ready access to trusted models, we recommend
+the kinds of tools that are widely used in the search-based
+software engineering community such as GALE, NSGA-II, NSGA-III, SPEA2, IBEA, particle swarm optimization, MOEA/D, etc.~\cite{krall14,deb00a,zit02,zit04,%
+deb14,Cui2005a,zhang07:TEC}. Otherwise, we recommend tools like XTREE.
+
 
 
 \section{Conclusion}
@@ -935,6 +1004,8 @@ github.com/ai-se/XTREE.
 The work has partially funded by a National Science Foundation CISE CCF award \#1506586.
 \bibliographystyle{plain}
 
+
+\balance
 \bibliography{References}
 \end{document}
 
@@ -1097,9 +1168,9 @@ Trustworthy domain models are a popular alternatives to CBR planners. In our pre
 
 Taking into account the wealth of data that is available to us, this issue can fortunately be circumvented by constructing a categorical model based on decision trees. Unlike the previous planners which use where, here we construct a decision tree using information gain as a metric to find ideal splits in the data. This allows us to identify the most informative attributes to select. A decision tree (hereafter referred to as DTREE) built in this fashion emulates a model built from the training data. 
 
-Using DTREE, the test cases can be categorized into one of the branches of the tree. Now, to generate the contrast sets, we determine (1) What \textit{current} branch does a test case fall in?; (2) What \textit{desired} branch would the test case have to move to?; (3) What are the deltas between \textit{current} and \textit{desired}? The last question can be answered by finding the deltas in branches of the decision tree that lead to \textit{desired} from \textit{current}. For full algorithmic details, refer to \fig{XTREE_bare}.
+Using DTREE, the test cases can be categorized into one of the branches of the tree. Now, to generate the contrast sets, we determine (1) What \textit{current} branch does a test case fall in?; (2) What \textit{desired} branch would the test case have to move to?; (3) What are the deltas between \textit{current} and \textit{desired}? The last question can be answered by finding the deltas in branches of the decision tree that lead to \textit{desired} from \textit{current}. For full algorithmic details, refer to \fig{xtrees_bare}.
 
-A tree structure such as DTREE is characterized by attributes such as size and depth. It is worth noting that these attributes have a profound impact on its performance. Our initial motivation for using DTREE was that they could serve as a medium for experts to reason about a data. The size of the tree, if too large, jeopardizes the readability of the solutions by increasing the complexity. We have, therefore, endeavored to reduce the size of the tree by pruning away irrelevant solutions that do not contribute to better solutions (refer to step-2 of \fig{XTREE_bare}). 
+A tree structure such as DTREE is characterized by attributes such as size and depth. It is worth noting that these attributes have a profound impact on its performance. Our initial motivation for using DTREE was that they could serve as a medium for experts to reason about a data. The size of the tree, if too large, jeopardizes the readability of the solutions by increasing the complexity. We have, therefore, endeavored to reduce the size of the tree by pruning away irrelevant solutions that do not contribute to better solutions (refer to step-2 of \fig{xtrees_bare}). 
 
 DTREE offers a great number of benefits compared to the other methods that were discussed above. Firstly, it offers a visual medium for experts to identify and explore solutions spaces that are local to the problem. Secondly, its solutions are much more stable than other cluster specific and instance specific learners. This stability can be attributed to the consistency and general reproducibility of the tree structure. Thirdly, and perhaps most importantly, the tree summarizes the training data succinctly, making it easier for a business user to examine the solution sets.
 
