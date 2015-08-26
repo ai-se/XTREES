@@ -64,7 +64,7 @@
 \newcommand{\G}{\cellcolor{green}}
 \newcommand{\Y}{\cellcolor{yellow}}
 
-\newcommand{\quart}[4]{\begin{picture}(100,4)%1
+\newcommand{\quart}[4]{\begin{picture}(80,4)%1
 {\color{black}\put(#3,2){\circle*{4}}\put(#1,2){\line(1,0){#2}}}\end{picture}}
 
 
@@ -95,7 +95,7 @@ Andrian Marcus \\
        \alignauthor
 Naveen  \\ Lekkalapudi\\
  \affaddr{Bellhops } \\ 
-       \affaddr{Washington D.C.}\\ 
+       \affaddr{Tennessee, USA}\\ 
        {navek91@gmail.com}
 \alignauthor
 Lucas Layman \\
@@ -110,11 +110,20 @@ Lucas Layman \\
  analytics. Instead of just predicting 
  some result, they also need tools that generate ``plans'';
  i.e. specific suggestions on  what to change  in order to
- improve on the predicted values. Hence, we propose the  XTREE planner and  show that
- it runs better than   three alternative methods. For this paper's    case studies,
- XTREE reduced
- the expected values of defects \& runtimes of some software projects to    
- 45\% \& 61.5\%  (median) and  22\% \& 6\% (best case) of the initial values, respectively.
+ improve on the predicted values.
+ 
+ This paper proposes
+ and evaluates the  XTREE planner for software projects. 
+XTREE inputs tables of data with independent features plus a   weighted class
+that indicate how much each row is  ``bad'' or  ``better''. Plans are edits proposed for each 
+row such that the changed row is more likely to be ``better''.  XTREE
+learns those plans by building a decision tree across the data, then reporting
+the differences in the branches from some current branch to another desired branch.
+
+Using data from 11 software projects,  XTREE found   larger reductions that three
+alternate methods.  Those reductions had 
+median size of (55\%,38.5\%) and   largest size of (78\%,94\%) in
+(defects,runtimes), respectively.
 \end{abstract}
 \section{Introduction}
 Business users are demanding  tools that support    business-level interpretations of their data. At a panel on software analytics at ICSE`12, industrial practitioners lamented the state of the art in software analytics~\cite{menzies12a}. Panelists commented  ``prediction is all well and good, but what about decision making?''. Note that these panelists were more interested in the interpretations and follow-up that occurs after the mining, rather than just the mining itself. So:
@@ -135,15 +144,14 @@ The contributions of this paper are (1)
     the new XTREE    algorithm and (2) an evaluation strategy for   planners.
 In the case studies of this paper  our evaluations shows
  XTREE performing significantly ``better'' than    planners  proposed in our prior   work~\cite{me12c,krishna15},
- where ``better'' means:
-\bi
-\item {\em Effective:}    i.e.  if  a plan is   applied  then  some  statistically significant  change  in expected values of the results will  be  observed. 
-\item {\em Succinct:} i.e. given two plans with the same effectiveness, we prefer the shorter one.
-Such shorter plans are easier to explain (less to show) and faster to implement (less to change).
-\item {\em Surprising}; i.e. we want the planners to (occasionally) tell us things we do not know already (otherwise,
-there would be no point to using the planner).
-\ei 
-The rest of this paper is describes our data, our planners, and the experiment that
+ where ``better'' means 
+{\em effective} (plans change the  expected values of the class);
+{\em succinct} (it is inconvenient if  plans   always require changing  everything);
+and {\em surprising} (a planner should sometimes tell us things we do not expect
+since, otherwise,
+there is no value added from  using the planner).
+
+The rest of this paper   describes our data, our planners, and the experiment that
 ranks XTREE against alternate approaches.  This is followed by notes on related work
 and validity.
 Note that, to allow for reproducibility, all scripts and data used in this 
@@ -154,8 +162,7 @@ study are available on-line at github.com/ai-se/XTREE.
 \subsection{What is a ``Plan''?}
 
 Our planners   use tables of data with independent features and one dependent feature, called the 
-``class''. Classes are weighted such that they indicate  what rows are ``good'' and what rows are ``bad''. Plans  change   a row such that it is more like they 
-will be more similar to ``good'' than ``bad''.
+``class''. Classes are weighted such that they indicate  what rows are ``bad'' and what rows are ``better''. Plans  change   a row such that it is more likely to be ``better''. 
 Specifically, for every test example $Z$,   planners proposes a  plan $\Delta$ to
   adjust   feature $Z_j$:
 \[
@@ -174,7 +181,7 @@ plan2).
  
  
 This paper is about the next step {\em after} prediction. Suppose
-a business user is presented a prediction and they do not like what they see; e.g. the runtimes are too long of the number of defects is too high. This user may
+a business user is presented with  a prediction and they do not like what they see; e.g. the runtimes are too long of the number of defects is too high. This user may
 then ask a {\em planning}  question; i.e. ``what can we change to do better than that?''.
 
  
@@ -256,20 +263,16 @@ changes, we may have a new example that has never seen before. Therefore, it mus
 {\em ``can we trust the predictions made on such new examples?''}
  
 To answer this question, we note
-that data miners explore two  ``clouds'' of data: (1) the cloud of training examples and (2) the  cloud   of test examples.
-For a visualization of these clouds, see \fig{howxy}.
-
-
+that data miners explore two  ``clouds'' of data: (1) the cloud of training examples and (2) the  cloud   of test examples
+(for a visualization of these clouds, see \fig{howxy}).
 \begin{figure}[!t]
-  \includegraphics[width=\linewidth]{figs/twodee.eps} 
+  \includegraphics[width=.9\linewidth]{figs/twodee.eps} 
  % \includegraphics[width=1\linewidth]{figs/BDBC.eps}
 \caption{Gray, red, green show (1) training examples, (2) test examples and 
   (3) tests that have been altered by planners.
   This figure uses axes generated from the first two components of a PCA analysis of all points. 
 }\label{fig:howxy}
 \end{figure}
-
-
 We should mistrust the predictions made by a  model   if it is being applied to examples  that are
 too far away from the
 training cloud.
@@ -310,7 +313,7 @@ Planners should be designed to be {\em trust increasing}. We list four such plan
 \item
 Where possible, planners should be assessed via some external
 oracle that can accurately assess new examples. For an example of that kind of analysis,
-see  \tion{valid}.
+see  \tion{coc}.
 \ei
 
 %XXX end
@@ -352,8 +355,7 @@ LLVM & Compiler & C++ & 47,549 & 11 & 1024\\
 x264 & Video Enc. & C& 45,743 & 16 & 1152\\\hline
 \end{tabular}
  
-\caption{Siegmund data.
-For SQLite, the data  contains 4,553 configurations for prediction modeling and 100 additional random configurations for prediction evaluation, see \cite{vapp}.}\label{fig:cpm}
+\caption{Siegmund data.}\label{fig:cpm}
 \end{figure}
 
 \begin{figure}[!t]
@@ -456,10 +458,8 @@ the test data; i.e. we took care that no clues from the test set were ever used 
  
 \section{Four Planning Methods}\label{sect:planners}
  
-In his textbook on empirical methods, Cohen~\cite{cohen95} advises that any supposedly better
-algorithm should be baselined against simpler alternatives. Accordingly,
-this section described XTREE (which we call Method4) against three  
-alternatives.
+This section described XTREE (which we call Method4) and  three  
+alternate methods for learning plans.
   XTREE  uses the decision tree learner of \fig{where}.D.  It is new to this paper.
   The other methods use the   top-down
 	bi-clustering method described in \fig{where}.C  which recursively divides the
@@ -550,7 +550,7 @@ for the Jureczko data, $B_x$  is the cluster member with lowest raw defect count
 (resolving ties at random).
 
 Method3 connects  each centroid to a nearest neighbor
-by {\em gradient}.
+by a {\em gradient}.
 Each gradient has a (bottom,top) end labelled  ($C_i,C_j$) containing the  (worst,best) centroid performance scores, respectively..  
 For each test instance, Method3 
 find the nearest gradient, the runs up to the top  best end $C_j$, then extracts $B_j$ (which is the
@@ -584,7 +584,7 @@ What {\em current} branch does a test case fall in?
 \item What are the {\em deltas} between current and desired? 
 \ee
  
-\section{Experiments}
+\newpage \section{Experiments}
 
   
  
@@ -722,7 +722,7 @@ In these experiments,   the dependent variables of Jureczko and Siegmund data se
 \bi
 \item For Siegmund data, we randomized the order of the data, training on one half while identifying treatment plans on the remaining test data. 
 \item For the Jureczko data, we used the training and testing sets of \fig{j}. For these datasets,
- all the SMOTE-ing and Random Forst tunings (discussed in \tion{tesd})
+ all the SMOTE-ing and Random Forest tunings (discussed in \tion{tesd})
 occurred in the {\em train} phase of \fig{design}.
 \ei
  \subsection{Experimental Results}
@@ -732,30 +732,13 @@ Recall from our introduction that we are assessing planners on three criteria:
 {\em succinctness}, which is how many things we need to change to achieve a plan;
 and {\em surprise}, which is how different are the plans from standard truisms.
 
-% \begin{figure}[t]
-% \begin{minipage}{0.5\textwidth}
-% \includegraphics[width=0.9\linewidth]{figs/Deltas-Lucene.eps}
-% \label{fig:delta_ivy}
-% \end{minipage}
-% \begin{minipage}{0.5\textwidth}
-% \includegraphics[width=0.9\linewidth]{figs/Deltas-BDBJ.eps}
-% \label{fig:delta_apache}
-% \end{minipage}
-% \caption{Performance Comparison showing the number of times a certain feature requires to be changed. X-axis lists the various features that make up a data set. The y-axis contains the frequency of change in \%.}\label{fig:changed}
-% \end{figure}
-
- 
- 
 \input{tex/results_jur.tex}
 \input{tex/results_conf.tex}
-
-
-
 
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=\linewidth]{figs/Deltas-both.eps}
-\caption{Percent frequency for how often certain feature was changed bu a plan.}\label{fig:changed}
+\caption{Percent frequency for how often certain feature was changed by a plan.}\label{fig:changed}
 \end{figure*}
 
 \subsubsection{Effectiveness Results}
@@ -875,7 +858,7 @@ in \fig{changed}). But note  that this is {\em object} coupling measure, not cla
 XTREE is warning against, say, some factory class generating a large
 community of agents, all of the same class, who
 co-ordinate on some task. This is a different issue to the class redesign issue that would
-be triggered by altering {\em loc}}.
+be triggered by altering {\em loc}.
 
 In summary, XTREE satisfies that criteria that, sometimes, it produces surprising plans.
 At least for the {\em lucense} data set, we can see advice that recommends {\em increasing coupling}
@@ -925,15 +908,14 @@ order to repeat, refute, or improve our results.
 
 
 
-\subsection{  Evaluation Bias} Another threat to validity of this work is our use
+\subsection{  Evaluation Bias}\label{sect:coc}
+Another threat to validity of this work is our use
 of predictors learned on the training data to assess the impact of our planners.
 This issues was discussed in detail in \tion{trust}. 
 
 To those notes, we add a few more details. If possible, planners should be assessed via some external oracle that can accurately assess new examples. For example, in search-based software engineering,
 examples can be assigned objective scores via  some model. In this approach, a changed example can be assessed by
 generating actual objective scores from the model. 
-
-
 
 \input{tex/results_models.tex}
 
@@ -953,7 +935,8 @@ Those results from the COCOMO model endorsed the conclusions of the rest
 of this paper; i.e. compared to three other methods,  XTREE's supervised methods are best for generating plans on how to change
 example projects.
 
-
+\subsection{  Feasibility}\label{sect:feasibility}
+It is important to also explore the general practicality of the plans. To this end, we are currently undertaking is a \textit{feasibility study} collaboration with industrial partners to assess the general feasibility of our changes. With this study, we would like to understand the nature of changes suggested by XTREE. Specifically: are the changes proposed by XTREE small enough to be easily implemented on software projects? Also, are the changes large enough to be feasible? In other words, we are asking if users can sufficient fine-grained control to make the changes proposed in \fig{changed}.
  
 \section{Related work}
 
@@ -1002,7 +985,7 @@ Examples of these algorithms include GALE, NSGA-II, NSGA-III, SPEA2, IBEA, parti
 deb14,Cui2005a,zhang07:TEC}.
 
 One problem with these   SBSE methods is that they can  make extensive mutations to the data they are exploring. In the language
-of \tion{trust}, these methods may not be {\em trust-increasing} those algorithms make no attempt
+of \tion{trust}, these methods may not be {\em trust-increasing} since those algorithms make no attempt
 to mutate new examples away from the kinds of data used to commission the model (in which case, we would
 start doubting the model's output).
 
@@ -1039,17 +1022,40 @@ Four planners were assessed here for the tasks of reducing defects and runtimes.
 Three of the methods come from our prior publications~\cite{me12c,krishna15}, and the conclusion of this
 paper is that a novel fourth method clearly out-performs the other three
 (measured in terms of {\em effectiveness, succinctness, and surprise}).
-The reason for the superior performance of our new method is clear: when planning how to change
-to different class methods, it is best to use a learner that reflects over those classes
-as it divides the data. 
+We conjecture that XTREE worked better than the rest since:
+\bi
+\item
+It uses a supervised method to divide the data and;
+\item
+When planning how to move examples to better classes, it is   best to use a learner that reflects over 
+differences between the classes.
+\ei
 
 
-Of course, there are many more methods for generating plans and
-no   one paper can survey them all.
-But the goal of this paper is not to claim that (e.g.) XTREE is some absolute optimal algorithm. Rather, it is
-to offer a baseline result (with XTREE) and an  evaluation strategy that  can assess  if alternate methods are better than XTREE.
-Our hope is that other   researchers apply this strategy  to repeat and/or improve
-and/or refute our results. 
+\section{Questions for Future Work}
+
+XTREE, as used here, sought improvements in a one goal (the   class variable). Does XTREE work for multi-goal reasoning?
+
+ The XTREE algorithm seems quite general to any data of table with rows containing
+weighted classes (so we can distinguish ``bad'' rows from ``better'' ones). 
+Does   XTREE works  on   domains (other than the  defect/runtime data explored here)?
+
+As an example of a domain that might benefit from XTREE, recent results raise doubts about
+the value of changing code to remove ``bad smells''~\cite{Sjoberg13}. Can XTREE be used as a ``really bad smell''
+detector to select the subset of possible refactorings that have the most   potential benefit?
+
+As to scalability, XTREE is a post-processor to a decision tree algorithm. Hence, in theory,  XTREE should work on
+any domain where data miners can generate decision trees. Given the current state of the art in Big Data,
+can   XTREE  be applied to  very large data sets?
+
+There are many more methods for generating plans and
+no   one paper can survey them all. For example, this paper has not explored variations to the $\alpha,\beta,\gamma$
+parameters that controlled XTREE. Would we get better results if we varied those parameters?
+
+That said, the goal of this paper was not to claim that (e.g.) XTREE is some absolute optimal algorithm. Rather, it is
+was to offer a baseline result (with XTREE) and an  evaluation strategy that  can assess  if alternate methods are better than XTREE.
+Will other  researchers apply this strategy  to repeat and/or improve
+(or even refute) our results?  Perhaps.
 
 \section*{Acknowledgements}
 The work has partially funded by a National Science Foundation CISE CCF award \#1506586.
