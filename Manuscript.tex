@@ -378,13 +378,9 @@ To assess our planning methods, we use data from Jureczko et al.'s object-orient
 
   The Siegmund data, described in \fig{cpm},  records  the runtimes of compiled systems. To make that data, Siegmund et al. perturbed
   the configuration parameters in the Makefiles of six systems: Apache, SQLite, LLVM, x264 and two versions of the
-  Berkeley database (one written in ``C'' and one in Java). 
-   \fig{bdbc} shows an example of a feature model defining valid combinations of settings to on the
-   the Siegmund et al. datasets. These feature models were used by Siegmund et al. to ensure all their perturbations are value
+  Berkeley database (one written in ``C'' and one in Java). Then, the performance was measured using standard benchmarking tools (delivered by \textsc{Oracle} for Berkley data sets and other popular tools such as \textsc{autobench} and \textsc{httpref})~\cite{sven12}. It's worth noting that in each of the above data set, some configurations are interdependent, this is expressed using a \textit{feature model}.
+   \fig{bdbc} shows an example of such a feature model defining valid combinations of settings to on the Berkley database (``C'' version). These feature models were used by Siegmund et al. to ensure all their perturbations are valid
    (we will use the same models to cull invalid plans).
-  Given those valid perturbations, the systems were then compiled and 
-  Siegmund et al. recorded how long each perturbation took to run a test suite. 
-  
   
 \input{tex/prediction_stats.tex}
 
@@ -528,7 +524,7 @@ of \fig{where}.E.
  
  
  \input{tex/algos}
-\subsubsection{Method3= BIC=   Method2 + Best-in-cluster}\label{sect:BIC}
+\subsubsection{Method3= GD=   Method2 + Gradient}\label{sect:BIC}
 
 {\em Summary3:} Method3 is like Method2, but it uses more knowledge about the training data.
 
@@ -549,7 +545,7 @@ Each gradient has a (bottom,top) end labelled  ($C_i,C_j$) containing the  (wors
 For each test instance, Method3 
 find the nearest gradient, the runs up to the top  best end $C_j$, then extracts $B_j$ (which is the
  best-in-cluster associated with  $C_j$).
-The returned plan is then computed  from the delta between the test case
+The returned plan is then computed as a fraction of the gradient between the test case
 and $B_j$.
  
 %\input{tex/pseudo-code-1.tex}
@@ -613,7 +609,7 @@ This section describes an experimental design (and results) for evaluating the a
             \begin{array}{l}
                 \mathit{test'} = \mathrm{planner}(\mathit{test})\\
                 \mathit{after} =\mathrm{predictor}(\mathit{test'})\\ 
-                \mathrm{{\bf return}\;} R=\frac{\mathit{after}}{\mathit{before}}
+                \mathrm{{\bf return}\;} R=(1-\frac{\mathit{after}}{\mathit{before}})\times 100 \%
             \end{array}
           \right.
    \end{array}\right.
@@ -644,12 +640,11 @@ we should not use some of the  Jureczko data.
 
 Else, we (1)~apply the { planner} to alter the {\em test} data;
 then (2)~apply the { predictor} to the altered data $test'$;
-then (3)~return data on the {\em before, after} predictions expressed as the ratio $R=\frac{\mathit{after}}{\mathit{before}}$.
-This is a unit-less ratio with the following properties:
+then (3)~return data on the {\em before, after} predictions expressed as percent improvement $R=(1-\frac{\mathit{after}}{\mathit{before}})\times100\%$ with the following following properties:
 \bi
-\item If $R= 1$, this means  ``no change from baseline''; 
-\item If $R < 1$, this indicates ``some reduction to the baseline'';
-\item If $R > 1$, this indicates ``optimization failure''.
+\item If $R= 0\%$, this means  ``no change from baseline''; 
+\item If $R < 0\%$, this indicates ``some reduction to the baseline'';
+\item If $R > 0\%$, this indicates ``optimization failure''.
 \ei
  \subsubsection{Statistical Methods}
  Our methods use some stochastic algorithms; e.g. WHERE's selection of ``what example to explore first'' (see \fig{where}.C) and
@@ -690,15 +685,15 @@ the 75th percentile value.
 {\small  \begin{tabular}{{l@{~~~~}l@{~~~~}r@{~~~~}r@{~~}c@{}r}} 
 \arrayrulecolor{lightgray}
 \textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
-1 &         XTREE &    0.49  &  0.13 & \quart{7}{25}{17}{115} \\\hline  
-2 &      CD &    0.59  &  0.18 & \quart{15}{34}{36}{115} \\
-2 &          BIC &    0.60  &  0.12 & \quart{24}{24}{38}{115} \\\hline  
-3 &      CD+FS &    0.62  &  0.06 & \quart{36}{12}{42}{115}  \\\hline \end{tabular}}
+1 &         CD+FS &    49  &  13 & \quart{7}{25}{17}{115} \\\hline  
+2 &      CD &    59  &  18 & \quart{15}{34}{36}{115} \\
+2 &          BIC &    60  &  12 & \quart{24}{24}{38}{115} \\\hline  
+3 &      XTREE &    62  &  6 & \quart{36}{12}{42}{115}  \\\hline \end{tabular}}
 \end{center}
 
 In this example table, the rows are  sorted on the median values of each method. Note that all the methods
-have   $R<1$ values; i.e. all these methods reduced the expected value of the performance score in that experiment
-while XTREE achieved the greatest reduction (down to 49\% of the original value).
+have   $R<0\%$ values; i.e. all these methods reduced the expected value of the performance score in that experiment
+while XTREE achieved the greatest reduction (of 60\% from the original value).
 
 
 The above eample table has a  left-hand-side  {\bf Rank} column, computed using the
@@ -714,7 +709,7 @@ In this example table, CD and BIC are ranked together while XTREE and CD+FS are 
 \fig{jur} and \fig{conf1} show the effectiveness of our methods seen in 40 repeats with each data set.
 In these experiments,   the dependent variables of Jureczko and Siegmund data sets are discrete and continuous in nature, respectively. Hence, while choosing the predictor, we used Random Forest (1) as a classifier for Jureczko data and (2) as a regressor for Siegmund data.
 \bi
-\item For Siegmund data, we randomized the order of the data, training on one half while identifying treatment plans on the remaining test data. 
+\item For Siegmund data, we performed a k-fold cross validation. Given the relatively smaller sample sizes in Apache and BDBJ, we chose $k=2$. This, we reasoned, would maintain a sufficiently large test data size in order for R to be measured reliably. However, in 2-fold cross validation, the division of data tends to affect the outcome significantly. To counter this, we randomized the order of the data, training on one half while identifying treatment plans on the remaining test data, repeating the process 40 times as mentioned above.
 \item For the Jureczko data, we used the training and testing sets of \fig{j}. For these datasets,
  all the SMOTE-ing and Random Forest tunings (discussed in \tion{tesd})
 occurred in the {\em train} phase of \fig{design}.
@@ -885,6 +880,7 @@ work should vary in order to test the internal validity of our conclusions:
 \bi
 \item All our planners divide data into groups of size $\alpha=\sqrt{N}$
 \item Method2 used the top $\beta=33\%$ most informative features (ranked using INFOGAIN);
+\item Method3 uses a fraction $F=0.5$ to compute the plan from the delta;
 \item Method4 (XTREE) assumed that another sibling was useful if  had 
  a  score less than $\gamma=0.5$ times the mean score of the current leaf.
  \ei
