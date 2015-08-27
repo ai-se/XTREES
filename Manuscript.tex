@@ -107,16 +107,15 @@ Lucas Layman \\
 \maketitle
 \begin{abstract}
  Business users now demand more insightful
- analytics. Instead of just predicting 
- some result, they also need tools that generate ``plans'';
- i.e. specific suggestions on  what to change  in order to
- improve on the predicted values.
+ analytics; specifically, tools that generate ``plans''--
+  specific suggestions on  what to change  in order to
+ improve  the predicted values.
  
- This paper proposes
- and evaluates the  XTREE planner for software projects. 
-XTREE inputs tables of data with independent features plus a   weighted class
-that indicate how much each row is  ``bad'' or  ``better''. Plans are edits proposed for each 
-row such that the changed row is more likely to be ``better''.  XTREE
+ This paper proposes  the  XTREE planner for software projects. 
+XTREE inputs tables of data of independent features plus a   weighted class
+  indicating how much each row is  ``bad'' or  ``better''. 
+  Plans are edits to  
+rows such that the changed row is more likely to be ``better''.  XTREE
 learns those plans by building a decision tree across the data, then reporting
 the differences in the branches from some current branch to another desired branch.
 
@@ -141,8 +140,7 @@ defects     in Jureczko et al.'s    JAVA systems~\cite{jureczko10};
 and the runtimes   in   software    configured by  Siegmund et al.~\cite{sven12}.
 
 The contributions of this paper are (1)  
-    the new XTREE    algorithm and (2) an evaluation strategy for   planners.
-In the case studies of this paper  our evaluations shows
+    the new XTREE    algorithm and (2) an evaluation strategy that shows
  XTREE performing significantly ``better'' than    planners  proposed in our prior   work~\cite{me12c,krishna15},
  where ``better'' means 
 {\em effective} (plans change the  expected values of the class);
@@ -154,20 +152,25 @@ there is no value added from  using the planner).
 The rest of this paper   describes our data, our planners, and the experiment that
 ranks XTREE against alternate approaches.  This is followed by notes on related work
 and validity.
-Note that, to allow for reproducibility, all scripts and data used in this 
+To enable reproducibility, all scripts and data used in this 
 study are available on-line at github.com/ai-se/XTREE.
 
 \section{Preliminaries}\label{sect:prelim}
 
 \subsection{What is a ``Plan''?}
 
-Our planners   use tables of data with independent features and one dependent feature, called the 
-``class''. Classes are weighted such that they indicate  what rows are ``bad'' and what rows are ``better''. Plans  change   a row such that it is more likely to be ``better''. 
+Our planners   use tables of data with independent features and a dependent class
+feature. Classes have weights  that  indicate  what rows are ``bad'' or ``better''. Plans  change   a row such that it is more likely to be ``better''. 
 Specifically, for every test example $Z$,   planners proposes a  plan $\Delta$ to
   adjust   feature $Z_j$:
-\[
-\forall \delta_j \in \Delta :  Z_j = Z_j + \delta_j
-\]
+
+{\small\[
+\forall \delta_j \in \Delta :  Z_j =  
+\begin{cases}
+     Z_j + \delta_j& \text{if $Z_j$ is numeric}\\
+    \delta_j              & \text{otherwise}
+\end{cases}
+\]}
 For example, to simplify a  large bug-prone  method, our planners might suggest
 to a developer to reduce its size (i.e.  refactor that code by, say, splitting it across
 two simpler functions).
@@ -266,7 +269,7 @@ To answer this question, we note
 that data miners explore two  ``clouds'' of data: (1) the cloud of training examples and (2) the  cloud   of test examples
 (for a visualization of these clouds, see \fig{howxy}).
 \begin{figure}[!t]
-  \includegraphics[width=.9\linewidth]{figs/twodee.eps} 
+  \includegraphics[width=\linewidth]{figs/twodee.eps} 
  % \includegraphics[width=1\linewidth]{figs/BDBC.eps}
 \caption{Gray, red, green show (1) training examples, (2) test examples and 
   (3) tests that have been altered by planners.
@@ -306,8 +309,7 @@ contain the changes examples.
 That said, the above comes with some important caveats:
 \bi
 \item 
-We   strongly recommend that predictors are assessed prior to planning. That
-issue is explored further in the \tion{tesd}.
+The quality of the prediction depends on the nature of the training data. Thus, we strongly recommend that both data set and the predictor be assessed prior to planning. This ensures that the predictor's performance is adequate for a data set. We tackle this issue in detail in \tion{tesd}.
 \item
 Planners should be designed to be {\em trust increasing}. We list four such planning methods in \tion{planners}.
 \item
@@ -364,17 +366,15 @@ x264 & Video Enc. & C& 45,743 & 16 & 1152\\\hline
 \end{figure}
 
 
-  \section{Test Data}\label{sect:tesd}
+ \section{Test Data}\label{sect:tesd}
 To assess our planning methods, we use data from Jureczko et al.'s object-oriented JAVA systems~\cite{jureczko10}  and
   software system   configuration data from by  Siegmund et al.~\cite{sven12}.
   See github.com/ai-se/XTREE\#data for full access to this data.
   
   
-   The Jurecko data records number of known defects for each class, where the classes are described in terms of
+   The Jurecko data records number of known defects for each class using a post-release bug tracking system. The classes are described in terms of
   nearly two dozen metrics such as number of children, lines of code, etc. For details on the Jurecko data, see  \fig{ck} and \fig{jd}. 
- For the most part, the methods of this paper treat
-  the Jurecko as a discrete class data set, where {\em defects} are true if the raw defect count is greater than zero.
-  The one exception will be the `best-in-cluster'' method that reflects on the numeric value of the raw defect count (see \tion{BIC}).
+ All the planning methods of this paper reflect on the numeric value of the raw defect counts. The predictor considers defects to be a discrete class data set,where defects are \textit{\texttt{TRUE}} if the numeric defect count is greater than zero and \textit{\texttt{FALSE}} otherwise.
 
   The Siegmund data, described in \fig{cpm},  records  the runtimes of compiled systems. To make that data, Siegmund et al. perturbed
   the configuration parameters in the Makefiles of six systems: Apache, SQLite, LLVM, x264 and two versions of the
@@ -420,9 +420,7 @@ Given access to $V$ released
 versions, we test on version $V$ and train on the available data from $V-1$ earlier releases (as
 shown in \fig{j}, this means that we are training on hundreds to thousands
 of classes and testing on smaller test suites).
-Note the   \colorbox{lavenderpink}{three bottom rows}   marked with $\times$: these contain predominately
-defective classes (two-thirds, or more).  In such data sets, it is hard to distinguish
-good from bad (since there are so many bad examples). 
+Note the   \colorbox{lavenderpink}{three bottom rows}   marked with $\times$: these contain predominately defective classes (two-thirds, or more).  In such data sets, it is hard to distinguish good from bad (since there are so many bad examples). 
 
 
 The  Jureczko data uses non-numeric discrete classes (``defective'' or ``not'').
@@ -433,16 +431,12 @@ by the {\em predictor}; and (2) the
 probability of false alarm (a.k.a. ``pf''): the percent of non-fault
 classes that are {\em predicted} to be defective.
 
-As a preliminary study, we split the Jureczko  data   into equal sized train:test groups.
+As a preliminary study, we split the Jureczko  data into train and test groups.
 Random Forests (again, from the SciKit learn kit~\cite{Pedregosa2012}) were
 built from the training data, then applied to the test data.
-The ``untuned'' columns of \fig{j} shows those results.
-If we define ``good'' to mean $\mathit{pd}>60 \wedge \mathit{pf} < 40$\%,
-then only two of our data sets ({\em ivy,ant}) are ``good'' enough for this study.
-Note that, as might have been expected, none of the \colorbox{lavenderpink}{three bottom rows} of \fig{j} were ``good''.
+The ``untuned'' columns of \fig{j} shows those results. We called a data set ``usable'' if Random Forest was able to classify majority of the instances correctly. For this purpose, we set a threshold of $\mathit{pd}\ge 60 \wedge \mathit{pf} \le 30$\% to select these data sets. With this threshold, however, none of our data sets were be suitable for this study.
 
-Fortunately,
-the ``tuned'' columns of \fig{j} show that we can salvage some of the data sets. Pelayo and Dick~\cite{pelayo07} report that defect prediction is improved by SMOTE~\cite{Chawla2002}; i.e. an over-sampling of minority-class examples. Also, Fu et al.~\cite{fu:ase15} report that parameter tuning with differential evolution~\cite{storn97} can quickly explore the tuning options of Random Forest to find better settings for the (e.g.) size of the forest, the termination criteria
+Fortunately, the ``tuned'' columns of \fig{j} show that we can salvage some of the data sets. Pelayo and Dick~\cite{pelayo07} report that defect prediction is improved by SMOTE~\cite{Chawla2002}; i.e. an over-sampling of minority-class examples and under-sampling of majority-class examples. Also, Fu et al.~\cite{fu:ase15} report that parameter tuning with differential evolution~\cite{storn97} can quickly explore the tuning options of Random Forest to find better settings for the (e.g.) size of the forest, the termination criteria
 for tree generation, etc. The rows \colorbox{celadon}{marked with a $\star$} in \fig{j} show data sets whose performance was improved remarkably by these techniques. For example, in {\em poi}, the recall increased by 4\% while the false alarm rate dropped by 21\%. However,  as might have been expected, we could not salvage the data sets in the  three bottom rows.
 
 In summary, while we cannot trust predictors from some of our defect data sets,
@@ -583,8 +577,8 @@ What {\em current} branch does a test case fall in?
 \item What {\em desired} branch would the test case want to move to?
 \item What are the {\em deltas} between current and desired? 
 \ee
- 
-\newpage \section{Experiments}
+
+\section{Experiments}
 
   
  
@@ -625,7 +619,7 @@ This section describes an experimental design (and results) for evaluating the a
    \end{array}\right.
 \end{array} \right. 
 \]}
- \caption{Experimental .}\label{fig:design}
+ \caption{Experimental design .}\label{fig:design}
  \end{figure}
 
 As shown in \fig{design}, we divide the
@@ -783,6 +777,10 @@ if this approach lead
 to the most effective changes. However, looking at 
 \fig{jur} and  \fig{conf1}, there is no evidence for this.  
 
+Overall,  XTREE's plans were usually succinct--  in all our data sets,
+ XTREE changes 
+ usually changes around a fifth of the features (see \fig{types}.
+
 An  interesting feature of \fig{changed} was that fewer things 
 were changed in the config data sets {\em BDBJ} than in the defect data set
 {\em lucene}. 
@@ -804,11 +802,7 @@ space.
 Hence, our planners can make fewer larger changes in the config data.
  For example, Method3 (BIC) and Method1 (CD) make far fewer changes in   data sets with discrete features (the Siegmund data) than in data with continuous features (the Jureczko data).  
  
- As to the method that lead to best effectiveness in \fig{jur} and \fig{conf1}, we note from \fig{types}
- that XTREE
- has a consistent behavior in both the discrete and continuous data sets.  Specifically,  in all our data sets,
- XTREE changes 
- usually changes around a fifth of the features.
+ 
 
 
 
@@ -828,17 +822,17 @@ OO systems: build classes that are internally cohesive with low coupling to othe
 to specific projects by checking how often a planner changes the
  coupling-related features:
 \bi
-\item {\em ca}:   afferent couplings  =  how many other classes use the specific
+\item {\em ca}:   afferent couplings  =  \# classes using this
 				class;
-\item {\em  	ce}:  efferent couplings =  how many other classes is used by the
-				specific class. 
-\item {\em cbm}: coupling between methods =  total number of new/redefined methods
+\item {\em  	ce}:  efferent couplings =  \# classes  used by this
+				  class. 
+\item {\em cbm}: coupling between methods =  \# new/redefined methods
 				to which all the inherited methods are coupled
 \item	{\em cbo}:  coupling between objects = a value that increases when the methods of one
 				class access services of another.
  
-\item {\em ic}:   inheritance coupling =  number of parent classes to which a given
-				class is coupled (includes counts of methods and variables inherited)
+\item {\em ic}:   inheritance coupling =  \#parent classes  which a given
+				class is coupled (includeing methods and variables inherited)
 \ei
 For the  {\em lucene} XTREE results  of  \fig{changed},
 the most frequent change was to alter the lines of code in a class (see the tallest
@@ -861,7 +855,7 @@ co-ordinate on some task. This is a different issue to the class redesign issue 
 be triggered by altering {\em loc}.
 
 In summary, XTREE satisfies that criteria that, sometimes, it produces surprising plans.
-At least for the {\em lucense} data set, we can see advice that recommends {\em increasing coupling}
+At least for the {\em lucene} data set, we can see advice that recommends {\em increasing coupling}
 to reduce defects.
 
  
@@ -919,24 +913,27 @@ generating actual objective scores from the model.
 
 \input{tex/results_models.tex}
 
-For example, the COCOMO model from University of 
-Southern California estimates software development time using a combination of industrial data and some domain expertise
-from its author (Barry Boehm). \fig{coc} shows results from using COCOMO 
-as an oracle to assess our planning methods. In this experiment, random projects were used as COCOMO
-inputs. This generated an development time estimate for each example, which we passed to our four methods.
+% For example, the COCOMO model from University of 
+% Southern California estimates software development time using a combination of industrial data and some domain expertise
+% from its author (Barry Boehm). \fig{coc} shows results from using COCOMO 
+% as an oracle to assess our planning methods. In this experiment, random projects were used as COCOMO
+% inputs. This generated an development time estimate for each example, which we passed to our four methods.
+% 40 times, we let those methods propose changes to those projects. 
+% For assessment purposes, the changes projects were then feed back to the COCOMO
+% oracle. 
+
+The POM3 model~\cite{boehm2003using},~\cite{port2008} is a tool for exploring that management challenge. POM3 implements the Boehm and Turner model of agile programming~\cite{boehm2003balancing} where teams select tasks as they appear in the scrum backlog.  POM3 can study the implications of different ways to adjust task lists in the face of shifting priorities. The model outputs estimates task completion rates; programmer idle rates; and total overall cost. POM3 represents requirements as a set of trees. POM3 models requirements as a dependency tree. A single requirement in the tree of a prioritization value and a cost, along with a list of child-requirements and dependencies. Before any requirement can be satisfied, its children and dependencies must first be satisfied. POM3 simulates changing priorities by making teams aware of random items in the requirements tree at random intervals, thus forcing teams to constantly readjust their "to do" lists. For further details on this model see~\cite{boehm2003balancing}, ~\cite{boehm2003using}, and ~\cite{port2008}. \fig{coc} shows results from using POM3 as an oracle to assess our planning methods and their ability to reduce the project cost. In this experiment, we generated a training and testing set with 1000 randomly generated instances, which we passed to our four methods.
 40 times, we let those methods propose changes to those projects. 
-For assessment purposes, the changes projects were then feed back to the COCOMO
+For assessment purposes, the changes projects were then feed back to the POM3
 oracle. 
 
 Using this approach, it is possible to assess the value of a plan by measuring its
-effectiveness with respect to some ground truth (in this case, the COCOMO model).
-As shown in \fig{coc}, XTREE passes this assessment.
-Those results from the COCOMO model endorsed the conclusions of the rest
-of this paper; i.e. compared to three other methods,  XTREE's supervised methods are best for generating plans on how to change
-example projects.
+effectiveness with respect to some ground truth (in this case, the POM3 model).
+As shown in \fig{coc}, XTREE reduces the  passes this assessment. These results from the POM3 model further endorsed the conclusions of the rest
+of this paper; i.e. compared to three other methods,  XTREE's supervised methods are best for generating plans on how to change example projects.
 
 \subsection{  Feasibility}\label{sect:feasibility}
-It is important to also explore the general practicality of the plans. To this end, we are currently undertaking is a \textit{feasibility study} collaboration with industrial partners to assess the general feasibility of our changes. With this study, we would like to understand the nature of changes suggested by XTREE. Specifically: are the changes proposed by XTREE small enough to be easily implemented on software projects? Also, are the changes large enough to be feasible? In other words, we are asking if users can sufficient fine-grained control to make the changes proposed in \fig{changed}.
+It is important to also explore the general practicality of the plans. To this end, we are currently undertaking a \textit{feasibility study} in collaboration with industrial partners to assess the general feasibility of our changes. With this study, we would like to understand the nature of changes suggested by XTREE. For example, we want to check if programmers are willing to implement the changes proposed by XTREE or are there other forces (e.g. social, psychological) that might block a team from accepting the advice of an outside oracle like XTREE. Note this a concern not just issues for XTREE, but for any tool proposing refactorings.
  
 \section{Related work}
 
@@ -954,9 +951,9 @@ that can generate decision trees.
 \subsection{Evaluating Changes}
 
 Some organizations have the resources to 
-run repeated trials to assess  different treatments.
-For example, in one remarkable recent study, Bente et al. report results
-were the same for specification that was developed  by four different organizations~\cite{Anda2009}. Given those kind of resources, it would be possible
+run repeated trials to assess  project changes.
+For example, in one   study, Bente et al. report results
+were the same  specification that was developed  by four different organizations~\cite{Anda2009}. Given those kind of resources, it would be possible
 to (say) take a code base, assign it to different teams, make these teams  adopt different polices,
 then check in 12 months time
  which teams have fewer defects than the others.  
@@ -1027,8 +1024,8 @@ We conjecture that XTREE worked better than the rest since:
 \item
 It uses a supervised method to divide the data and;
 \item
-When planning how to move examples to better classes, it is   best to use a learner that reflects over 
-differences between the classes.
+When planning how to move examples to better classes, it is   best to  reflects over 
+differences between those classes.
 \ei
 
 
@@ -1044,8 +1041,8 @@ As an example of a domain that might benefit from XTREE, recent results raise do
 the value of changing code to remove ``bad smells''~\cite{Sjoberg13}. Can XTREE be used as a ``really bad smell''
 detector to select the subset of possible refactorings that have the most   potential benefit?
 
-As to scalability, XTREE is a post-processor to a decision tree algorithm. Hence, in theory,  XTREE should work on
-any domain where data miners can generate decision trees. Given the current state of the art in Big Data,
+As to scalability, XTREE is a post-processor to a decision tree algorithm. Hence, in theory,  XTREE   works on
+  domain where data miners can generate decision trees. Given the current state of the art in Big Data,
 can   XTREE  be applied to  very large data sets?
 
 There are many more methods for generating plans and
@@ -1058,7 +1055,7 @@ Will other  researchers apply this strategy  to repeat and/or improve
 (or even refute) our results?  Perhaps.
 
 \section*{Acknowledgements}
-The work has partially funded by a National Science Foundation CISE CCF award \#1506586.
+The work has partially funded by NSF  award \#1506586.
 \bibliographystyle{plain}
 
 
