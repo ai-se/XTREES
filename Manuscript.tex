@@ -378,7 +378,7 @@ To assess our planning methods, we use data from Jureczko et al.'s object-orient
 
   The Siegmund data, described in \fig{cpm},  records  the runtimes of compiled systems. To make that data, Siegmund et al. perturbed
   the configuration parameters in the Makefiles of six systems: Apache, SQLite, LLVM, x264 and two versions of the
-  Berkeley database (one written in ``C'' and one in Java). Then, the performance was measured using standard benchmarking tools (delivered by \textsc{Oracle} for Berkley data sets and other popular tools such as \textsc{autobench} and \textsc{httpref})~\cite{sven12}. It's worth noting that in each of the above data set, some configurations are interdependent, this is expressed using a \textit{feature model}.
+  Berkeley database (one written in ``C'' and one in Java). Then, the performance was measured using standard benchmarking tools (delivered by \textsc{Oracle} for Berkley data sets and other popular tools such as \textsc{autobench} and \textsc{httpref} for the rest)~\cite{sven12}. It's worth noting that in each of the above data set, some configurations are interdependent, this is expressed using a \textit{feature model}.
    \fig{bdbc} shows an example of such a feature model defining valid combinations of settings to on the Berkley database (``C'' version). These feature models were used by Siegmund et al. to ensure all their perturbations are valid
    (we will use the same models to cull invalid plans).
   
