@@ -118,8 +118,7 @@ XTREE inputs tables of data of independent features plus a   weighted class
 rows such that the changed row is more likely to be ``better''.  XTREE
 learns those plans by building a decision tree across the data, then reporting
 the differences in the branches from some current branch to another desired branch.
-
-Using data from 11 software projects,  XTREE found   larger reductions than three
+Using data from 11 software projects,  XTREE can find  larger reductions than three
 alternate methods.  Those reductions had 
 median size of (56\%,28\%) and   largest size of (60\%,77\%) in
 (defects,runtimes), respectively.
@@ -153,7 +152,7 @@ The rest of this paper   describes our data, our planners, and the experiment th
 ranks XTREE against alternate approaches.  This is followed by notes on related work
 and validity.
 To enable reproducibility, all scripts and data used in this 
-study are available on-line at github.com/ai-se/XTREE.
+study are available online at \url{http://git.io/vG3DG}.
 
 \section{Preliminaries}\label{sect:prelim}
 
@@ -180,7 +179,7 @@ Note that we make no assumption that a plan mentions every feature
 plan2).
 
 
-\subsection{From Prediction to Planning}
+\subsection{From Prediction to Planning}\label{sect:p2p}
  
  
 This paper is about the next step {\em after} prediction. Suppose
@@ -201,8 +200,8 @@ may  assume that the lessons they learn from a few past
 projects are general to 
 all their future projects. They comment ``past experiences were taken into account without 
 much consideration for their context''~\cite{passos11}.  
- J{\o}rgensen \& Gruschke~\cite{jorgensen09} offer  a similar warning. They report that 
-  supposed software engineering    ``Gurus'' rarely use lessons
+ J{\o}rgensen \& Gruschke~\cite{jorgensen09} offer  a similar warning. They report that the 
+  supposed software engineering  ``Gurus'' rarely use lessons
   from past projects to improve their future reasoning and that such poor
   past advice can be detrimental to new projects.~\cite{jorgensen09}.
   Accordingly, we   propose a ``trust, but verify'' approach.
@@ -220,11 +219,9 @@ SE research community. This approach would propose changes to software
 projects that concur with internationally accept best practices. 
 There are two
 problems with that approach. Firstly, given the rapid pace of change in software
-engineering, we may be asking questions for which there is no currently acceptable
-``best practice''. For example, only very recently has there been any work
-of predicting software runtimes based on choices within Makefiles. While the work
-of Siegmund et al.~\cite{sven12} is certainly state of the art, it does not yet represent ``internationally accept best practices'' since that work is so
-recent. 
+engineering, we may be asking questions for which there is no current widely
+accepted concept of
+``best practice''. 
 
 Secondly, given the diversity of SE products and practices
 and personnel, it may well be that the current project being discussed is 
@@ -261,7 +258,7 @@ automatic methods to find plans from
    XTREE is evaluated by  comparing
 predicted performance scores before and after a planner makes changes to the feature values of an example:
 After making those
-changes, we may have a new example that has never seen before. Therefore, it must be asked
+changes, we may have a new example that has never been seen before. Therefore, it must be asked
 {\em ``can we trust the predictions made on such new examples?''}
  
 To answer this question, we note
@@ -284,10 +281,10 @@ a model learned from the training data applies to the test data. Such experiment
 Note that predictions  about changes that  fall within the space of the training+test data, will be at least
 as accurate as the predictions of the original test data. With this, we assert that the predictions for changes that move examples towards/away from the training data can be trusted more/less (respectively).
 
-Accordingly, we should use {\em trust-increasing} planners that generate changed examples {\em closer} to the
+Accordingly, we need {\em trust-increasing} planners to generate changed examples {\em closer} to the
 training examples.  To see how this works, 
  \fig{howxy} is from the {\em ivy} data
-set, which is one of the Jureczko data sets explored in this paper. It shows: (1)~the training examples in gray, (2)~the test examples in red, and (3)~the
+set (one of the Jureczko data sets used in this paper). It shows: (1)~the training examples in gray, (2)~the test examples in red, and (3)~the
 changed  examples displaced after applying a plan (in green).
  Note that the  the   changed examples
 cases  (shown in green)  fall closer to the training cases (shown in gray) than
@@ -363,12 +360,12 @@ x264 & Video Enc. & C& 45,743 & 16 & 1152\\\hline
 
 
  \section{Test Data}\label{sect:tesd}
-To assess our planning methods, we use data from Jureczko et al.'s object-oriented JAVA systems~\cite{jureczko10}  and
-  software system   configuration data from by  Siegmund et al.~\cite{sven12}\footnote{ See \url{http://git.io/vGYxc} for full access to this data.}.
+To assess our planning methods, our data (see git.io/vGYxc) comes from Jureczko et al.'s object-oriented JAVA systems~\cite{jureczko10}  and
+  software system   configuration data from by  Siegmund et al.~\cite{sven12}.
  
   
   
-   The Jureczko data records number of known defects for each class using a post-release bug tracking system. The classes are described in terms of
+   The Jureczko data records the number of known defects for each class using a post-release bug tracking system. The classes are described in terms of
   nearly two dozen metrics such as number of children (noc), lines of code (loc), etc. For details on the Jureczko data, see  \fig{ck} and \fig{jd}. 
  All the planning methods of this paper reflect on the numeric value of the raw defect counts. The predictor considers defects to a Boolean class data set, where defects are \texttt{TRUE} if the numeric defect count is greater than zero and \texttt{FALSE} otherwise.
 
@@ -380,8 +377,8 @@ To assess our planning methods, we use data from Jureczko et al.'s object-orient
   
 \input{tex/prediction_stats.tex}
 
-  Our evaluation strategy (discussed below) divides this data into a training and a test set.
-  From the train set we apply a data miner (to learn a quality predictor) and
+  Our evaluation strategy (discussed below) divides this data into a training and a testing set.
+  From the training set we apply a data miner (to learn a quality predictor) and
   various planning methods (to learn different plans). Next, we try applying
   each of those plans to the  test set and ask the quality predictor to assess the changed examples.
   Finally, we say that the  ``best'' planner is the one that most reduces the predicted values
@@ -395,8 +392,8 @@ This paper  explores six Siegmund configuration data sets:  Berkeley DB (Java an
   x264. 
   As a preliminary study, we split that data into equal sized train:test groups
   and trained a Random Forest
-  Regressor (from the SciKit learn kit~\cite{Pedregosa2012})   on one half, then applied to the other. After repeating this process 40 times, we achieved nearly perfect accuracy of $s=\{99.9, 99.8, 99.4, 99.1, 96.1\}\%$.
-Therefore, we can be very confident that the predictors from the Siegmund data can assess
+  Regressor (from the SciKit learn kit~\cite{Pedregosa2012})   on one half, then applied to the other. After repeating this process 40 times, we achieved nearly perfect accuracy of $s=\{99.9, 99.8, 99.4, 99.1, 96.1\}\%$;
+  i.e.  we are confident that the predictors from the Siegmund data can assess
 our plans. (Aside: if the reader doubts that such high scores are achievable, we note that these scores are consistent with those achieved by predictors built by Siegmund et al.~\cite{sven12}.)
 
 
@@ -424,14 +421,14 @@ probability of false alarm (a.k.a. ``pf''): the percent of non-fault
 classes that are {\em predicted} to be defective.
 
 As a preliminary study, we split the Jureczko  data into train and test groups.
-Random Forests (again, from the SciKit learn kit~\cite{Pedregosa2012}) were
+Random Forest (again, from the SciKit learn kit~\cite{Pedregosa2012}) were
 built from the training data, then applied to the test data.
 The ``untuned'' columns of \fig{j} shows those results. We called a data set ``usable'' if Random Forest was able to classify majority of the instances correctly. For this purpose, we set a threshold of $\mathit{pd}\ge 60 \wedge \mathit{pf} \le 30$\% to select suitable data sets. With this threshold, however, none of our data sets were be suitable for this study.
 
 Fortunately, the ``tuned'' columns of \fig{j} show that we can salvage some of the data sets. Pelayo and Dick~\cite{pelayo07} report that defect prediction is improved by SMOTE~\cite{Chawla2002}; i.e. an over-sampling of minority-class examples and an under-sampling of majority-class examples. Also, Fu et al.~\cite{fu:ase15} report that parameter tuning with differential evolution~\cite{storn97} can quickly explore the tuning options of Random Forest to find better settings for the (e.g.) size of the forest, the termination criteria
 for tree generation, etc. The rows \colorbox{celadon}{marked with a $\star$} in \fig{j} show data sets whose performance was improved remarkably by these techniques. For example, in {\em poi}, the recall increased by 4\% while the false alarm rate dropped by 21\%. However,  as might have been expected, we could not salvage the data sets in the  three bottom rows.
 
-In summary, while we cannot trust predictors from some of our defect data sets,
+In summary, while we cannot trust predictors from some of our Jureczko data sets,
 we can plan ways to reduce defects in {\em jedit, ivy, ant, lucene} and {\em poi}.
 Accordingly, when this study explores the Jureczko data, we will use these five data sets.
 
@@ -444,26 +441,22 @@ the test data; i.e. we took care that no clues from the test set were ever used 
  
 \section{Four Planning Methods}\label{sect:planners}
  
-This section described XTREE (which we call Method4) and  three  
+This section describes XTREE (which we call Method4) and  three  
 alternate methods for learning plans.
   XTREE  uses the decision tree learner of \fig{where}.D.  It is new to this paper.
   The other methods use the   top-down
 	bi-clustering method described in \fig{where}.C  which recursively divides the
 	data in two  using a dimension that captures the greatest variability in the data. 
-	We proposed Method 1 and 2   in 2012~\cite{me12c} while Methods 3 comes from research conducted earlier this year~\cite{krishna15}.
- 
- 
-  Note that all   methods have the  properties proposed in \tion{prelim}.
-  That is, they are {\em local learners}; i.e. different test examples
-  will be given plans that are specialized  to their particulars. Also,
-  they  are {\em trust-increasing}; 
+	We proposed Method 1 and 2   in 2012~\cite{me12c} while Methods 3 comes from research conducted earlier this year~\cite{krishna15}. 
+All  methods have the  properties proposed in \tion{prelim}: (1)~they are {\em local learners}
+that find   plans   particular to each test case; and (2)~they  are {\em trust-increasing}; 
   i.e. they change  examples such that they move {\em closer} to the training data.
  
 
  \subsection{  Methods}
 
 Our  description of the methods adopts the following convention. All variables
-  set via  our engineering judgement  with Greek letters; e.g. $\alpha,\beta,\gamma$.
+  set via  our engineering judgement  with Greek letters; e.g. $\alpha,\beta,\gamma,\omega$.
   In this paper, we show our current settings to these variables produces useful
   results. Elsewhere\cite{krall14,fu:ase15}, we are exploring tuning methods to 
   find better settings but  we have nothing definitive yet to report
@@ -475,16 +468,16 @@ Our  description of the methods adopts the following convention. All variables
  {\em Summary1:} Method1  computes a plan from the difference between where you are  (which we will call $C_i$) and
 where you want to be  (which we will call $C_j$).
 
-{\em Assumption1: } Method1 assumes that large data sets can be adequately represented by a few dozen (or so) 
+{\em Assumption1: } Large data sets can be adequately represented by a few dozen (or so) 
 centroids.
  
  {\em Details1:} Method1 clusters project data by reflecting   on the independent variables, then
   reports the delta between the cluster centroids. 
   After clustering   training data using the WHERE algorithm of  \fig{where}.C, Method1
-replaces all clusters with a  centroid $C_i$ computed from the mean/mode value of each
+replaces all clusters with a  centroid $C_i$ computed from the median value of each
 continuous/discrete feature. After that, it
 finds the closest centroid $C_j$ that has a better
-performance score. For defect data, ``better'' means fewer defective examples while for the config data,
+performance score. For Jureczko data, ``better'' means fewer defective examples while for the Seigmund data,
 ``better'' means lower median runtimes for the examples in that cluster.
 Method1 then caches the  delta between the independent features between $C_i$ and $C_j$. For continuous
 features, this delta is $C_j - C_i$. For discrete values, this delta is the value of that feature
@@ -496,12 +489,11 @@ that is the conjunction of all the deltas between $C_i$ and $C_j$.
 
 \subsubsection{Method2=CD+FS=Method1+Feature Selection }
  
-{\em Summary2:} Method2 works line Method1 but now the   plans  only
+{\em Summary2:} Method2 works like Method1 but now the   plans  only
 mention the $\beta=33\%$ most informative features. Hence, Method2's plans are simpler.
 
-{\em Assumption2: } Method2 assumes that, when reasoning about centroids, we can
-just use   features
-that   best distinguish    centroids; i.e. whose values appear in just a few centroids.
+{\em Assumption2: }  When reasoning about centroids, we can
+just use features that best distinguish centroids; i.e. whose values appear in just a few centroids.
  
 
 {\em Details2:} A common result is that the signal in a table of data is mostly contained in a handful of features~\cite{hall03,kohavi97}.
@@ -520,36 +512,23 @@ of \fig{where}.E.
  
  
  \input{tex/algos}
-\subsubsection{Method3= GD=   Method2 + Gradient}\label{sect:BIC}
+\subsubsection{Method3= Best In Cluster (BIC)=   Method1 + Gradient}\label{sect:BIC}
 
-{\em Summary3:} Method3 is like Method2, but it uses more knowledge about the training data.
+{\em Summary3:} Method3 is like Method1, but it uses more knowledge about the training data.
 
-{\em Assumption3: } Method3 assumes that there exists ``gradients'' between and
-within clusters which, if used, will better guide us to finding better plans.
+{\em Assumption3: } There exists ``gradients'' between clusters which, if used, will better guide us to finding better plans.
 
 {\em Details3:}
-Method3 summarizes clusters into {\em two} examples: (1)~the centroid $C_x$ found in Method1 and
-(2)~the best-in-cluster $B_x$  example; i.e. the  example in that cluster
-with the best performance score. 
-For the Siegmud data, $B_x$ is the cluster member with the fastest runtime;
-for the Jureczko data, $B_x$  is the cluster member with lowest raw defect count
-(resolving ties at random).
+Method3 generates clusters from the training data just like Method1. Following this, it summarizes the clusters $C_X$ using ``Best-In-Cluster'' $B_X$, which is (1) the centroid of the cluster for the Jureczko data; (2) the cluster's member with the fastest runtime for the Seigmund data. Following this, Method3 connects  each cluster $C_i$ to a nearest neighbor $C_j$ by a {\em gradient}. Each gradient has a (bottom,top) end labelled  ($C_i,C_j$) containing the (worst,best) performance scores, respectively. 
 
-Method3 connects  each centroid to a nearest neighbor
-by a {\em gradient}.
-Each gradient has a (bottom,top) end labelled  ($C_i,C_j$) containing the  (worst,best) centroid performance scores, respectively..  
-For each test instance, Method3 
-find the nearest gradient, the runs up to the top  best end $C_j$, then extracts $B_j$ (which is the
- best-in-cluster associated with  $C_j$).
-The returned plan is then computed as a fraction of the gradient between the test case
-and $B_j$.
+For each test instance, Method3 finds the nearest gradient, the runs up to the top (best) end $C_j$, then extracts $B_j$ (which is the best-in-cluster associated with  $C_j$). The returned plan is then computed as a fraction ($\omega=0.5$) of the distance between the test case and it's corresponding $B_j$.
  
 %\input{tex/pseudo-code-1.tex}
 
 
 \input{tex/dtree.tex}
 
-\subsubsection{Method4=XTREE=  Deltas in Decision   Branches}
+\subsubsection{Method4=XTREE=  Deltas in Decision Branches}
 
 {\em Summary4:} Method4 builds a decision tree,  then generates
 plans from the difference between two branches:
@@ -582,7 +561,7 @@ This section describes an experimental design (and results) for evaluating the a
  
  Here is our experimental design:
  
- \begin{figure}[!h]
+ \begin{figure}[!ht]
 {\small 
 \[
 \begin{array}{r} 
@@ -636,33 +615,35 @@ we should not use some of the  Jureczko data.
 
 Else, we (1)~apply the { planner} to alter the {\em test} data;
 then (2)~apply the { predictor} to the altered data $test'$;
-then (3)~return data on the {\em before, after} predictions expressed as percent improvement $R=(1-\frac{\mathit{after}}{\mathit{before}})\times100\%$ with the following following properties:
+then (3)~return data on the {\em before, after} predictions expressed as percent improvement, denoted by  $R=(1-\frac{\mathit{after}}{\mathit{before}})\times100\%$, with the following following properties:
 \bi
-\item If $R= 0\%$, this means  ``no change from baseline''; 
-\item If $R < 0\%$, this indicates ``some reduction to the baseline'';
-\item If $R > 0\%$, this indicates ``optimization failure''.
+\item If $R  = 0\%$, this means  ``no change from baseline''; 
+\item If $R \gt 0\%$, this indicates ``some reduction to the baseline'';
+\item If $R \lt 0\%$, this indicates ``optimization failure''.
 \ei
  \subsubsection{Statistical Methods}
  Our methods use some stochastic algorithms; e.g. WHERE's selection of ``what example to explore first'' (see \fig{where}.C) and
   XTREE' occasional use of a random guess when deciding what part of a discretized range to include in the plan
-  (see \fig{xtrees_bare}). Hence, we report the $R$ values seen in 40 repeated runs
-  (with different random number seeds).
-The the value 40 was chosen to be  larger than the 30 samples  required
-to satisfy the central limit theorem.
+  (see \fig{xtrees_bare}). Hence, we report the $R$ values seen in 40 repeated runs,
+  with different random number seeds
+(we use 40 since that is  more than the 30 samples  needed
+to satisfy the central limit theorem).
 
   To rank our methods using the results from these 40
   repeats, we use the Scott-Knott test recommended by Mittas and  Angelis~\cite{mittas13}. 
-In that test, using the median values of each method,  
+
+In accordance to that test, using the median values of each method, we
 sort a list of  $l=40$ values of $R$ values found in  $ls=4$ different methods. 
-Then,
-splits $l$ into sub-lists $m,n$ in order to maximize the expected value of
+Then, we
+split $l$ into sub-lists $m,n$ in order to maximize the expected value of
  differences  in the observed performances
 before and after divisions. E.g. for lists $l,m,n$ of size $ls,ms,ns$ where $l=m\cup n$:
  \[E(\Delta)=\frac{ms}{ls}abs(m.\mu - l.\mu)^2 + \frac{ns}{ls}abs(n.\mu - l.\mu)^2\]
-Scott-Knott  applies an statistical  hypothesis test $H$ to check
+
+We then apply a apply a statistical hypothesis test $H$ to check
 if $m,n$ are significantly different  (in our case, the conjunction of A12 and bootstrapping). 
 If so, Scott-Knott  recurses on the splits.
-In other words, the Scott-Knott procedure being used here divides the data if \textit{both} bootstrap sampling and effect size test agree that a division is statistically significant (with a confidence of 99\%) and not a small effect ($A12 \ge 0.6$).
+In other words, we divide the data if \textit{both} bootstrap sampling and effect size test agree that a division is statistically significant (with a confidence of 99\%) and not a small effect ($A12 \ge 0.6$).
 
 For a justification of the use of non-parametric bootstrapping, see Efron \& Tibshirani~\cite[p220-223]{efron93}. For a justification of the use of effect size tests see Shepperd\&MacDonell~\cite{shepperd12a}; Kampenes~\cite{kampenes07}; and Kocaguenli et al.~\cite{Kocaguneli2013:ep}. These researchers warn that even if an hypothesis test declares two populations to be ``significantly'' different, then that result is misleading if the ``effect size'' is very small. Hence, to assess the performance differences we first must rule out small effects using A12, a test   recently endorsed by Arcuri and Briand at ICSE'11~\cite{arcuri11}.
 
@@ -671,32 +652,32 @@ For a justification of the use of non-parametric bootstrapping, see Efron \& Tib
 \subsubsection{Report Format}
 
    
-Our results are presented by the line diagrams like those shown on the right-hand-side of the following example table.
-The black dot shows the median $R$ value and the horizontal likes stretch over the inter-quartile
-range (hereafter, IQR) that is the space from the 25th percentile value to
-the 75th percentile value.
+Our results are presented in the form of line diagrams like those shown on the right-hand-side of the following example table.
+The black dot shows the median $R$ value and the horizontal likes stretch 
+from the 25th percentile to the 75th percentile (a region called the inter-quartile
+range, or IQR).
 
 \begin{center}
 
-{\small  \begin{tabular}{{l@{~~~~}l@{~~~~}r@{~~~~}r@{~~}c@{}r}} 
+{\small Example \begin{tabular}{{l@{~~~~}l@{~~~~}r@{~~~~}r@{~~}c@{}r}} 
 \arrayrulecolor{lightgray}
-\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
-1 &         CD+FS &    49  &  13 & \quart{7}{25}{17}{115} \\\hline  
-2 &      CD &    59  &  18 & \quart{15}{34}{36}{115} \\
-2 &          BIC &    60  &  12 & \quart{24}{24}{38}{115} \\\hline  
-3 &      XTREE &    62  &  6 & \quart{36}{12}{42}{115}  \\\hline \end{tabular}}
+\rowcolor{lightgray}\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
+1 &      XTREE &    62  &  6 & \quart{47.2}{4.8}{49.6}{115}  \\
+\hline 2 &          BIC &    50  &  12 & \quart{34.2}{9.6}{40}{115} \\ 
+\hline 3 &      CD &    44  &  18 & \quart{28}{14.4}{35.2}{115} \\
+3 &         CD+FS &    43  &  13 & \quart{30}{10.4}{35}{115} \\  
+\hline \end{tabular}}
 \end{center}
 
 In this example table, the rows are  sorted on the median values of each method. Note that all the methods
-have   $R<0\%$ values; i.e. all these methods reduced the expected value of the performance score in that experiment
-while XTREE achieved the greatest reduction (of 60\% from the original value).
+have   $R\gt0\%$ values; i.e. all these methods reduced the expected value of the performance score in that experiment
+while XTREE achieved the greatest reduction (of 62\% from the original value).
 
 
-The above eample table has a  left-hand-side  {\bf Rank} column, computed using the
-Scott-Knott test described above. This column reports if
-the values for each method are statistically different and are more than trivially different. 
-In this example table, CD and BIC are ranked together while XTREE and CD+FS are ranked best and worst, respectively.
+The above example table has a  left-hand-side  {\bf Rank} column, computed using the
+Scott-Knott test described above. In this example table, XTREE is ranked the best, while CD and CD+FS together are ranked the worst.
   
+   
  
 
  
@@ -704,13 +685,15 @@ In this example table, CD and BIC are ranked together while XTREE and CD+FS are 
  
 \fig{jur} and \fig{conf1} show the effectiveness of our methods seen in 40 repeats with each data set.
 In these experiments,   the dependent variables of Jureczko and Siegmund data sets are discrete and continuous in nature, respectively. Hence, while choosing the predictor, we used Random Forest (1) as a classifier for Jureczko data and (2) as a regressor for Siegmund data.
-\bi
-\item For Siegmund data, we performed a k-fold cross validation. Given the relatively smaller sample sizes in Apache and BDBJ, we chose $k=2$. This, we reasoned, would maintain a sufficiently large test data size in order for R to be measured reliably. However, in 2-fold cross validation, the division of data tends to affect the outcome significantly. To counter this, we randomized the order of the data, training on one half while identifying treatment plans on the remaining test data, repeating the process 40 times as mentioned above.
-\item For the Jureczko data, we used the training and testing sets of \fig{j}. For these datasets,
- all the SMOTE-ing and Random Forest tunings (discussed in \tion{tesd})
-occurred in the {\em train} phase of \fig{design}.
-\ei
- \subsection{Experimental Results}
+
+For Siegmund data, we performed a k-fold cross validation. Given the relatively small sample sizes in Apache and BDBJ, we chose $k=2$. This, we reasoned, would maintain a sufficiently large test data size in order for R to be measured reliably. However, in 2-fold cross validation, the division of data tends to affect the outcome significantly. To counter this, we randomized the order of the data, training on one half while identifying treatment plans on the other, repeating the process 40 times as mentioned above.
+
+The Jureczko data, being temporal in nature, allows us
+to implement a validation procedure that ensures only past data is ever used to
+predict future values. Hence, in that data, we used the train/test sets shown in \fig{j}. 
+(Aside: note  that all the SMOTE-ing and Random Forest tunings (discussed in \tion{tesd}) occurred in the {\em train} phase of \fig{design}).
+
+\subsection{Experimental Results}
 
 Recall from our introduction that we are assessing planners on three criteria:
 {\em effectiveness}, which is how much they reduce the expected value of the changed examples;
@@ -728,22 +711,20 @@ and {\em surprise}, which is how different are the plans from standard truisms.
 
 \subsubsection{Effectiveness Results}
 
- 
 
 Measured in terms of effectiveness,
 some data sets were harder to optimize that others.  SQL (in \fig{conf1}) defied all 
-our methods for reducing runtimes. Also, BDBJ (in \fig{conf1}) was hard to optimize
-for all methods except XTREE.  However, in other data sets,
+our methods for reducing runtimes. While all methods performed equally well for Jedit, XTREE was the only method that could optimize BDBJ (in \fig{conf1}). In general, in most data sets,
 large reductions were observed:
 \bi
 \item
-Down to 22\% of the original baseline in Ant of \fig{jur};
+An improvement of 60\%, as compared to the original baseline in Ant and Lucene of \fig{jur};
 \item
-Down to 6\% of the original baseline in BDBD  of \fig{conf1};
+An improvement of 77\% as compared to the original baseline in BDBC  of \fig{conf1};
 \ei
-Overall, XTREE was most effective. It was always  the top-ranked method and (with 
-the exception of SQL), had significant reductions in the median performance
-values: median improvement of least 10\% lower (i.e. better) than the next ranked method.
+
+Overall, XTREE was most the effective. It was always the top-ranked method with 
+the exception of SQL and Jedit. Where it ranked better, it had significant improvements in the median performance values (1) In the Jureczko data sets, there was a median improvement of around 10\% larger than the next ranked method; (2) In the Seigmund data sets, improvements as large as 36\% greater than the next ranked method were observed.
 
 
 
@@ -760,43 +741,27 @@ The left-hand-side plot of that figure reports results from one of the  Jureczko
   where 
   it   recommends changing a particular feature (i.e. the vertical bars in that plot
   are {\em lower}). For example,
- Method1 (CD) was the least succinct  since it  wanted to change all features 
+  XTREE's plans were usually succinct--  in all  data sets,
+ XTREE   changes around a fifth of the features (see \fig{types}).
+On other hand,  Method1 (CD) was the least succinct  since it  wanted to change all features 
  (observe the change frequencies as 
 high as 100\% for all features). 
 Method1's policy of ``change everything''  might be acceptable
 if this approach lead 
-to the most effective changes. However, looking at 
+to the most effective changes. However, in
 \fig{jur} and  \fig{conf1}, there is no evidence for this.  
-
-Overall,  XTREE's plans were usually succinct--  in all our data sets,
- XTREE changes 
- usually changes around a fifth of the features (see \fig{types}.
+ 
 
 An  interesting feature of \fig{changed} was that fewer things 
-were changed in the config data sets {\em BDBJ} than in the defect data set
+were changed in the Seigmund data sets like {\em BDBJ} than in the Jureczko data set like
 {\em lucene}. 
 In turns out that this holds true across nearly all our data sets.
 \fig{types} summarizes all the change frequencies for all data sets. As with  \fig{changed},
-there are fewer changed features in the config data than in the defect prediction data. 
+there are fewer changed features in the Seigmund data than in the defect prediction data. 
 One explanation for that is the nature of the features: the
-defect data sets has continuous
+Jureczko data sets have continuous
 features while the 
-config data has binary independent features  (where so setting was turned ``on'' or ``off''). When exploring these different data types, it is possible to find more
-\bi
-\item
-``Gentle slopes'' the lead to small changes
-in  continuous space;
-\item
- ``Sharp cliffs'' that lead to major change in the discrete
-space. 
-\ei
-Hence, our planners can make fewer larger changes in the config data.
- For example, Method3 (BIC) and Method1 (CD) make far fewer changes in   data sets with discrete features (the Siegmund data) than in data with continuous features (the Jureczko data).  
- 
- 
-
-
-
+Seigmund data has binary independent features (where settings can be turned ``ON'' or ``OFF''). While the features of the Jureczko data sets are not constrained, those of Seigmund data sets are subject to several constrains (dictated by their feature models, see \fig{bdbc}). It is possible that planners in Method1, Method2, and Method3 find very few valid settings that can improve the performance scores. 
 
 \input{tex/deltas_avg.tex}
 
@@ -822,14 +787,18 @@ to specific projects by checking how often a planner changes the
 \item	{\em cbo}:  coupling between objects = a value that increases when the methods of one
 				class access services of another.
  
-\item {\em ic}:   inheritance coupling =  \#parent classes  which a given
+\item {\em ic}:   inheritance coupling =  \# parent classes  which a given
 				class is coupled (includeing methods and variables inherited)
 \ei
-For the  {\em lucene} XTREE results  of  \fig{changed},
+In many of our results with the Jureczko data, it was indeed true that the changes
+proposed by XTREE lead to lower coupling. However, the {\em lucene} results were quite
+different and quite surprising.
+
+In the {\em lucene} XTREE results  of  \fig{changed},
 the most frequent change was to alter the lines of code in a class (see the tallest
 red historgram in that figure on the {\em loc}, or lines of code). 
 Looking at the logs of our planner, we can see
-that XTREE's proposed changed is to {\em reduce} the size of a class.
+that XTREE's proposed change is to {\em reduce} the size of a class.
 The only way to do that,  while keeping the  same functionality, it is create a network
 of smaller classes that interact to produce that functionality.
 That is, we would need to {\em increase} the coupling of those classes to achieve XTREE's plan.
@@ -876,7 +845,7 @@ work should vary in order to test the internal validity of our conclusions:
 \bi
 \item All our planners divide data into groups of size $\alpha=\sqrt{N}$
 \item Method2 used the top $\beta=33\%$ most informative features (ranked using INFOGAIN);
-\item Method3 uses a fraction $F=0.5$ to compute the plan from the delta;
+\item Method3 uses  $\omega=0.5$ to find its deltas;
 \item XTREE considered a sibling useful if it's score was less than $\gamma=0.5$ times the mean score of the current leaf.
  \ei
 
@@ -896,7 +865,7 @@ order to repeat, refute, or improve our results.
 \subsection{  Evaluation Bias}\label{sect:coc}
 Another threat to validity of this work is our use
 of predictors learned on the training data to assess the impact of our planners.
-This issues was discussed in detail in \tion{trust}. 
+This issue was discussed in detail in \tion{trust}. 
 
 To those notes, we add a few more details. If possible, planners should be assessed via some external oracle that can accurately assess new examples. For example, in search-based software engineering,
 examples can be assigned objective scores via  some model. In this approach, a changed example can be assessed by
@@ -913,18 +882,17 @@ generating actual objective scores from the model.
 % For assessment purposes, the changes projects were then feed back to the COCOMO
 % oracle. 
 
-The POM3 model~\cite{boehm2003using},~\cite{port2008} is a tool for exploring that management challenge. POM3 implements the Boehm and Turner model of agile programming~\cite{boehm2003balancing} where teams select tasks as they appear in the scrum backlog.  POM3 can study the implications of different ways to adjust task lists in the face of shifting priorities. The model outputs estimates task completion rates; programmer idle rates; and total overall cost. POM3 represents requirements as a set of trees. POM3 models requirements as a dependency tree. A single requirement in the tree of a prioritization value and a cost, along with a list of child-requirements and dependencies. Before any requirement can be satisfied, its children and dependencies must first be satisfied. POM3 simulates changing priorities by making teams aware of random items in the requirements tree at random intervals, thus forcing teams to constantly readjust their "to do" lists. For further details on this model see~\cite{boehm2003balancing}, ~\cite{boehm2003using}, and ~\cite{port2008}. \fig{coc} shows results from using POM3 as an oracle to assess our planning methods and their ability to reduce the project cost. In this experiment, we generated a training and testing set with 1000 randomly generated instances, which we passed to our four methods.
+The POM3 model~\cite{boehm2003using},~\cite{port2008} is a tool for exploring management challenges. POM3 implements the Boehm and Turner model of agile programming~\cite{boehm2003balancing} where teams select tasks as they appear in the scrum backlog.  POM3 can study the implications of different ways to adjust task lists in the face of shifting priorities. The model outputs estimates task completion rates; programmer idle rates; and total overall cost. POM3 models requirements as a dependency tree. A single requirement in the tree of a prioritization value has a cost, along with a list of child-requirements and dependencies. Before any requirement can be satisfied, its children and dependencies must first be satisfied. POM3 simulates changing priorities by making teams aware of random items in the requirements tree at random intervals, thus forcing teams to constantly readjust their "to do" lists. For further details on this model see~\cite{boehm2003balancing}, ~\cite{boehm2003using}, and ~\cite{port2008}. 
+
+\fig{coc} shows results from using POM3 as an oracle to assess our planning methods and their ability to reduce the project cost. In this experiment, we generated a training and testing set with 1000 randomly generated instances, which we passed to our four methods.
 40 times, we let those methods propose changes to those projects. 
-For assessment purposes, the changes projects were then feed back to the POM3
+For assessment purposes, the changed projects were then feed back to the POM3
 oracle. 
 
 Using this approach, it is possible to assess the value of a plan by measuring its
 effectiveness with respect to some ground truth (in this case, the POM3 model).
-As shown in \fig{coc}, XTREE reduces the  passes this assessment. These results from the POM3 model further endorsed the conclusions of the rest
-of this paper; i.e. compared to three other methods,  XTREE's supervised methods are best for generating plans on how to change example projects.
-
-\subsection{  Feasibility}\label{sect:feasibility}
-It is important to also explore the general practicality of the plans. To this end, we are currently undertaking a \textit{feasibility study} in collaboration with industrial partners to assess the general feasibility of our changes. With this study, we would like to understand the nature of changes suggested by XTREE. For example, we want to check if programmers are willing to implement the changes proposed by XTREE or are there other forces (e.g. social, psychological) that might block a team from accepting the advice of an outside oracle like XTREE. Note this a concern not just issues for XTREE, but for any tool proposing refactorings.
+As shown in \fig{coc}, XTREE reduces the cost by 59\% thereby passing this assessment. These results from the POM3 model further endorse our previous conclusions; i.e. compared to three other methods,  XTREE's supervised methods are best for generating plans on how to change example projects.
+ 
  
 \section{Related work}
 
@@ -932,19 +900,19 @@ It is important to also explore the general practicality of the plans. To this e
 
 The XTREE planner is somewhat different to the logical-based planners explored by 
 classical AI. 
-That kind of planning is a logical procedure~\cite{Fikes1971}
+Those kinds of planners employ a logical procedure~\cite{Fikes1971}
 that seeks an ordering on {\em operators} to take some domain
 {\em state} from a {\em start} state to a {\em  goal} state.
 This classical logical approach is known to suffer from
-computational bottlenecks~\cite{Bylander1994} while tools like XTREE will scale to any domains
+computational bottlenecks~\cite{Bylander1994} while tools like XTREE will scale to any domain
 that can generate decision trees.
   
 \subsection{Evaluating Changes}
 
 Some organizations have the resources to 
 run repeated trials to assess  project changes.
-For example, in one   study, Bente et al. report results
-were the same  specification that was developed  by four different organizations~\cite{Anda2009}. Given those kind of resources, it would be possible
+For example, in one   study, Bente et al. reported results
+where the same  specification was developed by four different organizations~\cite{Anda2009}. Given those kind of resources, it would be possible
 to (say) take a code base, assign it to different teams, make these teams  adopt different polices,
 then check in 12 months time
  which teams have fewer defects than the others.  
@@ -957,7 +925,7 @@ diversity of modern software projects, it might be unreasonable to demand that a
 proposed changes for all projects are always evaluated by something like the Bente et al. study.
 Hence, 
 this paper has used data miners to build an oracle that can assess changed examples. The advantage
-of this approach is that it required far less resources to assess the effectiveness of proposed
+of our approach is that it required far less resources to assess the effectiveness of proposed
 changes to a project.  
 
 \subsection{Search-based SE}
@@ -974,7 +942,7 @@ deb14,Cui2005a,zhang07:TEC}.
 
 One problem with these   SBSE methods is that they can  make extensive mutations to the data they are exploring. In the language
 of \tion{trust}, these methods may not be {\em trust-increasing} since those algorithms make no attempt
-to mutate new examples away from the kinds of data used to commission the model (in which case, we would
+to prevent new examples from mutating away from the kinds of data used to commission the model (in which case, we would
 start doubting the model's output).
 
 Another issue with standard search-based SE methods is that they require ready access to 
@@ -992,15 +960,13 @@ the kinds of tools that are widely used in the search-based
 software engineering community such as GALE, NSGA-II, NSGA-III, SPEA2, IBEA, particle swarm optimization, MOEA/D, etc.~\cite{krall14,deb00a,zit02,zit04,%
 deb14,Cui2005a,zhang07:TEC}. Otherwise, we recommend tools like XTREE.
 
+\section{Conclusions}
 
-
-\section{Summary}
-
-The planner proposed in this paper propose changes to software project details in order to improve the expected
+The planner proposed in this paper proposes changes to software project details in order to improve the expected
 value of the performance scores of that part of the project.
 To evaluate these planners,
 data miners can be used to build oracles to assess planners.
-Such planners should be {\em trust-increasing}; i.e. they propose changes that generate
+Such planners should be {\em trust-increasing}; i.e. they should propose changes that generate
 changed examples that are closer to the training data of the data miner.
 One caveat here is that the evaluations we can make on the planner are only as good as the predictive
 performance of the data miner. Hence, if domain data does not support satisfactory predictors, then
@@ -1015,34 +981,40 @@ We conjecture that XTREE worked better than the rest since:
 \item
 It uses a supervised method to divide the data and;
 \item
-When planning how to move examples to better classes, it is   best to  reflects over 
+When planning how to move examples to better classes, it is best to reflect over 
 differences between those classes.
 \ei
+\newpage
+\section{Future Work}
+Future work in this area could explore numerous questions. For example, 
+XTREE, as used here, sought improvements in a one goal (the class variable). Does XTREE work for multi-goal reasoning?
 
-
-\section{Questions for Future Work}
-
-XTREE, as used here, sought improvements in a one goal (the   class variable). Does XTREE work for multi-goal reasoning?
-
- The XTREE algorithm seems quite general to any data of table with rows containing
+Also, the XTREE algorithm seems quite general to any data of table with rows containing
 weighted classes (so we can distinguish ``bad'' rows from ``better'' ones). 
-Does   XTREE works  on   domains (other than the  defect/runtime data explored here)?
+Does   XTREE works  on   domains (other than the defect/runtime data explored here)?
 
 As an example of a domain that might benefit from XTREE, recent results raise doubts about
-the value of changing code to remove ``bad smells''~\cite{Sjoberg13}. Can XTREE be used as a ``really bad smell''
-detector to select the subset of possible refactorings that have the most   potential benefit?
+the value of changing code to remove ``bad smells''~\cite{Sjoberg13}. Can XTREE be used as a ``bad smell'' detector to select the subset of possible refactorings that have the most potential benefit?
 
-As to scalability, XTREE is a post-processor to a decision tree algorithm. Hence, in theory,  XTREE   works on
-  domain where data miners can generate decision trees. Given the current state of the art in Big Data,
-can   XTREE  be applied to  very large data sets?
+As to scalability, XTREE is a post-processor to a decision tree algorithm. Hence, in theory, XTREE   works on domain where data miners can generate decision trees. Given the current state of the art in Big Data, can XTREE  be applied to  very large data sets?
+ 
+We discussed above in \tion{p2p} the general  conclusions of Passos, J{\o}rgensen  et.al~\cite{passos11,jorgensen09};
+i.e. software developers are reluctant to surrender their old biases
+in the face of new data. 
+Accordingly, it must be asked if  the {\em mental resistance} of developers
+will prevent them applying XTREE's automatically generated recommendations of tools?
+Note this this issue is not just a concern for XTREE, but also for any 
+automatic tool proposing refactorings.
 
 There are many more methods for generating plans and
-no   one paper can survey them all. For example, this paper has not explored variations to the $\alpha,\beta,\gamma$
+no   one paper can survey them all. For example, this paper has not explored variations to the $\alpha,\beta$, and $\gamma$
 parameters that controlled XTREE. Would we get better results if we varied those parameters?
 
 That said, the goal of this paper was not to claim that (e.g.) XTREE is some absolute optimal algorithm. Rather, it is
 was to offer a baseline result (with XTREE) and an  evaluation strategy that  can assess  if alternate methods are better than XTREE.
-Will other  researchers apply this strategy  to repeat and/or improve
+The authors of this paper would actively support other teams exploring this
+method (with or without using our current code base). So our last questions is this:
+will other  researchers try to repeat and/or improve
 (or even refute) our results?  Perhaps.
 
 \section*{Acknowledgements}
@@ -1170,7 +1142,7 @@ We will find that
 A recurring data analysis pattern in this paper is $cluster+contrast$. The data is distilled into a few clusters using a clustering scheme. Then lessons are inferred by studying the differences between these clusters. These lessons are used to generate rules that can be applied in any context.
 
 \subsection{Clustering}
-There are a wide variety of clustering methods to choose from. A study by Ganesan~\cite{div14} explored different clustering methods for software engineering data using the effort and defect data from the PROMISE repository~\cite{promise}. In that study methods such as WHERE, K-Means, mini-batch-K-Means, DBScan, EM, and Ward were investigated. The results of the study showed that the size and number of clusters is more important that the specifics of the techniques used. 
+There are a wide variety of clustering methods to choose from. A study by Ganesan~\cite{div14} explored different clustering methods for software engineering data using the effort and Jureczko data from the PROMISE repository~\cite{promise}. In that study methods such as WHERE, K-Means, mini-batch-K-Means, DBScan, EM, and Ward were investigated. The results of the study showed that the size and number of clusters is more important that the specifics of the techniques used. 
 
 For this purposes of this work, we have chosen WHERE, a clustering scheme which is capable of generating at least $\sqrt{N}$ clusters given $N$ instances. In addition to this, WHERE has been shown to run fast while ignoring spurious dimensions~\cite{menzies2013}. This is particularly useful, for much of the SE data is noisy, they contain a information not associated with the target variable. 
 

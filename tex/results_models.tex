@@ -3,14 +3,13 @@
 {\small 
 \begin{tabular}{llrrc}
 \arrayrulecolor{lightgray}
-\textbf{Rank} & \textbf{Treatment} & \textbf{50th} & \textbf{25-75th} & \\\hline
-  1 &          BIC &    -3.3  &  2.2 & \quart{26}{2}{27}{32} \\
-  1 &      CD &    -2.9  &  11.7 & \quart{17}{14}{28}{32} \\
-  1 &      CD+FS &    -2.75  &  65.5 & \quart{0}{78}{28}{32} \\
-\hline  2 &        XTREE &    51.5  &  14.84 & \quart{82}{17}{93}{32} \\
-\end{tabular}}
+\rowcolor{lightgray}\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
+  1 &        XTREE &   59   &  9 & \quart{75}{4}{78}{99} \\
+\hline   2 &      BIC &    5  & 1  & \quart{44}{0}{44}{99} \\
+2 &          CD+FS & -7  & 100  & \quart{0}{53}{43}{99} \\   
+2 &      CD &    -9  &  77 & \quart{21}{41}{42}{99} \\
+\hline \end{tabular}}
 \caption{Methods 1,2,3,4 applied to some ground-truth data (in this case, the POM3 model).
 Values collected from  40 repeated runs of each method with different random seeds.
-Results show the efficacy of XTREE in reducing the total overall cost in the original test data, when other planners fail to do so.
-}\label{fig:coc}
+Results show the efficacy of XTREE in reducing the total overall cost in the original test data, when other planners fail to do so.}\label{fig:coc}
 \end{figure}

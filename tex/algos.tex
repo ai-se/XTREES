@@ -7,7 +7,7 @@
 	
 	For  continuous and discrete values,
 the {\em variability} can be measured using standard deviation $\sigma$ or entropy $e$.
-Note that \mbox{$\sigma = \sqrt{\sum^n_{i=1} \left( \frac{x_i - \bar{x})^2}{n-1}\right)}$}
+Note that \mbox{$\sigma = \sqrt{\sum^n_{i=1} \left( \frac{(x_i - \bar{x})^2}{n-1}\right)}$}
 where $\bar{x}$ is the mean of  numeric features $x_1,x_2,..x_n$.
 Also \mbox{$e = - \sum^n_{i=1} p_i \mathit{log}_2(p_i)$} 
 for  $n$ discrete values  at frequency
@@ -31,7 +31,7 @@ $f_1,f_2,.. f_n$ for \mbox{$N = \sum^n_{i=1} f_i$} and $p_i = f_i/N$.
  
 	{\bf Figure 7.C: Top-down Clustering with WHERE}
 	
-				WHERE  divides data into  groups of size $\alpha=\sqrt{N}$ using 
+				WHERE  divides data into  groups of size $\alpha=\sqrt{N}$. 
 		Using this measure, WHERE runs as follows:
 		\begin{enumerate}[leftmargin=3mm]
 			\item Find   two   distance cases,  $X,Y$
@@ -55,7 +55,7 @@ $f_1,f_2,.. f_n$ for \mbox{$N = \sum^n_{i=1} f_i$} and $p_i = f_i/N$.
 	{\bf Figure 7.D: Top-down division with Decision Trees}
 	
 	Find a split in the values of  independent features that most reduces the variability
-  of the dependent feature (measured using \fig{where}.A). w
+  of the dependent feature (measured using \fig{where}.A). Contruct a tree using these splits.
 	
 	 ~\hrule~
 	 
