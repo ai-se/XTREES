@@ -58,7 +58,7 @@
 \definecolor{FunctionName}{rgb}{0,0,0}
 \definecolor{Operators}{rgb}{0,0,0}
 \definecolor{Background}{rgb}{1,1,1}
-
+\bibliographystyle{unsrt}
  \definecolor{lavenderpink}{rgb}{0.98, 0.68, 0.82}
  \definecolor{celadon}{rgb}{0.67, 0.88, 0.69}
 \newcommand{\G}{\cellcolor{green}}
@@ -119,9 +119,9 @@ rows such that the changed row is more likely to be ``better''.  XTREE
 learns those plans by building a decision tree across the data, then reporting
 the differences in the branches from some current branch to another desired branch.
 
-Using data from 11 software projects,  XTREE found   larger reductions that three
+Using data from 11 software projects,  XTREE found   larger reductions than three
 alternate methods.  Those reductions had 
-median size of (55\%,38.5\%) and   largest size of (78\%,94\%) in
+median size of (56\%,28\%) and   largest size of (60\%,77\%) in
 (defects,runtimes), respectively.
 \end{abstract}
 \section{Introduction}
@@ -175,7 +175,7 @@ For example, to simplify a  large bug-prone  method, our planners might suggest
 to a developer to reduce its size (i.e.  refactor that code by, say, splitting it across
 two simpler functions).
 
-Note that we make no assumption that a plan mentions every features
+Note that we make no assumption that a plan mentions every feature
 (so plan1 can be  more succinct than plan2 when plan1  mentions fewer features than
 plan2).
 
@@ -184,7 +184,7 @@ plan2).
  
  
 This paper is about the next step {\em after} prediction. Suppose
-a business user is presented with  a prediction and they do not like what they see; e.g. the runtimes are too long of the number of defects is too high. This user may
+a business user is presented with  a prediction and they do not like what they see; e.g. the runtimes are too long or the number of defects is too high. This user may
 then ask a {\em planning}  question; i.e. ``what can we change to do better than that?''.
 
  
@@ -200,9 +200,9 @@ According to Passos et al.~\cite{passos11},  developers
 may  assume that the lessons they learn from a few past
 projects are general to 
 all their future projects. They comment ``past experiences were taken into account without 
-much consideration for their context~\cite{passos11}.  
+much consideration for their context''~\cite{passos11}.  
  J{\o}rgensen \& Gruschke~\cite{jorgensen09} offer  a similar warning. They report that 
-  supposed software engineering    ``gurus'' rarely use lessons
+  supposed software engineering    ``Gurus'' rarely use lessons
   from past projects to improve their future reasoning and that such poor
   past advice can be detrimental to new projects.~\cite{jorgensen09}.
   Accordingly, we   propose a ``trust, but verify'' approach.
@@ -220,11 +220,10 @@ SE research community. This approach would propose changes to software
 projects that concur with internationally accept best practices. 
 There are two
 problems with that approach. Firstly, given the rapid pace of change in software
-engineering, we may be asking questions for which there is no currently accept
+engineering, we may be asking questions for which there is no currently acceptable
 ``best practice''. For example, only very recently has there been any work
 of predicting software runtimes based on choices within Makefiles. While the work
-of Siegmund et al.~\cite{sven12} is certainly state of the art, it does
-cannot yet represent ``internationally accept best practices'' since that work is so
+of Siegmund et al.~\cite{sven12} is certainly state of the art, it does not yet represent ``internationally accept best practices'' since that work is so
 recent. 
 
 Secondly, given the diversity of SE products and practices
@@ -232,7 +231,7 @@ and personnel, it may well be that the current project being discussed is
 substantively different to prior work. 
 Numerous recent {\em local learning} results compare (1) single models
 learned from all available data to (2) multiple models learned from clusters within the data~\cite{betten14,yang11,yang13,minku13,me12d,me11m,posnett11}.
-A repeated result in those studies in that the local models generated the better effort
+A repeated result in those studies is that the local models generated better effort
 and defect predictions (better median results,
 lower variance in the predictions). \tion{surprise} of this  paper offers yet another locality result:
 \bi
@@ -242,11 +241,11 @@ is that it is useful to implement modules such that they are internally cohesive
 much of their own local methods) while being loosely coupled with other classes~\cite{Dhama199565}.
 \item
 While that may be true in general, for particular classes other changes may be more important
-(later in this paper, we show one set of results were that is indeed the case).
+(later in this paper, we show one set of results where that is indeed the case).
 \ei
 In summary, 
 it is useful to have automatic methods to recommend changes. Such
-methods can fill in for human gurus (if such gurus are absent) or 
+methods can fill in for human gurus (if such Gurus are absent) or 
 to offer a second opinion.
 Also, prior to making automatic recommendations, it is wise to first stratify the data
 (clump it into related examples) then generate advice specific to each clump.
@@ -269,7 +268,7 @@ To answer this question, we note
 that data miners explore two  ``clouds'' of data: (1) the cloud of training examples and (2) the  cloud   of test examples
 (for a visualization of these clouds, see \fig{howxy}).
 \begin{figure}[!t]
-  \includegraphics[width=\linewidth]{figs/twodee.eps} 
+  \includegraphics[width=\linewidth]{figs/2d.eps} 
  % \includegraphics[width=1\linewidth]{figs/BDBC.eps}
 \caption{Gray, red, green show (1) training examples, (2) test examples and 
   (3) tests that have been altered by planners.
@@ -283,12 +282,9 @@ To test for ``too far'', we can run a data mining experiment that tests how well
 a model learned from the training data applies to the test data. Such experiments return some performance value.
 
 Note that predictions  about changes that  fall within the space of the training+test data, will be at least
-as reliable as the performance value found in the above data mining experiment.
-Given this, one thing  can be asserted about predictions on changed examples:
-\bi
-\item Predictions for changes that move examples towards/away from the training data can be trusted more/less (respectively).
-\ei  
-Accordingly, we should use  {\em trust-increasing} planners that generate changed examples {\em closer} to the
+as accurate as the predictions of the original test data. With this, we assert that the predictions for changes that move examples towards/away from the training data can be trusted more/less (respectively).
+
+Accordingly, we should use {\em trust-increasing} planners that generate changed examples {\em closer} to the
 training examples.  To see how this works, 
  \fig{howxy} is from the {\em ivy} data
 set, which is one of the Jureczko data sets explored in this paper. It shows: (1)~the training examples in gray, (2)~the test examples in red, and (3)~the
@@ -298,18 +294,18 @@ cases  (shown in green)  fall closer to the training cases (shown in gray) than
 the test cases (shown in red). 
 
 In that green region of changed examples, our belief in the value of predictions
-will be as much (or more) as our belief in the value of the predictions in the red region (that
+will be as much, if not more than our belief in the value of the predictions in the red region (that
 contains the original test data).
-This pattern of \fig{howxy} (where the changes examples are found closer to  the training cases than the test cases) has been observed in all the other data sets studied in this
+This pattern of \fig{howxy} (where the examples are found closer to  the training cases than the test cases) has been observed in all the other data sets studied in this
 paper. Hence,  we can assert that
 predictors learned from these training examples have some authority in the regions
-contain the changes examples.
+containing the changes examples.
 
 
 That said, the above comes with some important caveats:
 \bi
 \item 
-The quality of the prediction depends on the nature of the training data. Thus, we strongly recommend that both data set and the predictor be assessed prior to planning. This ensures that the predictor's performance is adequate for a data set. We tackle this issue in detail in \tion{tesd}.
+The quality of the prediction depends on the nature of the training data. Thus, we strongly recommend that both the data set and the predictor be assessed prior to planning. This ensures that the predictor's performance is adequate for a data set. We tackle this issue in detail in \tion{tesd}.
 \item
 Planners should be designed to be {\em trust increasing}. We list four such planning methods in \tion{planners}.
 \item
@@ -368,23 +364,23 @@ x264 & Video Enc. & C& 45,743 & 16 & 1152\\\hline
 
  \section{Test Data}\label{sect:tesd}
 To assess our planning methods, we use data from Jureczko et al.'s object-oriented JAVA systems~\cite{jureczko10}  and
-  software system   configuration data from by  Siegmund et al.~\cite{sven12}.
-  See github.com/ai-se/XTREE\#data for full access to this data.
+  software system   configuration data from by  Siegmund et al.~\cite{sven12}\footnote{ See \url{http://git.io/vGYxc} for full access to this data.}.
+ 
   
   
-   The Jurecko data records number of known defects for each class using a post-release bug tracking system. The classes are described in terms of
-  nearly two dozen metrics such as number of children, lines of code, etc. For details on the Jurecko data, see  \fig{ck} and \fig{jd}. 
- All the planning methods of this paper reflect on the numeric value of the raw defect counts. The predictor considers defects to be a discrete class data set,where defects are \textit{\texttt{TRUE}} if the numeric defect count is greater than zero and \textit{\texttt{FALSE}} otherwise.
+   The Jureczko data records number of known defects for each class using a post-release bug tracking system. The classes are described in terms of
+  nearly two dozen metrics such as number of children (noc), lines of code (loc), etc. For details on the Jureczko data, see  \fig{ck} and \fig{jd}. 
+ All the planning methods of this paper reflect on the numeric value of the raw defect counts. The predictor considers defects to a Boolean class data set, where defects are \texttt{TRUE} if the numeric defect count is greater than zero and \texttt{FALSE} otherwise.
 
-  The Siegmund data, described in \fig{cpm},  records  the runtimes of compiled systems. To make that data, Siegmund et al. perturbed
+  The Siegmund data, described in \fig{cpm},  records  the runtimes of compiled systems. To obtain the  data, Siegmund et al. perturbed
   the configuration parameters in the Makefiles of six systems: Apache, SQLite, LLVM, x264 and two versions of the
-  Berkeley database (one written in ``C'' and one in Java). Then, the performance was measured using standard benchmarking tools (delivered by \textsc{Oracle} for Berkley data sets and other popular tools such as \textsc{autobench} and \textsc{httpref} for the rest)~\cite{sven12}. It's worth noting that in each of the above data set, some configurations are interdependent, this is expressed using a \textit{feature model}.
-   \fig{bdbc} shows an example of such a feature model defining valid combinations of settings to on the Berkley database (``C'' version). These feature models were used by Siegmund et al. to ensure all their perturbations are valid
+  Berkeley database (one written in ``C'' and one in Java). Then, the performance was measured using standard benchmarking tools (delivered by \textsc{Oracle} for Berkley data sets and other popular tools such as \textsc{autobench} and \textsc{httpref} for the rest)~\cite{sven12}. It's worth noting that in each of the above data set, several configurations are interdependent, this is expressed using a \textit{feature model}.
+   \fig{bdbc} shows an example of such a feature model defining valid combinations of settings in the Berkley database (``C'' version). These feature models were used by Siegmund et al. to ensure all their perturbations are valid
    (we will use the same models to cull invalid plans).
   
 \input{tex/prediction_stats.tex}
 
-  Our evaluation strategy (discussed below) divides this data into a training a test set.
+  Our evaluation strategy (discussed below) divides this data into a training and a test set.
   From the train set we apply a data miner (to learn a quality predictor) and
   various planning methods (to learn different plans). Next, we try applying
   each of those plans to the  test set and ask the quality predictor to assess the changed examples.
@@ -392,15 +388,15 @@ To assess our planning methods, we use data from Jureczko et al.'s object-orient
   in the changed examples.
   
   As mentioned in the last section,  this approach depends on having effective predictors for assessing the results.
-  For the Siegmind data, this criteria was   relatively easy to achieve.
+  For the Siegmund data, this criteria was   relatively easy to achieve.
   The data in those data sets have a continuous class (runtime of the compiled system)
-  so the performance of a quality predictor can  be measured in terms of  difference between the predicted runtime $p$ of test case items and their actual runtimes $a$ using  $s= 1 - \frac{abs(a - p)}{a}$ (and {\em higher} values are {\em better}).
+  so the performance of a quality predictor can  be measured in terms of  difference between the predicted runtime $p$ of test case items and their actual runtimes $a$ using  $s= (1 - \frac{abs(a - p)}{a})\times100\%$ ({\em higher} values are {\em better}).
 This paper  explores six Siegmund configuration data sets:  Berkeley DB (Java and C versions), Apache, SQLite, LLVM, and
   x264. 
-  As a preliminary study, we split that data   into equal sized train:test groups
+  As a preliminary study, we split that data into equal sized train:test groups
   and trained a Random Forest
-  Regressor (from the SciKit learn kit~\cite{Pedregosa2012})   on one half, then applied to the other. This  achieved nearly perfect scores of $s=\{99.9, 99.8, 99.4, 99.1, 96.1\}\%$.
-That is, we can be very confident that the predictors from the Siegmund data can assess
+  Regressor (from the SciKit learn kit~\cite{Pedregosa2012})   on one half, then applied to the other. After repeating this process 40 times, we achieved nearly perfect accuracy of $s=\{99.9, 99.8, 99.4, 99.1, 96.1\}\%$.
+Therefore, we can be very confident that the predictors from the Siegmund data can assess
 our plans. (Aside: if the reader doubts that such high scores are achievable, we note that these scores are consistent with those achieved by predictors built by Siegmund et al.~\cite{sven12}.)
 
 
@@ -416,10 +412,10 @@ Given access to $V$ released
 versions, we test on version $V$ and train on the available data from $V-1$ earlier releases (as
 shown in \fig{j}, this means that we are training on hundreds to thousands
 of classes and testing on smaller test suites).
-Note the   \colorbox{lavenderpink}{three bottom rows}   marked with $\times$: these contain predominately defective classes (two-thirds, or more).  In such data sets, it is hard to distinguish good from bad (since there are so many bad examples). 
+Note the   \colorbox{lavenderpink}{three bottom} \colorbox{lavenderpink}{rows}   marked with $\times$: these contain predominately defective classes (two-thirds, or more).  In such data sets, it is hard to distinguish good from bad (since there are so many bad examples). 
 
 
-The  Jureczko data uses non-numeric discrete classes (``defective'' or ``not'').
+In order to identify the presence (or absence) of defects, we can consider using Boolean classes in the  Jureczko data ( \texttt{True} if defects $\gt$ 0; \texttt{False} if defects = 0).
 For such data, quality predictor   is be measured using
 (1) the  probability of detection (a.k.a. ``pd'' or recall):  the percent of faulty classes in
 the test data detected
@@ -430,9 +426,9 @@ classes that are {\em predicted} to be defective.
 As a preliminary study, we split the Jureczko  data into train and test groups.
 Random Forests (again, from the SciKit learn kit~\cite{Pedregosa2012}) were
 built from the training data, then applied to the test data.
-The ``untuned'' columns of \fig{j} shows those results. We called a data set ``usable'' if Random Forest was able to classify majority of the instances correctly. For this purpose, we set a threshold of $\mathit{pd}\ge 60 \wedge \mathit{pf} \le 30$\% to select these data sets. With this threshold, however, none of our data sets were be suitable for this study.
+The ``untuned'' columns of \fig{j} shows those results. We called a data set ``usable'' if Random Forest was able to classify majority of the instances correctly. For this purpose, we set a threshold of $\mathit{pd}\ge 60 \wedge \mathit{pf} \le 30$\% to select suitable data sets. With this threshold, however, none of our data sets were be suitable for this study.
 
-Fortunately, the ``tuned'' columns of \fig{j} show that we can salvage some of the data sets. Pelayo and Dick~\cite{pelayo07} report that defect prediction is improved by SMOTE~\cite{Chawla2002}; i.e. an over-sampling of minority-class examples and under-sampling of majority-class examples. Also, Fu et al.~\cite{fu:ase15} report that parameter tuning with differential evolution~\cite{storn97} can quickly explore the tuning options of Random Forest to find better settings for the (e.g.) size of the forest, the termination criteria
+Fortunately, the ``tuned'' columns of \fig{j} show that we can salvage some of the data sets. Pelayo and Dick~\cite{pelayo07} report that defect prediction is improved by SMOTE~\cite{Chawla2002}; i.e. an over-sampling of minority-class examples and an under-sampling of majority-class examples. Also, Fu et al.~\cite{fu:ase15} report that parameter tuning with differential evolution~\cite{storn97} can quickly explore the tuning options of Random Forest to find better settings for the (e.g.) size of the forest, the termination criteria
 for tree generation, etc. The rows \colorbox{celadon}{marked with a $\star$} in \fig{j} show data sets whose performance was improved remarkably by these techniques. For example, in {\em poi}, the recall increased by 4\% while the false alarm rate dropped by 21\%. However,  as might have been expected, we could not salvage the data sets in the  three bottom rows.
 
 In summary, while we cannot trust predictors from some of our defect data sets,
@@ -881,8 +877,7 @@ work should vary in order to test the internal validity of our conclusions:
 \item All our planners divide data into groups of size $\alpha=\sqrt{N}$
 \item Method2 used the top $\beta=33\%$ most informative features (ranked using INFOGAIN);
 \item Method3 uses a fraction $F=0.5$ to compute the plan from the delta;
-\item Method4 (XTREE) assumed that another sibling was useful if  had 
- a  score less than $\gamma=0.5$ times the mean score of the current leaf.
+\item XTREE considered a sibling useful if it's score was less than $\gamma=0.5$ times the mean score of the current leaf.
  \ei
 
 \subsection{  Sampling bias} 
