@@ -645,7 +645,7 @@ if $m,n$ are significantly different  (in our case, the conjunction of A12 and b
 If so, Scott-Knott  recurses on the splits.
 In other words, we divide the data if \textit{both} bootstrap sampling and effect size test agree that a division is statistically significant (with a confidence of 99\%) and not a small effect ($A12 \ge 0.6$).
 
-For a justification of the use of non-parametric bootstrapping, see Efron \& Tibshirani~\cite[p220-223]{efron93}. For a justification of the use of effect size tests see Shepperd\&MacDonell~\cite{shepperd12a}; Kampenes~\cite{kampenes07}; and Kocaguenli et al.~\cite{Kocaguneli2013:ep}. These researchers warn that even if an hypothesis test declares two populations to be ``significantly'' different, then that result is misleading if the ``effect size'' is very small. Hence, to assess the performance differences we first must rule out small effects using A12, a test   recently endorsed by Arcuri and Briand at ICSE'11~\cite{arcuri11}.
+For a justification of the use of non-parametric bootstrapping, see Efron \& Tibshirani~\cite[p220-223]{efron93}. For a justification of the use of effect size tests see Shepperd\&MacDonell~\cite{shepperd12a}; Kampenes~\cite{kampenes07}; and Kocaguenli et al.~\cite{Kocaguneli2013:ep}. These researchers warn that even if a hypothesis test declares two populations to be ``significantly'' different, then that result is misleading if the ``effect size'' is very small. Hence, to assess the performance differences we first must rule out small effects using A12, a test   recently endorsed by Arcuri and Briand at ICSE'11~\cite{arcuri11}.
 
 
 
@@ -713,7 +713,7 @@ and {\em surprise}, which is how different are the plans from standard truisms.
 
 
 Measured in terms of effectiveness,
-some data sets were harder to optimize that others.  SQL (in \fig{conf1}) defied all 
+some data sets were harder to optimize than others.  SQL (in \fig{conf1}) defied all 
 our methods for reducing runtimes. While all methods performed equally well for Jedit, XTREE was the only method that could optimize BDBJ (in \fig{conf1}). In general, in most data sets,
 large reductions were observed:
 \bi
@@ -741,7 +741,7 @@ The left-hand-side plot of that figure reports results from one of the  Jureczko
   where 
   it   recommends changing a particular feature (i.e. the vertical bars in that plot
   are {\em lower}). For example,
-  XTREE's plans were usually succinct--  in all  data sets,
+  XTREE's plans were usually succinct --  in all  data sets,
  XTREE   changes around a fifth of the features (see \fig{types}).
 On other hand,  Method1 (CD) was the least succinct  since it  wanted to change all features 
  (observe the change frequencies as 
@@ -770,7 +770,7 @@ Seigmund data has binary independent features (where settings can be turned ``ON
 \subsubsection{Surprising Results}\label{sect:surprise}
 
 If a planner only ever reports conclusions that were already known, then that planner offers
-little value-added over ``just use established wisdom''. Accordingly, we studied our results
+little value over ``just use established wisdom''. Accordingly, we studied our results
 for plans that were somewhat counter-intuitive. 
 
 Such a surprising plan can be  seen in the {\em lucene} results. Recall the standard advice for
@@ -799,7 +799,7 @@ the most frequent change was to alter the lines of code in a class (see the tall
 red historgram in that figure on the {\em loc}, or lines of code). 
 Looking at the logs of our planner, we can see
 that XTREE's proposed change is to {\em reduce} the size of a class.
-The only way to do that,  while keeping the  same functionality, it is create a network
+The only way to do that,  while keeping the  same functionality, is to create a network
 of smaller classes that interact to produce that functionality.
 That is, we would need to {\em increase} the coupling of those classes to achieve XTREE's plan.
 
@@ -882,11 +882,11 @@ generating actual objective scores from the model.
 % For assessment purposes, the changes projects were then feed back to the COCOMO
 % oracle. 
 
-The POM3 model~\cite{boehm2003using},~\cite{port2008} is a tool for exploring management challenges. POM3 implements the Boehm and Turner model of agile programming~\cite{boehm2003balancing} where teams select tasks as they appear in the scrum backlog.  POM3 can study the implications of different ways to adjust task lists in the face of shifting priorities. The model outputs estimates task completion rates; programmer idle rates; and total overall cost. POM3 models requirements as a dependency tree. A single requirement in the tree of a prioritization value has a cost, along with a list of child-requirements and dependencies. Before any requirement can be satisfied, its children and dependencies must first be satisfied. POM3 simulates changing priorities by making teams aware of random items in the requirements tree at random intervals, thus forcing teams to constantly readjust their "to do" lists. For further details on this model see~\cite{boehm2003balancing}, ~\cite{boehm2003using}, and ~\cite{port2008}. 
+The POM3 model~\cite{boehm2003using},~\cite{port2008} is a tool for exploring management challenges. POM3 implements the Boehm and Turner model of agile programming~\cite{boehm2003balancing} where teams select tasks as they appear in the scrum backlog.  POM3 can study the implications of different ways to adjust task lists in the face of shifting priorities. The model outputs estimated task completion rates; programmer idle rates; and total overall cost. POM3 models requirements as a dependency tree. A single requirement in the tree of a prioritization value has a cost, along with a list of child-requirements and dependencies. Before any requirement can be satisfied, its children and dependencies must first be satisfied. POM3 simulates changing priorities by making teams aware of random items in the requirements tree at random intervals, thus forcing teams to constantly readjust their "to do" lists. For further details on this model see~\cite{boehm2003balancing}, ~\cite{boehm2003using}, and ~\cite{port2008}. 
 
 \fig{coc} shows results from using POM3 as an oracle to assess our planning methods and their ability to reduce the project cost. In this experiment, we generated a training and testing set with 1000 randomly generated instances, which we passed to our four methods.
 40 times, we let those methods propose changes to those projects. 
-For assessment purposes, the changed projects were then feed back to the POM3
+For assessment purposes, the changed projects were then fed back to the POM3
 oracle. 
 
 Using this approach, it is possible to assess the value of a plan by measuring its
@@ -898,7 +898,7 @@ As shown in \fig{coc}, XTREE reduces the cost by 59\% thereby passing this asses
 
 \subsection{Planning in AI}
 
-The XTREE planner is somewhat different to the logical-based planners explored by 
+The XTREE planner is somewhat different to the logic-based planners explored by 
 classical AI. 
 Those kinds of planners employ a logical procedure~\cite{Fikes1971}
 that seeks an ordering on {\em operators} to take some domain

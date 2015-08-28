@@ -22,7 +22,7 @@ $f_1,f_2,.. f_n$ for \mbox{$N = \sum^n_{i=1} f_i$} and $p_i = f_i/N$.
 		 (usually set to 1).
 			Within $\Delta$, if   $X_i,Y_i$ are both missing  values, then  return 1.
 			Otherwise, replace any  missing items with values that maximizes the following.
-			For numerics $\Delta$ normalizes $X_i,Y_i$ (to the range 0,1 for min,max) then
+			For numerics, $\Delta$ normalizes $X_i,Y_i$ (to the range 0,1 for min,max) then
 			returns 
 			$X_i - Y_i$. For discrete variables, $\Delta$ returns 0,1 if $X_i,Y_i$ are the
 			same,different (respectively).  
