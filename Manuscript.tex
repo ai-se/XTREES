@@ -742,7 +742,7 @@ there are fewer changed features in the Seigmund data than in the defect predict
 One explanation for that is the nature of the features: the
 Jureczko data sets have continuous
 features while the 
-Seigmund data has binary independent features (where settings can be turned ``ON'' or ``OFF''). While the features of the Jureczko data sets are not constrained, those of Seigmund data sets are subject to several constrains (dictated by their feature models, see \fig{bdbc}). It is possible that planners in Method1, Method2, and Method3 find very few valid settings that can improve the performance scores, thereby making insignificant changes. As evidenced by the results in \fig{}
+Seigmund data has binary independent features (where settings can be turned ``ON'' or ``OFF''). While the features of the Jureczko data sets are not constrained, those of Seigmund data sets are subject to several constrains (dictated by their feature models, see \fig{bdbc}). It is possible that planners in Method1, Method2, and Method3 find very few valid settings that can improve the performance scores, thereby making insignificant changes. As a result all methods, except XTREE, fail to optimize the runtime, as evidenced by the results in \fig{conf1}.
 
 \input{tex/deltas_avg.tex}
 
@@ -750,11 +750,11 @@ Seigmund data has binary independent features (where settings can be turned ``ON
 
 \subsubsection{Surprising Results}\label{sect:surprise}
 
-If a planner only ever reports conclusions that were already known, then that planner offers
+If a planner only ever reported conclusions that were already known, then that planner offers
 little value over ``just use established wisdom''. Accordingly, we studied our results
 for plans that were somewhat counter-intuitive. 
 
-Such a surprising plan can be  seen in the {\em lucene} results. Recall the standard advice for
+Such a surprising plan can be  seen in {\em lucene}. Recall the standard advice for
 OO systems: build classes that are internally cohesive with low coupling to other parts of the system~\cite{Dhama199565}. We can assess the relevance of this advice
 to specific projects by checking how often a planner changes the
  coupling-related features:
@@ -773,11 +773,11 @@ to specific projects by checking how often a planner changes the
 \ei
 In many of our results with the Jureczko data, it was indeed true that the changes
 proposed by XTREE lead to lower coupling. However, the {\em lucene} results were quite
-different and quite surprising.
+different and rather surprising.
 
 In the {\em lucene} XTREE results  of  \fig{changed},
 the most frequent change was to alter the lines of code in a class (see the tallest
-red historgram in that figure on the {\em loc}, or lines of code). 
+red histogram in that figure on the {\em loc}, or lines of code). 
 Looking at the logs of our planner, we can see
 that XTREE's proposed change is to {\em reduce} the size of a class.
 The only way to do that,  while keeping the  same functionality, is to create a network
@@ -824,7 +824,7 @@ That said, we have taken care to document in this paper the decisions made by en
 judgement that could effect our conclusions. The above code used a set of variables which future
 work should vary in order to test the internal validity of our conclusions:
 \bi
-\item All our planners divide data into groups of size $\alpha=\sqrt{N}$
+\item All our planners divide data into groups of size $\alpha=\sqrt{N}$;
 \item Method2 used the top $\beta=33\%$ most informative features (ranked using INFOGAIN);
 \item Method3 uses  $\omega=0.5$ to find its deltas;
 \item XTREE considered a sibling useful if it's score was less than $\gamma=0.5$ times the mean score of the current leaf.
