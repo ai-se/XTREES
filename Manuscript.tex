@@ -854,16 +854,7 @@ generating actual objective scores from the model.
 
 \input{tex/results_models.tex}
 
-% For example, the COCOMO model from University of 
-% Southern California estimates software development time using a combination of industrial data and some domain expertise
-% from its author (Barry Boehm). \fig{coc} shows results from using COCOMO 
-% as an oracle to assess our planning methods. In this experiment, random projects were used as COCOMO
-% inputs. This generated an development time estimate for each example, which we passed to our four methods.
-% 40 times, we let those methods propose changes to those projects. 
-% For assessment purposes, the changes projects were then feed back to the COCOMO
-% oracle. 
-
-The POM3 model~\cite{boehm2003using},~\cite{port2008} is a tool for exploring management challenges. POM3 implements the Boehm and Turner model of agile programming~\cite{boehm2003balancing} where teams select tasks as they appear in the scrum backlog.  POM3 can study the implications of different ways to adjust task lists in the face of shifting priorities. The model outputs estimated task completion rates; programmer idle rates; and total overall cost. POM3 models requirements as a dependency tree. A single requirement in the tree of a prioritization value has a cost, along with a list of child-requirements and dependencies. Before any requirement can be satisfied, its children and dependencies must first be satisfied. POM3 simulates changing priorities by making teams aware of random items in the requirements tree at random intervals, thus forcing teams to constantly readjust their "to do" lists. For further details on this model see~\cite{boehm2003balancing}, ~\cite{boehm2003using}, and ~\cite{port2008}. 
+The POM3 model~\cite{boehm2003using},~\cite{port2008} is a tool for exploring management challenges. POM3 implements the Boehm and Turner model of agile programming~\cite{boehm2003balancing} where teams select tasks as they appear in the scrum backlog.  POM3 can study the implications of different ways to adjust task lists in the face of shifting priorities. The model outputs estimated task completion rates; programmer idle rates; and total overall cost. POM3 models requirements as a dependency tree. A single requirement in the tree of a prioritization value has a cost, along with a list of child-requirements and dependencies. Before any requirement can be satisfied, its children and dependencies must first be satisfied. POM3 simulates changing priorities by making teams aware of random items in the requirements tree at random intervals, thus forcing teams to constantly readjust their "to do" lists. For further details on this model see~\cite{boehm2003using},~\cite{port2008}, and~\cite{boehm2003balancing}. 
 
 \fig{coc} shows results from using POM3 as an oracle to assess our planning methods and their ability to reduce the project cost. In this experiment, we generated a training and testing set with 1000 randomly generated instances, which we passed to our four methods.
 40 times, we let those methods propose changes to those projects. 
@@ -885,7 +876,7 @@ Those kinds of planners employ a logical procedure~\cite{Fikes1971}
 that seeks an ordering on {\em operators} to take some domain
 {\em state} from a {\em start} state to a {\em  goal} state.
 This classical logical approach is known to suffer from
-computational bottlenecks~\cite{Bylander1994} while tools like XTREE will scale to any domain
+computational bottlenecks~\cite{Bylander1994}. On the other hand, tools like XTREE will scale to any domain
 that can generate decision trees.
   
 \subsection{Evaluating Changes}
@@ -899,13 +890,12 @@ then check in 12 months time
  which teams have fewer defects than the others.  
  
 
-Very few industrial or research groups have access
+Seldom do industrial or research groups have access
 to the kinds of resources needed for this kind study  (evidence: in the six years since the
 publication of that work, we know of only one   similar study to Bente et al.). Also, given the
 diversity of modern software projects, it might be unreasonable to demand that all
 proposed changes for all projects are always evaluated by something like the Bente et al. study.
-Hence, 
-this paper has used data miners to build an oracle that can assess changed examples. The advantage
+Hence, this paper has used data miners to build an oracle that can assess changed examples. The advantage
 of our approach is that it required far less resources to assess the effectiveness of proposed
 changes to a project.  
 
