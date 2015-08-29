@@ -106,23 +106,15 @@ Lucas Layman \\
 }
 \maketitle
 \begin{abstract}
- Business users now demand more insightful
- analytics; specifically, tools that generate ``plans''--
-  specific suggestions on  what to change  in order to
- improve  the predicted values.
+
+Business users now demand more insightful analytics; specifically, tools that generate ``plans''-- specific suggestions on  what to change  in order to improve  the predicted values.
  
- This paper proposes  the  XTREE planner for software projects. 
-XTREE inputs tables of data of independent features plus a   weighted class
-  indicating how much each row is  ``bad'' or  ``better''. 
-  Plans are edits to  
-rows such that the changed row is more likely to be ``better''.  XTREE
-learns those plans by building a decision tree across the data, then reporting
-the differences in the branches from some current branch to another desired branch.
-Using data from 11 software projects,  XTREE can find  larger reductions than three
-alternate methods.  Those reductions had 
-median size of (56\%,28\%) and   largest size of (60\%,77\%) in
-(defects,runtimes), respectively.
+This paper proposes XTREE, a planner for software projects. XTREE receives tables of data with independent features and a corresponding weighted class which indicates the quality (``bad'' or ``better'') of each row in the table. Plans are edits to  the rows which ensures the changed row is more likely to be of a ``better'' quality.  XTREE learns those plans by building a decision tree across the data, then reporting the differences in the branches from some current branch to another desired branch.
+Using data from 11 software projects,  XTREE can find better plans compared to three
+alternate methods. Those plans have lead to improvements with a median size of (56\%, 28\%) and   largest size of (60\%, 77\%) in (defect counts, runtimes), respectively.
 \end{abstract}
+
+\keywords{Defect prediction; Configuration; Planning; Decision trees.}
 \section{Introduction}
 Business users are demanding  tools that support    business-level interpretations of their data. At a panel on software analytics at ICSE`12, industrial practitioners lamented the state of the art in software analytics~\cite{menzies12a}. Panelists commented  ``prediction is all well and good, but what about decision making?''. Note that these panelists were more interested in the interpretations and follow-up that occurs after the mining, rather than just the mining itself. So:
 \bi
@@ -242,7 +234,7 @@ While that may be true in general, for particular classes other changes may be m
 \ei
 In summary, 
 it is useful to have automatic methods to recommend changes. Such
-methods can fill in for human gurus (if such Gurus are absent) or 
+methods can fill in for human expertise (if such experts are absent) or 
 to offer a second opinion.
 Also, prior to making automatic recommendations, it is wise to first stratify the data
 (clump it into related examples) then generate advice specific to each clump.
@@ -281,7 +273,7 @@ a model learned from the training data applies to the test data. Such experiment
 Note that predictions  about changes that  fall within the space of the training+test data, will be at least
 as accurate as the predictions of the original test data. With this, we assert that the predictions for changes that move examples towards/away from the training data can be trusted more/less (respectively).
 
-Accordingly, we need {\em trust-increasing} planners to generate changed examples {\em closer} to the
+Accordingly, we need {\em trust-increasing} planners to generate new examples {\em closer} to the
 training examples.  To see how this works, 
  \fig{howxy} is from the {\em ivy} data
 set (one of the Jureczko data sets used in this paper). It shows: (1)~the training examples in gray, (2)~the test examples in red, and (3)~the
@@ -291,9 +283,9 @@ cases  (shown in green)  fall closer to the training cases (shown in gray) than
 the test cases (shown in red). 
 
 In that green region of changed examples, our belief in the value of predictions
-will be as much, if not more than our belief in the value of the predictions in the red region (that
+will be just as much as, if not more than, our belief in the value of the predictions in the red region (that
 contains the original test data).
-This pattern of \fig{howxy} (where the examples are found closer to  the training cases than the test cases) has been observed in all the other data sets studied in this
+This pattern of \fig{howxy} (where the new examples are found closer to  the training cases than the test cases) has been observed in all the other data sets studied in this
 paper. Hence,  we can assert that
 predictors learned from these training examples have some authority in the regions
 containing the changes examples.
@@ -367,11 +359,11 @@ To assess our planning methods, our data (see git.io/vGYxc) comes from Jureczko 
   
    The Jureczko data records the number of known defects for each class using a post-release bug tracking system. The classes are described in terms of
   nearly two dozen metrics such as number of children (noc), lines of code (loc), etc. For details on the Jureczko data, see  \fig{ck} and \fig{jd}. 
- All the planning methods of this paper reflect on the numeric value of the raw defect counts. The predictor considers defects to a Boolean class data set, where defects are \texttt{TRUE} if the numeric defect count is greater than zero and \texttt{FALSE} otherwise.
+ All the planning methods of this paper reflect on the numeric value of the raw defect counts. The predictor considers defects to be a Boolean class data set, where defects are \texttt{TRUE} if the numeric defect count is greater than zero and \texttt{FALSE} otherwise.
 
   The Siegmund data, described in \fig{cpm},  records  the runtimes of compiled systems. To obtain the  data, Siegmund et al. perturbed
   the configuration parameters in the Makefiles of six systems: Apache, SQLite, LLVM, x264 and two versions of the
-  Berkeley database (one written in ``C'' and one in Java). Then, the performance was measured using standard benchmarking tools (delivered by \textsc{Oracle} for Berkley data sets and other popular tools such as \textsc{autobench} and \textsc{httpref} for the rest)~\cite{sven12}. It's worth noting that in each of the above data set, several configurations are interdependent, this is expressed using a \textit{feature model}.
+  Berkeley database (one written in ``C'' and one in Java). Then, the performance was measured using standard benchmarking tools (delivered by \textsc{Oracle} for Berkley data sets and other popular tools such as \textsc{autobench} and \textsc{httpref} for the rest)~\cite{sven12}. It's worth noting that in each of the above data sets, several features are interdependent, this is expressed using a \textit{feature model}.
    \fig{bdbc} shows an example of such a feature model defining valid combinations of settings in the Berkley database (``C'' version). These feature models were used by Siegmund et al. to ensure all their perturbations are valid
    (we will use the same models to cull invalid plans).
   
@@ -392,7 +384,7 @@ This paper  explores six Siegmund configuration data sets:  Berkeley DB (Java an
   x264. 
   As a preliminary study, we split that data into equal sized train:test groups
   and trained a Random Forest
-  Regressor (from the SciKit learn kit~\cite{Pedregosa2012})   on one half, then applied to the other. After repeating this process 40 times, we achieved nearly perfect accuracy of $s=\{99.9, 99.8, 99.4, 99.1, 96.1\}\%$;
+  Regressor (from the SciKit learn kit~\cite{Pedregosa2012})   on one half, then applied to the other. After repeating this process 40 times, we achieved nearly perfect accuracy of $s=\{99.8, 99.1, 96.1, \}\%$;
   i.e.  we are confident that the predictors from the Siegmund data can assess
 our plans. (Aside: if the reader doubts that such high scores are achievable, we note that these scores are consistent with those achieved by predictors built by Siegmund et al.~\cite{sven12}.)
 
@@ -413,7 +405,7 @@ Note the   \colorbox{lavenderpink}{three bottom} \colorbox{lavenderpink}{rows}  
 
 
 In order to identify the presence (or absence) of defects, we can consider using Boolean classes in the  Jureczko data ( \texttt{True} if defects $\gt$ 0; \texttt{False} if defects = 0).
-For such data, quality predictor   is be measured using
+For such data, quality of the predictor can be measured using
 (1) the  probability of detection (a.k.a. ``pd'' or recall):  the percent of faulty classes in
 the test data detected
 by the {\em predictor}; and (2) the 
@@ -421,7 +413,7 @@ probability of false alarm (a.k.a. ``pf''): the percent of non-fault
 classes that are {\em predicted} to be defective.
 
 As a preliminary study, we split the Jureczko  data into train and test groups.
-Random Forest (again, from the SciKit learn kit~\cite{Pedregosa2012}) were
+Random Forest (again, from the SciKit learn kit~\cite{Pedregosa2012}) was
 built from the training data, then applied to the test data.
 The ``untuned'' columns of \fig{j} shows those results. We called a data set ``usable'' if Random Forest was able to classify majority of the instances correctly. For this purpose, we set a threshold of $\mathit{pd}\ge 60 \wedge \mathit{pf} \le 30$\% to select suitable data sets. With this threshold, however, none of our data sets were be suitable for this study.
 
@@ -443,7 +435,7 @@ the test data; i.e. we took care that no clues from the test set were ever used 
  
 This section describes XTREE (which we call Method4) and  three  
 alternate methods for learning plans.
-  XTREE  uses the decision tree learner of \fig{where}.D.  It is new to this paper.
+  XTREE, a novel planner introduced in this work,  uses the decision tree learner of \fig{where}.D.
   The other methods use the   top-down
 	bi-clustering method described in \fig{where}.C  which recursively divides the
 	data in two  using a dimension that captures the greatest variability in the data. 
@@ -465,8 +457,7 @@ Our  description of the methods adopts the following convention. All variables
 \subsubsection{Method1= CD=   Centroid Deltas}
 
 
- {\em Summary1:} Method1  computes a plan from the difference between where you are  (which we will call $C_i$) and
-where you want to be  (which we will call $C_j$).
+ {\em Summary1:} Method1  computes a plan from the difference between where you are  (which we will call $C_i$) and where you want to be  (which we will call $C_j$).
 
 {\em Assumption1: } Large data sets can be adequately represented by a few dozen (or so) 
 centroids.
@@ -516,7 +507,7 @@ of \fig{where}.E.
 
 {\em Summary3:} Method3 is like Method1, but it uses more knowledge about the training data.
 
-{\em Assumption3: } There exists ``gradients'' between clusters which, if used, will better guide us to finding better plans.
+{\em Assumption3: } There exists ``gradients'' between clusters which, if used, will better guide us to finding beneficial plans.
 
 {\em Details3:}
 Method3 generates clusters from the training data just like Method1. Following this, it summarizes the clusters $C_X$ using ``Best-In-Cluster'' $B_X$, which is (1) the centroid of the cluster for the Jureczko data; (2) the cluster's member with the fastest runtime for the Seigmund data. Following this, Method3 connects  each cluster $C_i$ to a nearest neighbor $C_j$ by a {\em gradient}. Each gradient has a (bottom,top) end labelled  ($C_i,C_j$) containing the (worst,best) performance scores, respectively. 
@@ -536,7 +527,7 @@ plans from the difference between two branches:
 
 {\em Assumption4:} One potential problem with Methods 1,2 and 3 is the {\em unsupervised} nature of
 the clustering algorithm (WHERE) that  
-executes without knowledge of the target class.  {\em Supervised} methods, on the other hand, assume that it is useful to also reflect on the target class.
+executes without knowledge of the target class.  {\em Supervised} methods assume that it is useful to also reflect on the target class.
 
 {\em Details4:} 
 XTREE uses a supervised   decision tree algorithm of \fig{where}.D to divide the data.
@@ -558,8 +549,6 @@ This section describes an experimental design (and results) for evaluating the a
 \subsection{Experimental Design}
 
 \subsubsection{A Strategy for Evaluating Planners}
- 
- Here is our experimental design:
  
  \begin{figure}[!ht]
 {\small 
@@ -593,7 +582,7 @@ This section describes an experimental design (and results) for evaluating the a
  \caption{Experimental design .}\label{fig:design}
  \end{figure}
 
-As shown in \fig{design}, we divide the
+Our experimental design is shown in \fig{design}. We divide the
 project data  into two disjoint sets {\em train} and {\em test}
 (so \mbox{{\em train} $\cap ${\em test} $=\;\emptyset$}).
 Next, from the train set, we build both a {\em planner} and
@@ -618,7 +607,9 @@ then (2)~apply the { predictor} to the altered data $test'$;
 then (3)~return data on the {\em before, after} predictions expressed as percent improvement, denoted by  $R=(1-\frac{\mathit{after}}{\mathit{before}})\times100\%$, with the following following properties:
 \bi
 \item If $R  = 0\%$, this means  ``no change from baseline''; 
-\item If $R \gt 0\%$, this indicates ``some reduction to the baseline'';
+\item If $R \gt 0\%$, this indicates ``
+
+improvement over the baseline'';
 \item If $R \lt 0\%$, this indicates ``optimization failure''.
 \ei
  \subsubsection{Statistical Methods}
@@ -659,9 +650,9 @@ range, or IQR).
 
 \begin{center}
 
-{\small Example \begin{tabular}{{l@{~~~~}l@{~~~~}r@{~~~~}r@{~~}c@{}r}} 
+{\small Example \begin{tabular}{{l@{~~~}l@{~~~}r@{~~~~}r@{~~~}c@{}r}} 
 \arrayrulecolor{lightgray}
-\rowcolor{lightgray}\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\\hline
+\rowcolor{lightgray}\textbf{Rank} & \textbf{Treatment} & \textbf{Median} & \textbf{IQR} & \\
 1 &      XTREE &    62  &  6 & \quart{47.2}{4.8}{49.6}{115}  \\
 \hline 2 &          BIC &    50  &  12 & \quart{34.2}{9.6}{40}{115} \\ 
 \hline 3 &      CD &    44  &  18 & \quart{28}{14.4}{35.2}{115} \\
@@ -670,17 +661,12 @@ range, or IQR).
 \end{center}
 
 In this example table, the rows are  sorted on the median values of each method. Note that all the methods
-have   $R\gt0\%$ values; i.e. all these methods reduced the expected value of the performance score in that experiment
+have   $R\gt0\%$; i.e. all these methods reduced the expected value of the performance score in that experiment
 while XTREE achieved the greatest reduction (of 62\% from the original value).
-
 
 The above example table has a  left-hand-side  {\bf Rank} column, computed using the
 Scott-Knott test described above. In this example table, XTREE is ranked the best, while CD and CD+FS together are ranked the worst.
-  
-   
- 
 
- 
 \subsubsection{Other Details}
  
 \fig{jur} and \fig{conf1} show the effectiveness of our methods seen in 40 repeats with each data set.
@@ -714,7 +700,7 @@ and {\em surprise}, which is how different are the plans from standard truisms.
 
 Measured in terms of effectiveness,
 some data sets were harder to optimize than others.  SQL (in \fig{conf1}) defied all 
-our methods for reducing runtimes. While all methods performed equally well for Jedit, XTREE was the only method that could optimize BDBJ (in \fig{conf1}). In general, in most data sets,
+our methods for reducing runtimes. XTREE was the only method that could optimize BDBJ (in \fig{conf1}). In general, in most data sets,
 large reductions were observed:
 \bi
 \item
@@ -724,9 +710,7 @@ An improvement of 77\% as compared to the original baseline in BDBC  of \fig{con
 \ei
 
 Overall, XTREE was most the effective. It was always the top-ranked method with 
-the exception of SQL and Jedit. Where it ranked better, it had significant improvements in the median performance values (1) In the Jureczko data sets, there was a median improvement of around 10\% larger than the next ranked method; (2) In the Seigmund data sets, improvements as large as 36\% greater than the next ranked method were observed.
-
-
+the exception of SQL. Where it ranked better, it had significant improvements in the median performance values (1) In the Jureczko data sets, there was a median improvement of around 10\% larger than the next ranked method; (2) In the Seigmund data sets, improvements as large as 36\% greater than the next ranked method were observed.
 
 \subsubsection{Succinctness Results}
 
@@ -736,10 +720,7 @@ the exception of SQL and Jedit. Where it ranked better, it had significant impro
 The left-hand-side plot of that figure reports results from one of the  Jureczko data sets ({\em lucene}) and the right-hand-side
   shows a Siegmund data set ({\em BDBJ}). 
   
-  In these plots, the {\em more} succinct a planning method, the {\em less} percent
-  of the runs
-  where 
-  it   recommends changing a particular feature (i.e. the vertical bars in that plot
+  In these plots, {\em more} succinct a planning method, {\em fewer} the frequency (in percent) where it recommends changing a particular feature (i.e. the vertical bars in that plot
   are {\em lower}). For example,
   XTREE's plans were usually succinct --  in all  data sets,
  XTREE   changes around a fifth of the features (see \fig{types}).
@@ -761,7 +742,7 @@ there are fewer changed features in the Seigmund data than in the defect predict
 One explanation for that is the nature of the features: the
 Jureczko data sets have continuous
 features while the 
-Seigmund data has binary independent features (where settings can be turned ``ON'' or ``OFF''). While the features of the Jureczko data sets are not constrained, those of Seigmund data sets are subject to several constrains (dictated by their feature models, see \fig{bdbc}). It is possible that planners in Method1, Method2, and Method3 find very few valid settings that can improve the performance scores. 
+Seigmund data has binary independent features (where settings can be turned ``ON'' or ``OFF''). While the features of the Jureczko data sets are not constrained, those of Seigmund data sets are subject to several constrains (dictated by their feature models, see \fig{bdbc}). It is possible that planners in Method1, Method2, and Method3 find very few valid settings that can improve the performance scores, thereby making insignificant changes. As evidenced by the results in \fig{}
 
 \input{tex/deltas_avg.tex}
 
@@ -984,7 +965,6 @@ It uses a supervised method to divide the data and;
 When planning how to move examples to better classes, it is best to reflect over 
 differences between those classes.
 \ei
-\newpage
 \section{Future Work}
 Future work in this area could explore numerous questions. For example, 
 XTREE, as used here, sought improvements in a one goal (the class variable). Does XTREE work for multi-goal reasoning?

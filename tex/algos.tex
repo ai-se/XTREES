@@ -55,7 +55,7 @@ $f_1,f_2,.. f_n$ for \mbox{$N = \sum^n_{i=1} f_i$} and $p_i = f_i/N$.
 	{\bf Figure 7.D: Top-down division with Decision Trees}
 	
 	Find a split in the values of  independent features that most reduces the variability
-  of the dependent feature (measured using \fig{where}.A). Contruct a tree using these splits.
+  of the dependent feature (measured using \fig{where}.A). Construct a standard decision tree using these splits.
 	
 	 ~\hrule~
 	 
@@ -67,7 +67,7 @@ Discretize all numeric features using the Fayyad-Iranni discretizer~\cite{FayIra
 Let feature $F$ have bins $B_i$, each of which contains $n_i$ rows
 and 
 let each bin $B_i$ have entropy $e_i$ computed from the frequency of clusters seen in that bin (computed from \fig{where}.A).
-Cull the the features as per Papakroni~\cite{papa13}; i.e. just use the $\beta=33\%$ most informative features
+Cull the the features as per~\cite{papa13}; i.e. just use the $\beta=33\%$ most informative features
 where  the   value of  feature $F$ is $\sum_i e_i\frac{n_i}{N}$ ($N$ is the number of rows).
 
 ~\hrule~ 
